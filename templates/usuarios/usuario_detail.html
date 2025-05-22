@@ -1,0 +1,111 @@
+{% extends 'base.html' %} {% block title %}{{ usuario.get_full_name }}{%
+endblock %} {% block content %}
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ usuario.get_full_name }}</h1>
+    <div>
+      <a
+        href="{% url 'usuarios:update' pk=usuario.pk %}"
+        class="btn btn-warning"
+      >
+        <i class="fas fa-edit"></i> Editar
+      </a>
+      <a href="{% url 'usuarios:list' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Volver
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-body text-center">
+          {% if usuario.perfil.foto %}
+          <img
+            src="{{ usuario.perfil.foto.url }}"
+            alt="{{ usuario.get_full_name }}"
+            class="rounded-circle mb-3"
+            style="width: 150px; height: 150px; object-fit: cover"
+          />
+          {% else %}
+          <div
+            class="rounded-circle bg-secondary mb-3 mx-auto d-flex align-items-center justify-content-center"
+            style="width: 150px; height: 150px"
+          >
+            <i class="fas fa-user fa-4x text-white"></i>
+          </div>
+          {% endif %}
+          <h5 class="card-title">{{ usuario.get_full_name }}</h5>
+          <p class="text-muted">@{{ usuario.username }}</p>
+          <div class="d-flex justify-content-center">
+            <span class="badge bg-primary me-2"
+              >{{ usuario.perfil.get_tipo_usuario_display }}</span
+            >
+            {% if usuario.perfil.activo %}
+            <span class="badge bg-success">Activo</span>
+            {% else %}
+            <span class="badge bg-danger">Inactivo</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Información Personal</h5>
+        </div>
+        <div class="card-body">
+          <dl class="row">
+            <dt class="col-sm-3">Email:</dt>
+            <dd class="col-sm-9">{{ usuario.email }}</dd>
+
+            <dt class="col-sm-3">Teléfono:</dt>
+            <dd class="col-sm-9">
+              {{ usuario.perfil.telefono|default:"No especificado" }}
+            </dd>
+
+            <dt class="col-sm-3">Dirección:</dt>
+            <dd class="col-sm-9">
+              {{ usuario.perfil.direccion|default:"No especificada" }}
+            </dd>
+
+            <dt class="col-sm-3">Fecha de Nacimiento:</dt>
+            <dd class="col-sm-9">
+              {{ usuario.perfil.fecha_nacimiento|date:"d/m/Y"|default:"No
+              especificada" }}
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Información Institucional</h5>
+        </div>
+        <div class="card-body">
+          <dl class="row">
+            <dt class="col-sm-3">Colegio:</dt>
+            <dd class="col-sm-9">
+              {% if usuario.perfil.colegio %}
+              <a
+                href="{% url 'colegios:detail' slug=usuario.perfil.colegio.slug %}"
+              >
+                {{ usuario.perfil.colegio.nombre }}
+              </a>
+              {% else %} No asignado {% endif %}
+            </dd>
+
+            <dt class="col-sm-3">Sede:</dt>
+            <dd class="col-sm-9">
+              {% if usuario.perfil.sede %} {{ usuario.perfil.sede.nombre }} {%
+              else %} No asignada {% endif %}
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

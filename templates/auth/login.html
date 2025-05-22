@@ -1,0 +1,57 @@
+{% extends 'base.html' %} {% block title %}Iniciar Sesión{% endblock %} 
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow">
+        <div class="card-body">
+          <h2 class="text-center mb-4">Iniciar Sesión</h2>
+
+          <form method="post" novalidate>
+            {% csrf_token %} {% if form.errors %}
+            <div class="alert alert-danger">
+              <i class="fas fa-exclamation-circle"></i>
+              Por favor, corrija los errores a continuación.
+            </div>
+            {% endif %}
+
+            <div class="mb-3">
+              <label for="id_username" class="form-label">Usuario</label>
+              <input
+                type="text"
+                name="username"
+                id="id_username"
+                class="form-control"
+                required
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="id_password" class="form-label">Contraseña</label>
+              <input
+                type="password"
+                name="password"
+                id="id_password"
+                class="form-control"
+                required
+              />
+            </div>
+
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+              </button>
+            </div>
+          </form>
+
+          <div class="text-center mt-3">
+            <a href="{% url 'password_reset' %}" class="text-decoration-none">
+              ¿Olvidaste tu contraseña?
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'base.html' %} {% block title %}{{ colegio.nombre }}{% endblock %} {%
+block content %}
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ colegio.nombre }}</h1>
+    <div>
+      <a
+        href="{% url 'colegios:update' slug=colegio.slug %}"
+        class="btn btn-warning"
+      >
+        <i class="fas fa-edit"></i> Editar
+      </a>
+      <a href="{% url 'colegios:list' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Volver
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Información General</h5>
+        </div>
+        <div class="card-body">
+          <dl class="row">
+            <dt class="col-sm-4">Código:</dt>
+            <dd class="col-sm-8">{{ colegio.codigo }}</dd>
+
+            <dt class="col-sm-4">Director:</dt>
+            <dd class="col-sm-8">{{ colegio.director }}</dd>
+
+            <dt class="col-sm-4">Email:</dt>
+            <dd class="col-sm-8">{{ colegio.email }}</dd>
+
+            <dt class="col-sm-4">Teléfono:</dt>
+            <dd class="col-sm-8">{{ colegio.telefono }}</dd>
+
+            <dt class="col-sm-4">Dirección:</dt>
+            <dd class="col-sm-8">{{ colegio.direccion }}</dd>
+
+            <dt class="col-sm-4">Estado:</dt>
+            <dd class="col-sm-8">
+              {% if colegio.activo %}
+              <span class="badge bg-success">Activo</span>
+              {% else %}
+              <span class="badge bg-danger">Inactivo</span>
+              {% endif %}
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <h5 class="card-title mb-0">Sedes</h5>
+          <a
+            href="{% url 'colegios:sede_create' colegio_slug=colegio.slug %}"
+            class="btn btn-primary btn-sm"
+          >
+            <i class="fas fa-plus"></i> Nueva Sede
+          </a>
+        </div>
+        <div class="card-body">
+          {% if sedes %}
+          <div class="list-group">
+            {% for sede in sedes %}
+            <div class="list-group-item">
+              <div class="d-flex w-100 justify-content-between">
+                <h6 class="mb-1">{{ sede.nombre }}</h6>
+                <small>
+                  {% if sede.activo %}
+                  <span class="badge bg-success">Activo</span>
+                  {% else %}
+                  <span class="badge bg-danger">Inactivo</span>
+                  {% endif %}
+                </small>
+              </div>
+              <p class="mb-1">
+                <small>
+                  <i class="fas fa-phone"></i> {{ sede.telefono }}<br />
+                  <i class="fas fa-envelope"></i> {{ sede.email }}
+                </small>
+              </p>
+              <small class="text-muted">{{ sede.direccion }}</small>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="alert alert-info">
+            No hay sedes registradas para este colegio.
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
