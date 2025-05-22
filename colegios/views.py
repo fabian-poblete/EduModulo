@@ -1,81 +1,55 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
-from .models import Colegio, Sede
-from .forms import ColegioForm, SedeForm
+from .models import Colegio
+from .forms import ColegioForm
 
 # Create your views here.
 
 
-@login_required
-def colegio_list(request):
-    colegios = Colegio.objects.all()
-    return render(request, 'colegios/colegio_list.html', {
-        'colegios': colegios
-    })
+class SuperuserRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def handle_no_permission(self):
+        messages.error(
+            self.request, 'No tienes permiso para acceder a esta página.')
+        return redirect('dashboard:index')
 
 
-@login_required
-def colegio_detail(request, slug):
-    colegio = get_object_or_404(Colegio, slug=slug)
-    sedes = colegio.sedes.all()
-    return render(request, 'colegios/colegio_detail.html', {
-        'colegio': colegio,
-        'sedes': sedes
-    })
+class ColegioListView(LoginRequiredMixin, SuperuserRequiredMixin, ListView):
+    model = Colegio
+    template_name = 'colegios/colegio_list.html'
+    context_object_name = 'object_list'
+    ordering = ['nombre']
 
 
-@login_required
-def colegio_create(request):
-    if request.method == 'POST':
-        form = ColegioForm(request.POST)
-        if form.is_valid():
-            colegio = form.save()
-            messages.success(request, 'Colegio creado exitosamente.')
-            return redirect('colegios:detail', slug=colegio.slug)
-    else:
-        form = ColegioForm()
-
-    return render(request, 'colegios/colegio_form.html', {
-        'form': form,
-        'title': 'Crear Colegio'
-    })
+class ColegioDetailView(LoginRequiredMixin, SuperuserRequiredMixin, DetailView):
+    model = Colegio
+    template_name = 'colegios/colegio_detail.html'
+    context_object_name = 'colegio'
+    slug_url_kwarg = 'slug'
 
 
-@login_required
-def colegio_update(request, slug):
-    colegio = get_object_or_404(Colegio, slug=slug)
-    if request.method == 'POST':
-        form = ColegioForm(request.POST, instance=colegio)
-        if form.is_valid():
-            colegio = form.save()
-            messages.success(request, 'Colegio actualizado exitosamente.')
-            return redirect('colegios:detail', slug=colegio.slug)
-    else:
-        form = ColegioForm(instance=colegio)
-
-    return render(request, 'colegios/colegio_form.html', {
-        'form': form,
-        'title': 'Editar Colegio'
-    })
+class ColegioCreateView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
+    model = Colegio
+    form_class = ColegioForm
+    template_name = 'colegios/colegio_form.html'
+    success_url = reverse_lazy('colegios:list')
 
 
-@login_required
-def sede_create(request, colegio_slug):
-    colegio = get_object_or_404(Colegio, slug=colegio_slug)
-    if request.method == 'POST':
-        form = SedeForm(request.POST)
-        if form.is_valid():
-            sede = form.save(commit=False)
-            sede.colegio = colegio
-            sede.save()
-            messages.success(request, 'Sede creada exitosamente.')
-            return redirect('colegios:detail', slug=colegio.slug)
-    else:
-        form = SedeForm()
+class ColegioUpdateView(LoginRequiredMixin, SuperuserRequiredMixin, UpdateView):
+    model = Colegio
+    form_class = ColegioForm
+    template_name = 'colegios/colegio_form.html'
+    slug_url_kwarg = 'slug'
+    success_url = reverse_lazy('colegios:list')
 
-    return render(request, 'colegios/sede_form.html', {
-        'form': form,
-        'colegio': colegio,
-        'title': 'Crear Sede'
-    })
+
+class ColegioDeleteView(LoginRequiredMixin, SuperuserRequiredMixin, DeleteView):
+    model = Colegio
+    template_name = 'colegios/colegio_confirm_delete.html'
+    slug_url_kwarg = 'slug'
+    success_url = reverse_lazy('colegios:list')

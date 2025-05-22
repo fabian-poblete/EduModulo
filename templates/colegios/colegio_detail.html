@@ -1,103 +1,262 @@
-{% extends 'base.html' %} {% block title %}{{ colegio.nombre }}{% endblock %} {%
-block content %}
-<div class="container">
+{% extends 'base.html' %} {% load static %} 
+{% block title %}{{ colegio.nombre}}{% endblock %}
+{% block content %}
+<div class="container py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>{{ colegio.nombre }}</h1>
     <div>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-1">
+          <li class="breadcrumb-item">
+            <a href="{% url 'colegios:list' %}">Colegios</a>
+          </li>
+          <li class="breadcrumb-item active">{{ colegio.nombre }}</li>
+        </ol>
+      </nav>
+      <h4 class="mb-0">{{ colegio.nombre }}</h4>
+    </div>
+    <div class="btn-group">
       <a
-        href="{% url 'colegios:update' slug=colegio.slug %}"
-        class="btn btn-warning"
+        href="{% url 'colegios:update' colegio.slug %}"
+        class="btn btn-primary"
       >
-        <i class="fas fa-edit"></i> Editar
+        <i class="fas fa-edit me-2"></i>Editar
       </a>
-      <a href="{% url 'colegios:list' %}" class="btn btn-secondary">
-        <i class="fas fa-arrow-left"></i> Volver
+      <a href="{% url 'colegios:delete' colegio.slug %}" class="btn btn-danger">
+        <i class="fas fa-trash me-2"></i>Eliminar
       </a>
     </div>
   </div>
 
   <div class="row">
-    <div class="col-md-6">
+    <!-- Información Principal -->
+    <div class="col-lg-8">
       <div class="card mb-4">
-        <div class="card-header">
-          <h5 class="card-title mb-0">Información General</h5>
-        </div>
         <div class="card-body">
-          <dl class="row">
-            <dt class="col-sm-4">Código:</dt>
-            <dd class="col-sm-8">{{ colegio.codigo }}</dd>
-
-            <dt class="col-sm-4">Director:</dt>
-            <dd class="col-sm-8">{{ colegio.director }}</dd>
-
-            <dt class="col-sm-4">Email:</dt>
-            <dd class="col-sm-8">{{ colegio.email }}</dd>
-
-            <dt class="col-sm-4">Teléfono:</dt>
-            <dd class="col-sm-8">{{ colegio.telefono }}</dd>
-
-            <dt class="col-sm-4">Dirección:</dt>
-            <dd class="col-sm-8">{{ colegio.direccion }}</dd>
-
-            <dt class="col-sm-4">Estado:</dt>
-            <dd class="col-sm-8">
-              {% if colegio.activo %}
-              <span class="badge bg-success">Activo</span>
-              {% else %}
-              <span class="badge bg-danger">Inactivo</span>
+          <div class="d-flex align-items-center mb-4">
+            {% if colegio.logo %}
+            <img
+              src="{{ colegio.logo.url }}"
+              alt="{{ colegio.nombre }}"
+              class="rounded-circle me-3"
+              style="width: 80px; height: 80px; object-fit: cover"
+            />
+            {% else %}
+            <div
+              class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3"
+              style="width: 80px; height: 80px"
+            >
+              <i class="fas fa-school fa-2x text-muted"></i>
+            </div>
+            {% endif %}
+            <div>
+              <h5 class="mb-1">{{ colegio.nombre }}</h5>
+              <p class="text-muted mb-0">Código: {{ colegio.codigo }}</p>
+              {% if colegio.sitio_web %}
+              <a
+                href="{{ colegio.sitio_web }}"
+                target="_blank"
+                class="text-primary small"
+              >
+                <i class="fas fa-external-link-alt me-1"></i>Visitar sitio web
+              </a>
               {% endif %}
-            </dd>
-          </dl>
+            </div>
+          </div>
+
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="d-flex align-items-center mb-3">
+                <div
+                  class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3"
+                  style="width: 40px; height: 40px"
+                >
+                  <i class="fas fa-map-marker-alt text-primary"></i>
+                </div>
+                <div>
+                  <h6 class="mb-1">Ubicación</h6>
+                  <p class="mb-0">{{ colegio.direccion }}</p>
+                  <p class="mb-0">{{ colegio.ciudad }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="d-flex align-items-center mb-3">
+                <div
+                  class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3"
+                  style="width: 40px; height: 40px"
+                >
+                  <i class="fas fa-phone text-primary"></i>
+                </div>
+                <div>
+                  <h6 class="mb-1">Contacto</h6>
+                  {% if colegio.telefono %}
+                  <p class="mb-1">{{ colegio.telefono }}</p>
+                  {% endif %} {% if colegio.email %}
+                  <p class="mb-0">{{ colegio.email }}</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estadísticas -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div
+                  class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center me-3"
+                  style="width: 48px; height: 48px"
+                >
+                  <i class="fas fa-users text-primary"></i>
+                </div>
+                <div>
+                  <h6 class="mb-1">Estudiantes</h6>
+                  <h3 class="mb-0">0</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div
+                  class="rounded-circle bg-success bg-opacity-10 d-flex align-items-center justify-content-center me-3"
+                  style="width: 48px; height: 48px"
+                >
+                  <i class="fas fa-chalkboard-teacher text-success"></i>
+                </div>
+                <div>
+                  <h6 class="mb-1">Profesores</h6>
+                  <h3 class="mb-0">0</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="d-flex align-items-center">
+                <div
+                  class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center me-3"
+                  style="width: 48px; height: 48px"
+                >
+                  <i class="fas fa-book text-info"></i>
+                </div>
+                <div>
+                  <h6 class="mb-1">Cursos</h6>
+                  <h3 class="mb-0">0</h3>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="col-md-6">
-      <div class="card">
-        <div
-          class="card-header d-flex justify-content-between align-items-center"
-        >
-          <h5 class="card-title mb-0">Sedes</h5>
-          <a
-            href="{% url 'colegios:sede_create' colegio_slug=colegio.slug %}"
-            class="btn btn-primary btn-sm"
-          >
-            <i class="fas fa-plus"></i> Nueva Sede
-          </a>
-        </div>
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+      <div class="card mb-4">
         <div class="card-body">
-          {% if sedes %}
-          <div class="list-group">
-            {% for sede in sedes %}
-            <div class="list-group-item">
-              <div class="d-flex w-100 justify-content-between">
-                <h6 class="mb-1">{{ sede.nombre }}</h6>
-                <small>
-                  {% if sede.activo %}
-                  <span class="badge bg-success">Activo</span>
-                  {% else %}
-                  <span class="badge bg-danger">Inactivo</span>
-                  {% endif %}
-                </small>
+          <h6 class="card-title mb-3">Información del Sistema</h6>
+          <ul class="list-unstyled mb-0">
+            <li class="d-flex align-items-center mb-3">
+              <i class="fas fa-calendar-alt text-muted me-2"></i>
+              <div>
+                <small class="text-muted d-block">Fecha de Registro</small>
+                <span>{{ colegio.fecha_creacion|date:"d/m/Y" }}</span>
               </div>
-              <p class="mb-1">
-                <small>
-                  <i class="fas fa-phone"></i> {{ sede.telefono }}<br />
-                  <i class="fas fa-envelope"></i> {{ sede.email }}
-                </small>
-              </p>
-              <small class="text-muted">{{ sede.direccion }}</small>
-            </div>
-            {% endfor %}
+            </li>
+            <li class="d-flex align-items-center mb-3">
+              <i class="fas fa-clock text-muted me-2"></i>
+              <div>
+                <small class="text-muted d-block">Última Actualización</small>
+                <span>{{ colegio.fecha_actualizacion|date:"d/m/Y H:i" }}</span>
+              </div>
+            </li>
+            <li class="d-flex align-items-center">
+              <i class="fas fa-toggle-on text-muted me-2"></i>
+              <div>
+                <small class="text-muted d-block">Estado</small>
+                {% if colegio.activo %}
+                <span class="badge bg-success">Activo</span>
+                {% else %}
+                <span class="badge bg-danger">Inactivo</span>
+                {% endif %}
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title mb-3">Acciones Rápidas</h6>
+          <div class="d-grid gap-2">
+            <a href="#" class="btn btn-outline-primary">
+              <i class="fas fa-user-plus me-2"></i>Agregar Estudiante
+            </a>
+            <a href="#" class="btn btn-outline-primary">
+              <i class="fas fa-chalkboard-teacher me-2"></i>Agregar Profesor
+            </a>
+            <a href="#" class="btn btn-outline-primary">
+              <i class="fas fa-book me-2"></i>Crear Curso
+            </a>
           </div>
-          {% else %}
-          <div class="alert alert-info">
-            No hay sedes registradas para este colegio.
-          </div>
-          {% endif %}
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<style>
+  .breadcrumb {
+    background: none;
+    padding: 0;
+  }
+
+  .breadcrumb-item a {
+    color: var(--primary-color);
+    text-decoration: none;
+  }
+
+  .breadcrumb-item.active {
+    color: #6c757d;
+  }
+
+  .card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .btn-group .btn {
+    padding: 0.5rem 1rem;
+  }
+
+  .badge {
+    padding: 0.5em 0.75em;
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 1rem;
+    }
+
+    .btn-group {
+      width: 100%;
+    }
+
+    .btn-group .btn {
+      flex: 1;
+    }
+  }
+</style>
 {% endblock %}

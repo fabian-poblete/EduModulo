@@ -26,11 +26,10 @@
   </head>
   <body>
     <!-- Navbar -->
-    {% if user.is_authenticated %}
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
       <div class="container">
-        <a class="navbar-brand" href="{% url 'dashboard:index' %}">
-          <i class="fas fa-graduation-cap me-2"></i>EduModulo
+        <a class="navbar-brand" href="{% url 'public:home' %}">
+          <i class="fas fa-graduation-cap"></i> EduModulo
         </a>
         <button
           class="navbar-toggler"
@@ -41,15 +40,23 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
+          {% if user.is_authenticated %}
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'colegios:list' %}">
-                <i class="fas fa-school me-1"></i>Colegios
+              <a class="nav-link" href="{% url 'dashboard:index' %}">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
               </a>
             </li>
+            {% if user.is_superuser %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'colegios:list' %}">
+                <i class="fas fa-school"></i> Colegios
+              </a>
+            </li>
+            {% endif %}
             <li class="nav-item">
               <a class="nav-link" href="{% url 'usuarios:list' %}">
-                <i class="fas fa-users me-1"></i>Usuarios
+                <i class="fas fa-users"></i> Usuarios
               </a>
             </li>
           </ul>
@@ -62,70 +69,39 @@
                 role="button"
                 data-bs-toggle="dropdown"
               >
-                <i class="fas fa-user-circle me-1"></i>{{ user.username }}
+                <i class="fas fa-user-circle"></i>
+                {{user.get_full_name|default:user.username }}
               </a>
-              <ul class="dropdown-menu dropdown-menu-end shadow">
+              <ul class="dropdown-menu dropdown-menu-end">
                 <li>
                   <a class="dropdown-item" href="{% url 'usuarios:profile' %}">
-                    <i class="fas fa-id-card me-2"></i>Perfil
+                    <i class="fas fa-user"></i> Mi Perfil
                   </a>
                 </li>
                 <li><hr class="dropdown-divider" /></li>
                 <li>
                   <a
                     class="dropdown-item text-danger"
-                    href="{% url 'logout' %}"
+                    href="{% url 'usuarios:logout' %}"
                   >
-                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
                   </a>
                 </li>
               </ul>
             </li>
           </ul>
-        </div>
-      </div>
-    </nav>
-    {% else %}
-    <nav class="navbar navbar-expand-lg navbar-dark">
-      <div class="container">
-        <a class="navbar-brand" href="{% url 'public:home' %}">
-          <i class="fas fa-graduation-cap me-2"></i>EduModulo
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
+          {% else %}
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-              <a class="nav-link" href="#features">
-                <i class="fas fa-star me-1"></i>Características
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#about">
-                <i class="fas fa-info-circle me-1"></i>Acerca de
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#contact">
-                <i class="fas fa-envelope me-1"></i>Contacto
-              </a>
-            </li>
-            <li class="nav-item ms-2">
-              <a class="btn btn-outline-light" href="{% url 'login' %}">
-                <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+              <a class="nav-link" href="{% url 'login' %}">
+                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
               </a>
             </li>
           </ul>
+          {% endif %}
         </div>
       </div>
     </nav>
-    {% endif %}
 
     <!-- Main Content -->
     <main>
@@ -146,58 +122,17 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-4">
-            <h5><i class="fas fa-graduation-cap me-2"></i>EduModulo</h5>
-            <p>
-              Sistema integral de gestión educativa diseñado para optimizar los
-              procesos administrativos y académicos de instituciones educativas.
-            </p>
-          </div>
-          <div class="col-md-4">
-            <h5><i class="fas fa-link me-2"></i>Enlaces Rápidos</h5>
-            <ul class="list-unstyled">
-              <li>
-                <a href="#features"
-                  ><i class="fas fa-chevron-right me-2"></i>Características</a
-                >
-              </li>
-              <li>
-                <a href="#about"
-                  ><i class="fas fa-chevron-right me-2"></i>Acerca de</a
-                >
-              </li>
-              <li>
-                <a href="#contact"
-                  ><i class="fas fa-chevron-right me-2"></i>Contacto</a
-                >
-              </li>
-            </ul>
-          </div>
-          <div class="col-md-4">
-            <h5><i class="fas fa-address-card me-2"></i>Contacto</h5>
-            <ul class="list-unstyled">
-              <li><i class="fas fa-envelope me-2"></i> info@edumodulo.com</li>
-              <li><i class="fas fa-phone me-2"></i> +569 54638182</li>
-              <li>
-                <i class="fas fa-map-marker-alt me-2"></i> Santiago, Chile
-              </li>
-            </ul>
-          </div>
-        </div>
-        <hr class="mt-4 mb-4" style="border-color: rgba(255, 255, 255, 0.1)" />
-        <div class="text-center">
-          <p class="mb-0">
-            &copy; {% now "Y" %} EduModulo. Todos los derechos reservados.
-          </p>
-        </div>
+    <footer class="footer mt-auto py-3 bg-light">
+      <div class="container text-center">
+        <p class="text-muted mb-0">
+          &copy; {% now "Y" %} EduModulo. Todos los derechos reservados.
+        </p>
       </div>
     </footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     {% block extra_js %}{% endblock %}
   </body>
 </html>

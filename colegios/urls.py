@@ -4,10 +4,9 @@ from . import views
 app_name = 'colegios'
 
 urlpatterns = [
-    path('', views.colegio_list, name='list'),
-    path('crear/', views.colegio_create, name='create'),
-    path('<slug:slug>/', views.colegio_detail, name='detail'),
-    path('<slug:slug>/editar/', views.colegio_update, name='update'),
-    path('<slug:colegio_slug>/sedes/crear/',
-         views.sede_create, name='sede_create'),
+    path('', views.ColegioListView.as_view(), name='list'),
+    path('crear/', views.ColegioCreateView.as_view(), name='create'),
+    path('<slug:slug>/', views.ColegioDetailView.as_view(), name='detail'),
+    path('<slug:slug>/editar/', views.ColegioUpdateView.as_view(), name='update'),
+    path('<slug:slug>/eliminar/', views.ColegioDeleteView.as_view(), name='delete'),
 ]

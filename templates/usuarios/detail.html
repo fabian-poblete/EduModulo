@@ -1,0 +1,86 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Perfil
+de{{usuario.get_full_name|default:usuario.username }}{% endblock %} 
+{% block content%}
+<div class="container py-5">
+  <div class="row">
+    <!-- Información del Usuario -->
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body text-center">
+          {% if perfil.foto %}
+          <img
+            src="{{ perfil.foto.url }}"
+            alt="Foto de perfil"
+            class="rounded-circle mb-3"
+            style="width: 150px; height: 150px; object-fit: cover"
+          />
+          {% else %}
+          <img
+            src="{% static 'img/default-avatar.png' %}"
+            alt="Foto de perfil"
+            class="rounded-circle mb-3"
+            style="width: 150px; height: 150px; object-fit: cover"
+          />
+          {% endif %}
+          <h4 class="card-title">
+            {{ usuario.get_full_name|default:usuario.username }}
+          </h4>
+          <p class="text-muted">
+            {% if is_superuser %}
+            <span class="badge bg-warning">CTO</span>
+            {% else %}
+            <span class="badge bg-info"
+              >{{ perfil.get_tipo_usuario_display }}</span
+            >
+            {% endif %} {{ usuario.email }}
+          </p>
+          <p class="text-muted">
+            <i class="fas fa-calendar-alt me-2"></i>
+            Miembro desde {{ usuario.date_joined|date:"d/m/Y" }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario de Perfil -->
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-4">
+            <i class="fas fa-user-edit me-2"></i>Editar Perfil
+          </h5>
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Tipo de Usuario</label>
+                {{ form.tipo_usuario }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Foto de Perfil</label>
+                {{ form.foto }}
+              </div>
+            </div>
+
+           
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Colegio</label>
+                {{ form.colegio }}
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-2"></i>Guardar Cambios
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

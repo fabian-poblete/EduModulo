@@ -1,15 +1,17 @@
 {% extends 'base.html' %} {% block title %}{{ usuario.get_full_name }}{%
 endblock %} {% block content %}
-<div class="container">
+<div class="container py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>{{ usuario.get_full_name }}</h1>
     <div>
+      {% if can_edit and usuario.id != request.user.id %}
       <a
         href="{% url 'usuarios:update' pk=usuario.pk %}"
         class="btn btn-warning"
       >
         <i class="fas fa-edit"></i> Editar
       </a>
+      {% endif %}
       <a href="{% url 'usuarios:list' %}" class="btn btn-secondary">
         <i class="fas fa-arrow-left"></i> Volver
       </a>
@@ -88,19 +90,14 @@ endblock %} {% block content %}
           <dl class="row">
             <dt class="col-sm-3">Colegio:</dt>
             <dd class="col-sm-9">
-              {% if usuario.perfil.colegio %}
+              {% if usuario.perfil.colegio %} {% if is_superuser %}
               <a
+                <a
                 href="{% url 'colegios:detail' slug=usuario.perfil.colegio.slug %}"
               >
                 {{ usuario.perfil.colegio.nombre }}
               </a>
               {% else %} No asignado {% endif %}
-            </dd>
-
-            <dt class="col-sm-3">Sede:</dt>
-            <dd class="col-sm-9">
-              {% if usuario.perfil.sede %} {{ usuario.perfil.sede.nombre }} {%
-              else %} No asignada {% endif %}
             </dd>
           </dl>
         </div>

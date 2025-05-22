@@ -1,70 +1,100 @@
-{% extends 'base.html' %} {% block title %}Mi Perfil{% endblock %} {% block
-content %}
-<div class="container">
+{% extends 'base.html' %} {% load static %} {% block title %} Mi Perfil {%endblock %}
+{% block content %}
+<div class="container py-4">
   <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title mb-0">Mi Perfil</h2>
+    <div class="col-lg-8">
+      <!-- Header del Perfil -->
+      <div class="card profile-card mb-4">
+        <div class="card-body text-center p-4">
+          <div class="profile-image mb-3">
+            {% if user.perfil.foto %}
+            <img
+              src="{{ user.perfil.foto.url }}"
+              alt="Foto de perfil"
+              class="rounded-circle"
+            />
+            {% else %}
+            <div class="profile-image-placeholder">
+              <i class="fas fa-user"></i>
+            </div>
+            {% endif %}
+          </div>
+          <h3 class="mb-1">{{ user.get_full_name|default:user.username }}</h3>
+          <p class="text-muted mb-2">
+            {% if user.is_superuser %}
+            <span class="badge bg-warning">CTO</span>
+            {% else %}
+            <span class="badge bg-info">{{ user.perfil.get_tipo_usuario_display }}</span>
+            {% endif %}
+          </p>
+          <p class="text-muted small">
+            <i class="fas fa-envelope me-1"></i>{{ user.email }}
+          </p>
         </div>
-        <div class="card-body">
-          <form method="post" enctype="multipart/form-data" novalidate>
+      </div>
+
+      <!-- Formulario de Edición -->
+      <div class="card">
+        <div class="card-body p-4">
+          <h5 class="card-title mb-4">Editar Perfil</h5>
+          <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
 
-            <div class="text-center mb-4">
-              {% if user.perfil.foto %}
-              <img
-                src="{{ user.perfil.foto.url }}"
-                alt="{{ user.get_full_name }}"
-                class="rounded-circle mb-3"
-                style="width: 150px; height: 150px; object-fit: cover"
-              />
-              {% else %}
-              <div
-                class="rounded-circle bg-secondary mb-3 mx-auto d-flex align-items-center justify-content-center"
-                style="width: 150px; height: 150px"
-              >
-                <i class="fas fa-user fa-4x text-white"></i>
+            <!-- Foto y Tipo de Usuario -->
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label class="form-label">Tipo de Usuario</label>
+                <div class="form-control bg-light">
+                  {% if user.is_superuser %} CTO {% else %} {{user.perfil.get_tipo_usuario_display }} {% endif %}
+                </div>
               </div>
-              {% endif %}
-              <h4>{{ user.get_full_name }}</h4>
-              <p class="text-muted">@{{ user.username }}</p>
             </div>
 
-            <h4 class="mb-3">Información de Usuario</h4>
-            {% for field in user_form %}
-            <div class="mb-3">
-              <label for="{{ field.id_for_label }}" class="form-label">
-                {{ field.label }}
-              </label>
-              {{ field }} {% if field.help_text %}
-              <div class="form-text">{{ field.help_text }}</div>
-              {% endif %} {% if field.errors %}
-              <div class="invalid-feedback d-block">{{ field.errors }}</div>
-              {% endif %}
+            <!-- Información Institucional -->
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label class="form-label">Colegio</label>
+                <div class="form-control bg-light">
+                  {% if user.is_superuser %} {% if user.perfil.colegio %} {{
+                  user.perfil.colegio.nombre }} {% else %} No asignado {% endif%}
+                  {% else %} {{ user.perfil.colegio.nombre }} {% endif %}
+                </div>
+              </div>
             </div>
-            {% endfor %}
 
-            <hr class="my-4" />
-
-            <h4 class="mb-3">Información de Perfil</h4>
-            {% for field in perfil_form %} {% if field.name != 'tipo_usuario'
-            and field.name != 'activo' %}
-            <div class="mb-3">
-              <label for="{{ field.id_for_label }}" class="form-label">
-                {{ field.label }}
-              </label>
-              {{ field }} {% if field.help_text %}
-              <div class="form-text">{{ field.help_text }}</div>
-              {% endif %} {% if field.errors %}
-              <div class="invalid-feedback d-block">{{ field.errors }}</div>
-              {% endif %}
+            <!-- Cambiar Contraseña -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h6 class="mb-3">Cambiar Contraseña</h6>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Nueva Contraseña</label>
+                    <input
+                      type="password"
+                      name="password"
+                      class="form-control"
+                      placeholder="Nueva contraseña"
+                    />
+                    <small class="text-muted"
+                      >La contraseña debe tener al menos 8 caracteres</small
+                    >
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Confirmar Contraseña</label>
+                    <input
+                      type="password"
+                      name="confirm_password"
+                      class="form-control"
+                      placeholder="Confirmar contraseña"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-            {% endif %} {% endfor %}
 
-            <div class="d-flex justify-content-end">
+            <div class="d-grid">
               <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> Guardar Cambios
+                <i class="fas fa-save me-2"></i>Guardar Cambios
               </button>
             </div>
           </form>
@@ -73,4 +103,109 @@ content %}
     </div>
   </div>
 </div>
+
+<style>
+  .profile-card {
+    background: linear-gradient(
+      135deg,
+      var(--primary-color) 0%,
+      var(--secondary-color) 100%
+    );
+    color: white;
+    border: none;
+  }
+
+  .profile-card .text-muted {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+
+  .profile-image {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .profile-image-placeholder {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .profile-image-placeholder i {
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-control,
+  .form-select {
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    padding: 0.75rem 1rem;
+  }
+
+  .form-control:focus,
+  .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.1);
+  }
+
+  .btn-primary {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  .badge {
+    padding: 0.5em 1em;
+    font-weight: 500;
+    border-radius: 6px;
+  }
+
+  /* Estilos para los campos del formulario */
+  .form-label {
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Ajustes para dispositivos móviles */
+  @media (max-width: 768px) {
+    .container {
+      padding: 1rem;
+    }
+
+    .profile-image {
+      width: 100px;
+      height: 100px;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+  }
+</style>
 {% endblock %}

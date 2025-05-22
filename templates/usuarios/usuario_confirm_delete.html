@@ -1,0 +1,49 @@
+{% extends 'base.html' %} {% block title %}Eliminar Usuario{% endblock %} 
+{%block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-danger text-white">
+          <h2 class="card-title mb-0">Eliminar Usuario</h2>
+        </div>
+        <div class="card-body">
+          <p class="mb-4">
+            ¿Estás seguro de que deseas eliminar el usuario "{{usuario.get_full_name }}"?
+          </p>
+          <p class="text-danger">Esta acción no se puede deshacer.</p>
+
+          <form method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-between">
+              <a href="{% url 'usuarios:list' %}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancelar
+              </a>
+              <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Eliminar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .card-header {
+    border-radius: 8px 8px 0 0 !important;
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+</style>
+{% endblock %}
