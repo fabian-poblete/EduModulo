@@ -1,90 +1,206 @@
 {% extends 'base.html' %} {% block title %}Dashboard{% endblock %} 
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-12">
-      <div class="card shadow">
-        <div class="card-header">
-          <h2 class="card-title mb-0">Dashboard</h2>
+<div class="container mt-4">
+  <h1 class="mb-4">Dashboard</h1>
+
+  <!-- Tarjetas de resumen -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card bg-primary text-white">
+        <div class="card-body">
+          <h5 class="card-title">Total Cursos</h5>
+          <h2 class="card-text">{{ total_cursos }}</h2>
+          <p class="card-text">
+            <small>{{ cursos_activos }} activos</small>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-success text-white">
+        <div class="card-body">
+          <h5 class="card-title">Total Estudiantes</h5>
+          <h2 class="card-text">{{ total_estudiantes }}</h2>
+          <p class="card-text">
+            <small>{{ estudiantes_activos }} activos</small>
+          </p>
+        </div>
+      </div>
+    </div>
+    {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
+    <div class="col-md-3">
+      <div class="card bg-info text-white">
+        <div class="card-body">
+          <h5 class="card-title">Total Usuarios</h5>
+          <h2 class="card-text">{{ total_usuarios }}</h2>
+          <p class="card-text">
+            <small>usuarios activos</small>
+          </p>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Últimos cursos -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card">
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <h5 class="mb-0">Últimos Cursos</h5>
+          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'%}
+          <a href="{% url 'cursos:create' %}" class="btn btn-sm btn-primary">
+            <i class="fas fa-plus"></i> Nuevo Curso
+          </a>
+          {% endif %}
         </div>
         <div class="card-body">
-          <div class="row">
-            {% if user.is_superuser %}
-            <!-- Resumen de Colegios -->
-            <div class="col-md-4 mb-4">
-              <div class="card bg-primary text-white">
-                <div class="card-body">
-                  <h5 class="card-title">
-                    <i class="fas fa-school"></i> Colegios
-                  </h5>
-                  <p class="card-text display-4">
-                    {{ colegios_count|default:"0" }}
-                  </p>
-                </div>
-              </div>
-            </div>
-            {% endif %}
-
-            <!-- Resumen de Usuarios -->
-            <div class="col-md-4 mb-4">
-              <div class="card bg-success text-white">
-                <div class="card-body">
-                  <h5 class="card-title">
-                    <i class="fas fa-users"></i> Usuarios
-                  </h5>
-                  <p class="card-text display-4">
-                    {{ usuarios_count|default:"0" }}
-                  </p>
-                </div>
-              </div>
-            </div>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Colegio</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for curso in ultimos_cursos %}
+                <tr>
+                  <td>{{ curso.nombre }}</td>
+                  <td>{{ curso.colegio.nombre }}</td>
+                  <td>
+                    {% if curso.activo %}
+                    <span class="badge bg-success">Activo</span>
+                    {% else %}
+                    <span class="badge bg-danger">Inactivo</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="3" class="text-center">
+                    No hay cursos registrados.
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
+        </div>
+      </div>
+    </div>
 
-          <!-- Acciones Rápidas -->
-          <div class="row mt-4">
-            <div class="col-12">
-              <h3 class="mb-3">Acciones Rápidas</h3>
-              <div class="row">
-                {% if user.is_superuser %}
-                <div class="col-md-3 mb-3">
-                  <a
-                    href="{% url 'colegios:create' %}"
-                    class="btn btn-primary w-100"
-                  >
-                    <i class="fas fa-plus"></i> Nuevo Colegio
-                  </a>
-                </div>
-                <div class="col-md-3 mb-3">
-                  <a
-                    href="{% url 'colegios:list' %}"
-                    class="btn btn-info w-100"
-                  >
-                    <i class="fas fa-list"></i> Ver Colegios
-                  </a>
-                </div>
-                {% endif %}
-                <div class="col-md-3 mb-3">
-                  <a
-                    href="{% url 'usuarios:create' %}"
-                    class="btn btn-success w-100"
-                  >
-                    <i class="fas fa-user-plus"></i> Nuevo Usuario
-                  </a>
-                </div>
-                <div class="col-md-3 mb-3">
-                  <a
-                    href="{% url 'usuarios:list' %}"
-                    class="btn btn-secondary w-100"
-                  >
-                    <i class="fas fa-users"></i> Ver Usuarios
-                  </a>
-                </div>
-              </div>
-            </div>
+    <!-- Últimos estudiantes -->
+    <div class="col-md-6">
+      <div class="card">
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <h5 class="mb-0">Últimos Estudiantes</h5>
+          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'%}
+          <a
+            href="{% url 'estudiantes:create' %}"
+            class="btn btn-sm btn-primary"
+          >
+            <i class="fas fa-plus"></i> Nuevo Estudiante
+          </a>
+          {% endif %}
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Curso</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for estudiante in ultimos_estudiantes %}
+                <tr>
+                  <td>{{ estudiante.nombre }}</td>
+                  <td>{{ estudiante.curso.nombre }}</td>
+                  <td>
+                    {% if estudiante.activo %}
+                    <span class="badge bg-success">Activo</span>
+                    {% else %}
+                    <span class="badge bg-danger">Inactivo</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="3" class="text-center">
+                    No hay estudiantes registrados.
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Últimos usuarios -->
+  {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card">
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <h5 class="mb-0">Últimos Usuarios</h5>
+          <a href="{% url 'usuarios:create' %}" class="btn btn-sm btn-primary">
+            <i class="fas fa-plus"></i> Nuevo Usuario
+          </a>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Email</th>
+                  <th>Tipo</th>
+                  <th>Colegio</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for usuario in ultimos_usuarios %}
+                <tr>
+                  <td>{{ usuario.username }}</td>
+                  <td>{{ usuario.email }}</td>
+                  <td>{{ usuario.perfil.get_tipo_usuario_display }}</td>
+                  <td>{{ usuario.perfil.colegio.nombre }}</td>
+                  <td>
+                    {% if usuario.is_active %}
+                    <span class="badge bg-success">Activo</span>
+                    {% else %}
+                    <span class="badge bg-danger">Inactivo</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center">
+                    No hay usuarios registrados.
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}

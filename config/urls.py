@@ -10,6 +10,9 @@ urlpatterns = [
     path('dashboard/', include('dashboard.urls')),
     path('colegios/', include('colegios.urls')),
     path('usuarios/', include('usuarios.urls')),
+    path('cursos/', include('cursos.urls')),
+    path('estudiantes/', include('estudiantes.urls')),
+
 
     # URLs de autenticación
     path('accounts/login/',
@@ -37,6 +40,8 @@ urlpatterns = [
     path('accounts/reset/done/', auth_views.PasswordResetCompleteView.as_view(
         template_name='auth/password_reset_complete.html'
     ), name='password_reset_complete'),
+
+    #
 ]
 
 # Servir archivos media en desarrollo

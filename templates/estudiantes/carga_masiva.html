@@ -1,0 +1,86 @@
+{% extends 'base.html' %} 
+{% block title %}Carga Masiva de Estudiantes{%endblock%}
+{% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="mb-0">Carga Masiva de Estudiantes</h4>
+        </div>
+        <div class="card-body">
+          {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <div class="alert alert-info">
+            <h5 class="alert-heading">Instrucciones:</h5>
+            <ol>
+              <li>
+                Descarga el formato de ejemplo haciendo clic en el botón
+                "Descargar Formato"
+              </li>
+              <li>
+                Completa el archivo Excel con los datos de los estudiantes
+              </li>
+              <li>Sube el archivo completado usando el formulario de abajo</li>
+            </ol>
+            <p class="mb-0">
+              <strong>Nota:</strong> El archivo debe ser un Excel (.xlsx) y debe
+              contener todas las columnas requeridas.
+            </p>
+          </div>
+
+          <div class="alert alert-warning">
+            <h5 class="alert-heading">Formato del RUT:</h5>
+            <ul class="mb-0">
+              <li>El RUT debe ser válido según el algoritmo chileno</li>
+              <li>Puede incluir puntos y guión (ej: 12.345.678-9)</li>
+              <li>El dígito verificador puede ser un número o la letra K</li>
+              <li>El sistema validará y formateará automáticamente el RUT</li>
+            </ul>
+          </div>
+
+          <div class="mb-4">
+            <a
+              href="{% url 'estudiantes:descargar_formato' %}"
+              class="btn btn-primary"
+            >
+              <i class="fas fa-download"></i> Descargar Formato
+            </a>
+          </div>
+
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="archivo" class="form-label"
+                >Archivo Excel (.xlsx)</label
+              >
+              <input
+                type="file"
+                class="form-control"
+                id="archivo"
+                name="archivo"
+                accept=".xlsx"
+                required
+              />
+            </div>
+            <div class="d-flex justify-content-between">
+              <a href="{% url 'estudiantes:list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+              </a>
+              <button type="submit" class="btn btn-success">
+                <i class="fas fa-upload"></i> Cargar Estudiantes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
