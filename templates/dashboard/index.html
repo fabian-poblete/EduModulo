@@ -1,4 +1,7 @@
-{% extends 'base.html' %} {% block title %}Dashboard{% endblock %} 
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
   <h1 class="mb-4">Dashboard</h1>
@@ -10,9 +13,7 @@
         <div class="card-body">
           <h5 class="card-title">Total Cursos</h5>
           <h2 class="card-text">{{ total_cursos }}</h2>
-          <p class="card-text">
-            <small>{{ cursos_activos }} activos</small>
-          </p>
+          <p class="card-text"><small>{{ cursos_activos }} activos</small></p>
         </div>
       </div>
     </div>
@@ -21,9 +22,7 @@
         <div class="card-body">
           <h5 class="card-title">Total Estudiantes</h5>
           <h2 class="card-text">{{ total_estudiantes }}</h2>
-          <p class="card-text">
-            <small>{{ estudiantes_activos }} activos</small>
-          </p>
+          <p class="card-text"><small>{{ estudiantes_activos }} activos</small></p>
         </div>
       </div>
     </div>
@@ -33,9 +32,46 @@
         <div class="card-body">
           <h5 class="card-title">Total Usuarios</h5>
           <h2 class="card-text">{{ total_usuarios }}</h2>
-          <p class="card-text">
-            <small>usuarios activos</small>
-          </p>
+          <p class="card-text"><small>usuarios activos</small></p>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Accesos rápidos -->
+  <div class="row mb-4">
+    {% if user.is_authenticated %}
+    <div class="col-md-4">
+      <div class="card border-primary">
+        <div class="card-body text-center">
+          <i class="fas fa-comments fa-2x text-primary mb-2"></i>
+          <h5 class="card-title">Comunicaciones</h5>
+          <a href="{% url 'comunicaciones:lista_mensajes' %}" class="btn btn-primary btn-sm">Ir a Comunicaciones</a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor apoderado' %}
+    <div class="col-md-4">
+      <div class="card border-success">
+        <div class="card-body text-center">
+          <i class="fas fa-door-open fa-2x text-success mb-2"></i>
+          <h5 class="card-title">Salidas</h5>
+          <a href="{% url 'salidas:lista_salidas' %}" class="btn btn-success btn-sm">Ir a Salidas</a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor' %}
+    <div class="col-md-4">
+      <div class="card border-warning">
+        <div class="card-body text-center">
+          <i class="fas fa-file-alt fa-2x text-warning mb-2"></i>
+          <h5 class="card-title">Revisión de Pruebas</h5>
+          <a href="{% url 'revision_pruebas:lista_revisiones' %}" class="btn btn-warning btn-sm">Ir a Revisión de Pruebas</a>
         </div>
       </div>
     </div>
@@ -46,11 +82,9 @@
   <div class="row mb-4">
     <div class="col-md-6">
       <div class="card">
-        <div
-          class="card-header d-flex justify-content-between align-items-center"
-        >
+        <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="mb-0">Últimos Cursos</h5>
-          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'%}
+          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
           <a href="{% url 'cursos:create' %}" class="btn btn-sm btn-primary">
             <i class="fas fa-plus"></i> Nuevo Curso
           </a>
@@ -81,9 +115,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="3" class="text-center">
-                    No hay cursos registrados.
-                  </td>
+                  <td colspan="3" class="text-center">No hay cursos registrados.</td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -96,15 +128,10 @@
     <!-- Últimos estudiantes -->
     <div class="col-md-6">
       <div class="card">
-        <div
-          class="card-header d-flex justify-content-between align-items-center"
-        >
+        <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="mb-0">Últimos Estudiantes</h5>
-          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'%}
-          <a
-            href="{% url 'estudiantes:create' %}"
-            class="btn btn-sm btn-primary"
-          >
+          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
+          <a href="{% url 'estudiantes:create' %}" class="btn btn-sm btn-primary">
             <i class="fas fa-plus"></i> Nuevo Estudiante
           </a>
           {% endif %}
@@ -134,9 +161,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="3" class="text-center">
-                    No hay estudiantes registrados.
-                  </td>
+                  <td colspan="3" class="text-center">No hay estudiantes registrados.</td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -152,9 +177,7 @@
   <div class="row mb-4">
     <div class="col-md-12">
       <div class="card">
-        <div
-          class="card-header d-flex justify-content-between align-items-center"
-        >
+        <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="mb-0">Últimos Usuarios</h5>
           <a href="{% url 'usuarios:create' %}" class="btn btn-sm btn-primary">
             <i class="fas fa-plus"></i> Nuevo Usuario
@@ -189,9 +212,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="5" class="text-center">
-                    No hay usuarios registrados.
-                  </td>
+                  <td colspan="5" class="text-center">No hay usuarios registrados.</td>
                 </tr>
                 {% endfor %}
               </tbody>

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Mensajes Recibidos</h2>
+  <ul>
+    {% for mensaje in mensajes_recibidos %}
+      <li>
+        <strong>{{ mensaje.remitente }}</strong>: {{ mensaje.contenido }} ({{ mensaje.fecha_envio }})
+        {% if not mensaje.leido %}
+          <span style="color: red">(No leído)</span>
+        {% endif %}
+      </li>
+    {% empty %}
+      <li>No hay mensajes recibidos.</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Mensajes Enviados</h2>
+  <ul>
+    {% for mensaje in mensajes_enviados %}
+      <li>
+        <strong>Para {{ mensaje.destinatario }}</strong>: {{ mensaje.contenido }} ({{ mensaje.fecha_envio }})
+      </li>
+    {% empty %}
+      <li>No hay mensajes enviados.</li>
+    {% endfor %}
+  </ul>
+
+  <a href="{% url 'comunicaciones:enviar_mensaje' %}">Enviar nuevo mensaje</a>
+{% endblock %}

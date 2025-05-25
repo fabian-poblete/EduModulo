@@ -1,0 +1,13 @@
+{% extends 'base.html' %} {% block content %}
+<h2>Salidas Anticipadas</h2>
+<ul>
+  {% for salida in salidas %}
+  <li>
+    <a href="{% url 'salidas:detalle_salida' salida.pk %}">{{ salida.estudiante }} - {{ salida.fecha_salida }} ({{ salida.motivo}})</a>
+  </li>
+  {% empty %}
+  <li>No hay salidas registradas.</li>
+  {% endfor %}
+</ul>
+<a href="{% url 'salidas:registrar_salida' %}">Registrar nueva salida</a>
+{% endblock %}

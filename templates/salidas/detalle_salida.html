@@ -1,0 +1,27 @@
+{% extends 'base.html' %} {% block content %}
+<h2>Detalle de Salida Anticipada</h2>
+<ul class="list-group">
+  <li class="list-group-item">
+    <strong>Estudiante:</strong> {{ salida.estudiante }}
+  </li>
+  <li class="list-group-item">
+    <strong>Fecha de Salida:</strong> {{ salida.fecha_salida }}
+  </li>
+  <li class="list-group-item"><strong>Motivo:</strong> {{ salida.motivo }}</li>
+  <li class="list-group-item">
+    <strong>Autorizado por:</strong> {{ salida.autorizado_por }}
+  </li>
+  <li class="list-group-item">
+    <strong>Colegio:</strong> {{ salida.colegio }}
+  </li>
+  <li class="list-group-item">
+    <strong>Notificado:</strong> {{ salida.notificado|yesno:"Sí,No" }}
+  </li>
+  <li class="list-group-item">
+    <strong>Fecha de Registro:</strong> {{ salida.fecha_registro }}
+  </li>
+</ul>
+<a href="{% url 'salidas:lista_salidas' %}" class="btn btn-secondary mt-3"
+  >Volver a la lista</a
+>
+{% endblock %}

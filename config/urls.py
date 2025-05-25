@@ -12,7 +12,10 @@ urlpatterns = [
     path('usuarios/', include('usuarios.urls')),
     path('cursos/', include('cursos.urls')),
     path('estudiantes/', include('estudiantes.urls')),
-
+    path('comunicaciones/', include('comunicaciones.urls', namespace='comunicaciones')),
+    path('salidas/', include('salidas.urls', namespace='salidas')),
+    path('revision_pruebas/', include('revision_pruebas.urls',
+         namespace='revision_pruebas')),
 
     # URLs de autenticación
     path('accounts/login/',
