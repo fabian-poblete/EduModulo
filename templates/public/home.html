@@ -1,205 +1,636 @@
-{% extends 'base.html' %} {% block title %}EduModulo - Sistema de Gestión
-Educativa{% endblock %} {% block content %}
-<!-- Hero Section -->
-<section class="hero-section">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-lg-6">
-        <h1 class="display-4 fw-bold mb-4">Transforma la Gestión Educativa</h1>
-        <p class="lead mb-4">
-          EduModulo es una plataforma integral que simplifica la administración
-          escolar, conectando estudiantes, profesores y administradores en un
-          solo lugar.
-        </p>
-        <div class="d-flex gap-3">
-          <a href="{% url 'login' %}" class="btn btn-light btn-lg">
-            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
-          </a>
-          <a href="#features" class="btn btn-outline-light btn-lg">
-            <i class="fas fa-info-circle me-2"></i>Conoce Más
-          </a>
+{% extends 'base.html' %}
+
+{% block title %}EduModulo - Sistema de Gestión Educativa{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Override sidebar styles for public pages */
+  .main-content {
+    margin-left: 0 !important;
+  }
+  
+  .navbar-authenticated {
+    margin-left: 0 !important;
+  }
+
+  /* Public page specific styles */
+  .public-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+    color: white;
+    padding: 6rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"/><circle cx="800" cy="300" r="150" fill="url(%23a)"/><circle cx="400" cy="700" r="120" fill="url(%23a)"/></svg>');
+    opacity: 0.1;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #ffffff, #e2e8f0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+  }
+
+  .hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2.5rem;
+    color: #e2e8f0;
+    line-height: 1.6;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-hero-primary {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  }
+
+  .btn-hero-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    color: white;
+  }
+
+  .btn-hero-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-hero-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    color: white;
+  }
+
+  .hero-image {
+    position: relative;
+  }
+
+  .hero-image img {
+    border-radius: 1rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Features Section */
+  .features-section {
+    padding: 6rem 0;
+    background: #f8fafc;
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 3rem;
+    color: #1e293b;
+  }
+
+  .feature-card {
+    background: white;
+    border: none;
+    border-radius: 1rem;
+    padding: 2rem;
+    height: 100%;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--feature-color, #3b82f6);
+  }
+
+  .feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  .feature-card.feature-1 { --feature-color: #f59e0b; }
+  .feature-card.feature-2 { --feature-color: #10b981; }
+  .feature-card.feature-3 { --feature-color: #3b82f6; }
+  .feature-card.feature-4 { --feature-color: #8b5cf6; }
+  .feature-card.feature-5 { --feature-color: #ef4444; }
+  .feature-card.feature-6 { --feature-color: #06b6d4; }
+
+  .feature-icon {
+    width: 4rem;
+    height: 4rem;
+    background: var(--feature-color, #3b82f6);
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 1.5rem;
+  }
+
+  .feature-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1e293b;
+    text-align: center;
+  }
+
+  .feature-description {
+    color: #64748b;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  /* About Section */
+  .about-section {
+    padding: 6rem 0;
+    background: white;
+  }
+
+  .about-image img {
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .about-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: #1e293b;
+  }
+
+  .about-subtitle {
+    font-size: 1.125rem;
+    color: #64748b;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .check-item:hover {
+    background: #e2e8f0;
+  }
+
+  .check-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: #10b981;
+    flex-shrink: 0;
+  }
+
+  .check-text {
+    margin: 0;
+    color: #334155;
+    font-weight: 500;
+  }
+
+  /* Contact Section */
+  .contact-section {
+    padding: 6rem 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  }
+
+  .contact-card {
+    background: white;
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .contact-form {
+    padding: 3rem;
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-control {
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+  }
+
+  .form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .btn-contact {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border: none;
+    padding: 0.875rem 2rem;
+    border-radius: 0.5rem;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+  }
+
+  .btn-contact:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+  }
+
+  /* Stats Section */
+  .stats-section {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    color: white;
+    padding: 4rem 0;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 2rem 1rem;
+  }
+
+  .stat-number {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stat-label {
+    font-size: 1.125rem;
+    color: #e2e8f0;
+    font-weight: 500;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.125rem;
+    }
+    
+    .hero-buttons {
+      justify-content: center;
+    }
+    
+    .btn-hero-primary,
+    .btn-hero-secondary {
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .section-title {
+      font-size: 2rem;
+    }
+    
+    .about-title {
+      font-size: 1.875rem;
+    }
+    
+    .contact-form {
+      padding: 2rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="public-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <div class="hero-content">
+            <h1 class="hero-title">Transforma la Gestión Educativa</h1>
+            <p class="hero-subtitle">
+              EduModulo es una plataforma integral que simplifica la administración
+              escolar, conectando estudiantes, profesores y administradores en un
+              ecosistema digital moderno y eficiente.
+            </p>
+            <div class="hero-buttons">
+              <a href="{% url 'login' %}" class="btn-hero-primary">
+                <i class="fas fa-sign-in-alt"></i>
+                Iniciar Sesión
+              </a>
+              <a href="#features" class="btn-hero-secondary">
+                <i class="fas fa-info-circle"></i>
+                Conoce Más
+              </a>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="col-lg-6 d-none d-lg-block">
-        <img
-          src="https://via.placeholder.com/600x400"
-          alt="EduModulo Platform"
-          class="img-fluid rounded shadow"
-        />
+        <div class="col-lg-6 d-none d-lg-block">
+          <div class="hero-image">
+            <img
+              src="/placeholder.svg?height=500&width=600"
+              alt="EduModulo Platform"
+              class="img-fluid"
+            />
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Features Section -->
-<section id="features" class="py-5">
-  <div class="container">
-    <h2 class="text-center mb-5">Módulos Principales</h2>
-    <div class="row">
-      <div class="col-md-4">
-        <div class="card feature-card h-100">
-          <div class="card-body text-center">
-            <i class="fas fa-clock feature-icon"></i>
-            <h3 class="h4 mb-3">Control de Atrasos</h3>
-            <p class="text-muted">
-              Gestión eficiente de llegadas tardías, registro automático y
-              seguimiento de patrones de asistencia para mejorar la puntualidad.
-            </p>
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3 col-6">
+          <div class="stat-item">
+            <div class="stat-number">500+</div>
+            <div class="stat-label">Colegios</div>
           </div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card feature-card h-100">
-          <div class="card-body text-center">
-            <i class="fas fa-door-open feature-icon"></i>
-            <h3 class="h4 mb-3">Control de Salidas</h3>
-            <p class="text-muted">
-              Registro y autorización de salidas anticipadas, con notificaciones
-              automáticas a apoderados y seguimiento en tiempo real.
-            </p>
+        <div class="col-md-3 col-6">
+          <div class="stat-item">
+            <div class="stat-number">50K+</div>
+            <div class="stat-label">Estudiantes</div>
           </div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card feature-card h-100">
-          <div class="card-body text-center">
-            <i class="fas fa-comments feature-icon"></i>
-            <h3 class="h4 mb-3">Comunicaciones</h3>
-            <p class="text-muted">
-              Canal directo de comunicación entre profesores y apoderados, con
-              historial de conversaciones y notificaciones instantáneas.
-            </p>
+        <div class="col-md-3 col-6">
+          <div class="stat-item">
+            <div class="stat-number">5K+</div>
+            <div class="stat-label">Profesores</div>
           </div>
         </div>
-      </div>
-      <div class="col-md-4 mt-4">
-        <div class="card feature-card h-100">
-          <div class="card-body text-center">
-            <i class="fas fa-file-alt feature-icon"></i>
-            <h3 class="h4 mb-3">Revisión de Pruebas</h3>
-            <p class="text-muted">
-              Sistema completo para la gestión, revisión y análisis de
-              evaluaciones, con retroalimentación personalizada para
-              estudiantes.
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4 mt-4">
-        <div class="card feature-card h-100">
-          <div class="card-body text-center">
-            <i class="fas fa-school feature-icon"></i>
-            <h3 class="h4 mb-3">Gestión de Colegios</h3>
-            <p class="text-muted">
-              Administración centralizada de múltiples sedes, personal y
-              recursos con herramientas de gestión eficiente.
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4 mt-4">
-        <div class="card feature-card h-100">
-          <div class="card-body text-center">
-            <i class="fas fa-users feature-icon"></i>
-            <h3 class="h4 mb-3">Gestión de Usuarios</h3>
-            <p class="text-muted">
-              Control de acceso personalizado para estudiantes, profesores y
-              administradores con perfiles específicos.
-            </p>
+        <div class="col-md-3 col-6">
+          <div class="stat-item">
+            <div class="stat-number">99.9%</div>
+            <div class="stat-label">Uptime</div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- About Section -->
-<section id="about" class="py-5 bg-light">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-lg-6 mb-4 mb-lg-0">
-        <img
-          src="https://via.placeholder.com/600x400"
-          alt="About EduModulo"
-          class="img-fluid rounded shadow"
-        />
-      </div>
-      <div class="col-lg-6">
-        <h2 class="mb-4">¿Por qué elegir EduModulo?</h2>
-        <p class="lead mb-4">
-          EduModulo nace de la necesidad de modernizar y simplificar la gestión
-          educativa, ofreciendo una solución completa y fácil de usar.
-        </p>
-        <div class="d-flex gap-3 mb-3">
-          <i class="fas fa-check-circle text-success"></i>
-          <p class="mb-0">Interfaz intuitiva y fácil de usar</p>
+  <!-- Features Section -->
+  <section id="features" class="features-section">
+    <div class="container">
+      <h2 class="section-title">Módulos Principales</h2>
+      <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+          <div class="card feature-card feature-1">
+            <div class="card-body">
+              <div class="feature-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <h3 class="feature-title">Control de Atrasos</h3>
+              <p class="feature-description">
+                Gestión eficiente de llegadas tardías, registro automático y
+                seguimiento de patrones de asistencia para mejorar la puntualidad.
+              </p>
+            </div>
+          </div>
         </div>
-        <div class="d-flex gap-3 mb-3">
-          <i class="fas fa-check-circle text-success"></i>
-          <p class="mb-0">Soporte técnico 24/7</p>
+        <div class="col-lg-4 col-md-6">
+          <div class="card feature-card feature-2">
+            <div class="card-body">
+              <div class="feature-icon">
+                <i class="fas fa-door-open"></i>
+              </div>
+              <h3 class="feature-title">Control de Salidas</h3>
+              <p class="feature-description">
+                Registro y autorización de salidas anticipadas, con notificaciones
+                automáticas a apoderados y seguimiento en tiempo real.
+              </p>
+            </div>
+          </div>
         </div>
-        <div class="d-flex gap-3 mb-3">
-          <i class="fas fa-check-circle text-success"></i>
-          <p class="mb-0">Actualizaciones constantes</p>
+        <div class="col-lg-4 col-md-6">
+          <div class="card feature-card feature-3">
+            <div class="card-body">
+              <div class="feature-icon">
+                <i class="fas fa-comments"></i>
+              </div>
+              <h3 class="feature-title">Comunicaciones</h3>
+              <p class="feature-description">
+                Canal directo de comunicación entre profesores y apoderados, con
+                historial de conversaciones y notificaciones instantáneas.
+              </p>
+            </div>
+          </div>
         </div>
-        <div class="d-flex gap-3">
-          <i class="fas fa-check-circle text-success"></i>
-          <p class="mb-0">Seguridad y privacidad garantizadas</p>
+        <div class="col-lg-4 col-md-6">
+          <div class="card feature-card feature-4">
+            <div class="card-body">
+              <div class="feature-icon">
+                <i class="fas fa-file-alt"></i>
+              </div>
+              <h3 class="feature-title">Revisión de Pruebas</h3>
+              <p class="feature-description">
+                Sistema completo para la gestión, revisión y análisis de
+                evaluaciones, con retroalimentación personalizada para estudiantes.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="card feature-card feature-5">
+            <div class="card-body">
+              <div class="feature-icon">
+                <i class="fas fa-school"></i>
+              </div>
+              <h3 class="feature-title">Gestión de Colegios</h3>
+              <p class="feature-description">
+                Administración centralizada de múltiples sedes, personal y
+                recursos con herramientas de gestión eficiente.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="card feature-card feature-6">
+            <div class="card-body">
+              <div class="feature-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <h3 class="feature-title">Gestión de Usuarios</h3>
+              <p class="feature-description">
+                Control de acceso personalizado para estudiantes, profesores y
+                administradores con perfiles específicos.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Contact Section -->
-<section id="contact" class="py-5">
-  <div class="container">
-    <h2 class="text-center mb-5">Contáctanos</h2>
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <div class="card shadow">
-          <div class="card-body p-5">
-            <form>
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label for="name" class="form-label">Nombre</label>
-                  <input type="text" class="form-control" id="name" required />
+  <!-- About Section -->
+  <section id="about" class="about-section">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+          <img
+            src="/placeholder.svg?height=400&width=600"
+            alt="About EduModulo"
+            class="img-fluid"
+          />
+        </div>
+        <div class="col-lg-6">
+          <h2 class="about-title">¿Por qué elegir EduModulo?</h2>
+          <p class="about-subtitle">
+            EduModulo nace de la necesidad de modernizar y simplificar la gestión
+            educativa, ofreciendo una solución completa, segura y fácil de usar
+            para instituciones educativas de todos los tamaños.
+          </p>
+          <div class="check-item">
+            <i class="fas fa-check-circle check-icon"></i>
+            <p class="check-text">Interfaz intuitiva y fácil de usar</p>
+          </div>
+          <div class="check-item">
+            <i class="fas fa-check-circle check-icon"></i>
+            <p class="check-text">Soporte técnico 24/7 especializado</p>
+          </div>
+          <div class="check-item">
+            <i class="fas fa-check-circle check-icon"></i>
+            <p class="check-text">Actualizaciones constantes y mejoras</p>
+          </div>
+          <div class="check-item">
+            <i class="fas fa-check-circle check-icon"></i>
+            <p class="check-text">Seguridad y privacidad garantizadas</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="contact-section">
+    <div class="container">
+      <h2 class="section-title">Contáctanos</h2>
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="card contact-card">
+            <div class="contact-form">
+              <form>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="name" class="form-label">Nombre Completo</label>
+                    <input type="text" class="form-control" id="name" required />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="email" class="form-label">Correo Electrónico</label>
+                    <input type="email" class="form-control" id="email" required />
+                  </div>
                 </div>
-                <div class="col-md-6 mb-3">
-                  <label for="email" class="form-label"
-                    >Correo Electrónico</label
-                  >
-                  <input
-                    type="email"
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="phone" class="form-label">Teléfono</label>
+                    <input type="tel" class="form-control" id="phone" />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="institution" class="form-label">Institución</label>
+                    <input type="text" class="form-control" id="institution" />
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="subject" class="form-label">Asunto</label>
+                  <select class="form-control" id="subject" required>
+                    <option value="">Selecciona un asunto</option>
+                    <option value="demo">Solicitar Demo</option>
+                    <option value="pricing">Información de Precios</option>
+                    <option value="support">Soporte Técnico</option>
+                    <option value="other">Otro</option>
+                  </select>
+                </div>
+                <div class="mb-4">
+                  <label for="message" class="form-label">Mensaje</label>
+                  <textarea
                     class="form-control"
-                    id="email"
+                    id="message"
+                    rows="5"
+                    placeholder="Cuéntanos sobre tu institución y cómo podemos ayudarte..."
                     required
-                  />
+                  ></textarea>
                 </div>
-              </div>
-              <div class="mb-3">
-                <label for="subject" class="form-label">Asunto</label>
-                <input type="text" class="form-control" id="subject" required />
-              </div>
-              <div class="mb-3">
-                <label for="message" class="form-label">Mensaje</label>
-                <textarea
-                  class="form-control"
-                  id="message"
-                  rows="5"
-                  required
-                ></textarea>
-              </div>
-              <div class="text-center">
-                <button type="submit" class="btn btn-primary btn-lg">
-                  <i class="fas fa-paper-plane me-2"></i>Enviar Mensaje
-                </button>
-              </div>
-            </form>
+                <div class="text-center">
+                  <button type="submit" class="btn btn-contact">
+                    <i class="fas fa-paper-plane me-2"></i>
+                    Enviar Mensaje
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+</div>
 {% endblock %}

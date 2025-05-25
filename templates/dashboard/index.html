@@ -2,97 +2,434 @@
 
 {% block title %}Dashboard{% endblock %}
 
-{% block content %}
-<div class="container mt-4">
-  <h1 class="mb-4">Dashboard</h1>
+{% block extra_css %}
+<style>
+  .dashboard-container {
+    padding: 2rem 1.5rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    min-height: calc(100vh - 120px);
+  }
 
-  <!-- Tarjetas de resumen -->
-  <div class="row mb-4">
-    <div class="col-md-3">
-      <div class="card bg-primary text-white">
-        <div class="card-body">
-          <h5 class="card-title">Total Cursos</h5>
-          <h2 class="card-text">{{ total_cursos }}</h2>
-          <p class="card-text"><small>{{ cursos_activos }} activos</small></p>
+  .dashboard-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .dashboard-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .dashboard-subtitle {
+    color: #64748b;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  .stats-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--card-color);
+  }
+
+  .stats-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  .stats-card.primary {
+    --card-color: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  }
+
+  .stats-card.success {
+    --card-color: linear-gradient(135deg, #10b981, #059669);
+  }
+
+  .stats-card.info {
+    --card-color: linear-gradient(135deg, #06b6d4, #0891b2);
+  }
+
+  .stats-card.warning {
+    --card-color: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+
+  .stats-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    background: var(--card-color);
+    color: white;
+    font-size: 1.25rem;
+  }
+
+  .stats-number {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+    line-height: 1;
+  }
+
+  .stats-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 0.5rem;
+  }
+
+  .stats-subtitle {
+    font-size: 0.75rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .quick-access-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .quick-access-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--accent-color);
+  }
+
+  .quick-access-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  .quick-access-card.primary {
+    --accent-color: #3b82f6;
+  }
+
+  .quick-access-card.success {
+    --accent-color: #10b981;
+  }
+
+  .quick-access-card.warning {
+    --accent-color: #f59e0b;
+  }
+
+  .quick-access-icon {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-color));
+    color: white;
+    font-size: 1.5rem;
+    opacity: 0.9;
+  }
+
+  .quick-access-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1rem;
+  }
+
+  .data-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .data-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+
+  .data-card-header {
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: between;
+    align-items: center;
+  }
+
+  .data-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+  }
+
+  .data-card-body {
+    padding: 0;
+  }
+
+  .modern-table {
+    margin: 0;
+    border: none;
+  }
+
+  .modern-table thead th {
+    background: #f8fafc;
+    border: none;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    color: #475569;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .modern-table tbody td {
+    padding: 1rem 1.5rem;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    font-weight: 500;
+  }
+
+  .modern-table tbody tr:hover {
+    background: #f8fafc;
+  }
+
+  .modern-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .status-badge {
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .status-badge.active {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .status-badge.inactive {
+    background: #fef2f2;
+    color: #991b1b;
+  }
+
+  .btn-modern {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-modern:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .btn-modern.primary {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #64748b;
+  }
+
+  .empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .section-spacing {
+    margin-bottom: 3rem;
+  }
+
+  @media (max-width: 768px) {
+    .dashboard-container {
+      padding: 1rem;
+    }
+    
+    .dashboard-title {
+      font-size: 2rem;
+    }
+    
+    .stats-card,
+    .quick-access-card {
+      margin-bottom: 1rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">Dashboard</h1>
+    <p class="dashboard-subtitle">Bienvenido de vuelta, {{ user.get_full_name|default:user.username }}</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="row section-spacing">
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="stats-card primary">
+        <div class="stats-icon">
+          <i class="fas fa-chalkboard"></i>
+        </div>
+        <div class="stats-number">{{ total_cursos }}</div>
+        <div class="stats-label">Total Cursos</div>
+        <div class="stats-subtitle">
+          <i class="fas fa-check-circle"></i>
+          {{ cursos_activos }} activos
         </div>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="card bg-success text-white">
-        <div class="card-body">
-          <h5 class="card-title">Total Estudiantes</h5>
-          <h2 class="card-text">{{ total_estudiantes }}</h2>
-          <p class="card-text"><small>{{ estudiantes_activos }} activos</small></p>
+    
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="stats-card success">
+        <div class="stats-icon">
+          <i class="fas fa-user-graduate"></i>
+        </div>
+        <div class="stats-number">{{ total_estudiantes }}</div>
+        <div class="stats-label">Total Estudiantes</div>
+        <div class="stats-subtitle">
+          <i class="fas fa-check-circle"></i>
+          {{ estudiantes_activos }} activos
         </div>
       </div>
     </div>
+    
     {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
-    <div class="col-md-3">
-      <div class="card bg-info text-white">
-        <div class="card-body">
-          <h5 class="card-title">Total Usuarios</h5>
-          <h2 class="card-text">{{ total_usuarios }}</h2>
-          <p class="card-text"><small>usuarios activos</small></p>
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="stats-card info">
+        <div class="stats-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stats-number">{{ total_usuarios }}</div>
+        <div class="stats-label">Total Usuarios</div>
+        <div class="stats-subtitle">
+          <i class="fas fa-check-circle"></i>
+          usuarios activos
         </div>
       </div>
     </div>
     {% endif %}
   </div>
 
-  <!-- Accesos rápidos -->
-  <div class="row mb-4">
+  <!-- Quick Access Section -->
+  <div class="row section-spacing">
     {% if user.is_authenticated %}
-    <div class="col-md-4">
-      <div class="card border-primary">
-        <div class="card-body text-center">
-          <i class="fas fa-comments fa-2x text-primary mb-2"></i>
-          <h5 class="card-title">Comunicaciones</h5>
-          <a href="{% url 'comunicaciones:lista_mensajes' %}" class="btn btn-primary btn-sm">Ir a Comunicaciones</a>
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="quick-access-card primary">
+        <div class="quick-access-icon">
+          <i class="fas fa-comments"></i>
         </div>
+        <h5 class="quick-access-title">Comunicaciones</h5>
+        <a href="{% url 'comunicaciones:lista_mensajes' %}" class="btn btn-modern primary">
+          <i class="fas fa-arrow-right"></i>
+          Ir a Comunicaciones
+        </a>
       </div>
     </div>
     {% endif %}
 
     {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor apoderado' %}
-    <div class="col-md-4">
-      <div class="card border-success">
-        <div class="card-body text-center">
-          <i class="fas fa-door-open fa-2x text-success mb-2"></i>
-          <h5 class="card-title">Salidas</h5>
-          <a href="{% url 'salidas:lista_salidas' %}" class="btn btn-success btn-sm">Ir a Salidas</a>
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="quick-access-card success">
+        <div class="quick-access-icon">
+          <i class="fas fa-door-open"></i>
         </div>
+        <h5 class="quick-access-title">Salidas</h5>
+        <a href="{% url 'salidas:lista_salidas' %}" class="btn btn-modern primary">
+          <i class="fas fa-arrow-right"></i>
+          Ir a Salidas
+        </a>
       </div>
     </div>
     {% endif %}
 
     {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor' %}
-    <div class="col-md-4">
-      <div class="card border-warning">
-        <div class="card-body text-center">
-          <i class="fas fa-file-alt fa-2x text-warning mb-2"></i>
-          <h5 class="card-title">Revisión de Pruebas</h5>
-          <a href="{% url 'revision_pruebas:lista_revisiones' %}" class="btn btn-warning btn-sm">Ir a Revisión de Pruebas</a>
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="quick-access-card warning">
+        <div class="quick-access-icon">
+          <i class="fas fa-file-alt"></i>
         </div>
+        <h5 class="quick-access-title">Revisión de Pruebas</h5>
+        <a href="{% url 'revision_pruebas:lista_revisiones' %}" class="btn btn-modern primary">
+          <i class="fas fa-arrow-right"></i>
+          Ir a Revisión
+        </a>
       </div>
     </div>
     {% endif %}
   </div>
 
-  <!-- Últimos cursos -->
-  <div class="row mb-4">
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Últimos Cursos</h5>
+  <!-- Data Tables Section -->
+  <div class="row section-spacing">
+    <!-- Recent Courses -->
+    <div class="col-lg-6 mb-4">
+      <div class="data-card">
+        <div class="data-card-header">
+          <h5 class="data-card-title">Últimos Cursos</h5>
           {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
-          <a href="{% url 'cursos:create' %}" class="btn btn-sm btn-primary">
-            <i class="fas fa-plus"></i> Nuevo Curso
+          <a href="{% url 'cursos:create' %}" class="btn btn-modern primary">
+            <i class="fas fa-plus"></i>
+            Nuevo Curso
           </a>
           {% endif %}
         </div>
-        <div class="card-body">
+        <div class="data-card-body">
+          {% if ultimos_cursos %}
           <div class="table-responsive">
-            <table class="table">
+            <table class="table modern-table">
               <thead>
                 <tr>
                   <th>Nombre</th>
@@ -103,42 +440,50 @@
               <tbody>
                 {% for curso in ultimos_cursos %}
                 <tr>
-                  <td>{{ curso.nombre }}</td>
+                  <td>
+                    <div class="fw-semibold">{{ curso.nombre }}</div>
+                  </td>
                   <td>{{ curso.colegio.nombre }}</td>
                   <td>
                     {% if curso.activo %}
-                    <span class="badge bg-success">Activo</span>
+                    <span class="status-badge active">Activo</span>
                     {% else %}
-                    <span class="badge bg-danger">Inactivo</span>
+                    <span class="status-badge inactive">Inactivo</span>
                     {% endif %}
                   </td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="3" class="text-center">No hay cursos registrados.</td>
                 </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
+          {% else %}
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <i class="fas fa-chalkboard"></i>
+            </div>
+            <p class="mb-0">No hay cursos registrados</p>
+          </div>
+          {% endif %}
         </div>
       </div>
     </div>
 
-    <!-- Últimos estudiantes -->
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Últimos Estudiantes</h5>
+    <!-- Recent Students -->
+    <div class="col-lg-6 mb-4">
+      <div class="data-card">
+        <div class="data-card-header">
+          <h5 class="data-card-title">Últimos Estudiantes</h5>
           {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
-          <a href="{% url 'estudiantes:create' %}" class="btn btn-sm btn-primary">
-            <i class="fas fa-plus"></i> Nuevo Estudiante
+          <a href="{% url 'estudiantes:create' %}" class="btn btn-modern primary">
+            <i class="fas fa-plus"></i>
+            Nuevo Estudiante
           </a>
           {% endif %}
         </div>
-        <div class="card-body">
+        <div class="data-card-body">
+          {% if ultimos_estudiantes %}
           <div class="table-responsive">
-            <table class="table">
+            <table class="table modern-table">
               <thead>
                 <tr>
                   <th>Nombre</th>
@@ -149,43 +494,51 @@
               <tbody>
                 {% for estudiante in ultimos_estudiantes %}
                 <tr>
-                  <td>{{ estudiante.nombre }}</td>
+                  <td>
+                    <div class="fw-semibold">{{ estudiante.nombre }}</div>
+                  </td>
                   <td>{{ estudiante.curso.nombre }}</td>
                   <td>
                     {% if estudiante.activo %}
-                    <span class="badge bg-success">Activo</span>
+                    <span class="status-badge active">Activo</span>
                     {% else %}
-                    <span class="badge bg-danger">Inactivo</span>
+                    <span class="status-badge inactive">Inactivo</span>
                     {% endif %}
                   </td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="3" class="text-center">No hay estudiantes registrados.</td>
                 </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
+          {% else %}
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <i class="fas fa-user-graduate"></i>
+            </div>
+            <p class="mb-0">No hay estudiantes registrados</p>
+          </div>
+          {% endif %}
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Últimos usuarios -->
+  <!-- Recent Users (Admin Only) -->
   {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
-  <div class="row mb-4">
-    <div class="col-md-12">
-      <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Últimos Usuarios</h5>
-          <a href="{% url 'usuarios:create' %}" class="btn btn-sm btn-primary">
-            <i class="fas fa-plus"></i> Nuevo Usuario
+  <div class="row">
+    <div class="col-12">
+      <div class="data-card">
+        <div class="data-card-header">
+          <h5 class="data-card-title">Últimos Usuarios</h5>
+          <a href="{% url 'usuarios:create' %}" class="btn btn-modern primary">
+            <i class="fas fa-plus"></i>
+            Nuevo Usuario
           </a>
         </div>
-        <div class="card-body">
+        <div class="data-card-body">
+          {% if ultimos_usuarios %}
           <div class="table-responsive">
-            <table class="table">
+            <table class="table modern-table">
               <thead>
                 <tr>
                   <th>Usuario</th>
@@ -198,26 +551,42 @@
               <tbody>
                 {% for usuario in ultimos_usuarios %}
                 <tr>
-                  <td>{{ usuario.username }}</td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 2.5rem; height: 2.5rem; color: white; font-weight: 600;">
+                        {{ usuario.username|first|upper }}
+                      </div>
+                      <div>
+                        <div class="fw-semibold">{{ usuario.username }}</div>
+                        <div class="text-muted small">{{ usuario.get_full_name|default:"Sin nombre" }}</div>
+                      </div>
+                    </div>
+                  </td>
                   <td>{{ usuario.email }}</td>
-                  <td>{{ usuario.perfil.get_tipo_usuario_display }}</td>
+                  <td>
+                    <span class="badge bg-light text-dark">{{ usuario.perfil.get_tipo_usuario_display }}</span>
+                  </td>
                   <td>{{ usuario.perfil.colegio.nombre }}</td>
                   <td>
                     {% if usuario.is_active %}
-                    <span class="badge bg-success">Activo</span>
+                    <span class="status-badge active">Activo</span>
                     {% else %}
-                    <span class="badge bg-danger">Inactivo</span>
+                    <span class="status-badge inactive">Inactivo</span>
                     {% endif %}
                   </td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="5" class="text-center">No hay usuarios registrados.</td>
                 </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
+          {% else %}
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <p class="mb-0">No hay usuarios registrados</p>
+          </div>
+          {% endif %}
         </div>
       </div>
     </div>
