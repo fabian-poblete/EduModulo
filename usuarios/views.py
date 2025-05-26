@@ -113,7 +113,11 @@ def usuario_create(request, colegio_id=None):
                 if not can_create_any:
                     perfil.colegio = request.user.perfil.colegio
                 else:
-                    perfil.colegio = colegio_id
+                    # If a colegio_id was provided in the URL (from quick actions), use that
+                    # Otherwise, use the colegio selected in the form by the superuser
+                    colegio_a_asignar = colegio_id if colegio_id is not None else perfil_form.cleaned_data[
+                        'colegio']
+                    perfil.colegio = colegio_a_asignar
 
                 perfil.save()
 
