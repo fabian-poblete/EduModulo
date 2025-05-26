@@ -4,7 +4,9 @@ from . import views
 app_name = 'salidas'
 
 urlpatterns = [
-    path('', views.lista_salidas, name='lista_salidas'),
+    path('', views.lista_salidas, name='list'),
     path('registrar/', views.registrar_salida, name='registrar_salida'),
-    path('<int:pk>/', views.detalle_salida, name='detalle_salida'),
+    path('buscar-estudiantes/', views.buscar_estudiantes_salida,
+         name='buscar_estudiantes'),
+    path('<int:pk>/eliminar/', views.salida_delete, name='delete'),
 ]

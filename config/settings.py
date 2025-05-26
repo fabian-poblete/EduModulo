@@ -29,7 +29,8 @@ INSTALLED_APPS = [
     'estudiantes',
     'comunicaciones',
     'revision_pruebas',
-    'salidas'
+    'salidas',
+    'atrasos'
 ]
 
 MIDDLEWARE = [

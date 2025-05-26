@@ -16,6 +16,7 @@ urlpatterns = [
     path('salidas/', include('salidas.urls', namespace='salidas')),
     path('revision_pruebas/', include('revision_pruebas.urls',
          namespace='revision_pruebas')),
+    path('atrasos/', include('atrasos.urls', namespace='atrasos')),
 
     # URLs de autenticación
     path('accounts/login/',

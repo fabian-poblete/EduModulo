@@ -1,10 +1,10 @@
-{% extends 'base.html' %} {% block title %}Salidas{% endblock %} 
+{% extends 'base.html' %} {% block title %}Atrasos{% endblock %} 
 {% block content %}
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Salidas</h1>
-    <a href="{% url 'salidas:registrar_salida' %}" class="btn btn-primary">
-      <i class="fas fa-plus"></i> Registrar Salida
+    <h1>Atrasos</h1>
+    <a href="{% url 'atrasos:create' %}" class="btn btn-primary">
+      <i class="fas fa-plus"></i> Registrar Atraso
     </a>
   </div>
 
@@ -64,24 +64,24 @@
         </tr>
       </thead>
       <tbody>
-        {% for salida in salidas %}
+        {% for atraso in atrasos %}
         <tr>
-          <td>{{ salida.estudiante.nombre }}</td>
-          <td>{{ salida.estudiante.rut }}</td>
-          <td>{{ salida.estudiante.curso.nombre }}</td>
-          <td>{{ salida.fecha }}</td>
-          <td>{{ salida.hora }}</td>
+          <td>{{ atraso.estudiante.nombre }}</td>
+          <td>{{ atraso.estudiante.rut }}</td>
+          <td>{{ atraso.estudiante.curso.nombre }}</td>
+          <td>{{ atraso.fecha }}</td>
+          <td>{{ atraso.hora }}</td>
           <td>
-            {% if salida.justificado %}
+            {% if atraso.justificado %}
             <span class="badge bg-success">Sí</span>
             {% else %}
             <span class="badge bg-danger">No</span>
             {% endif %}
           </td>
-          <td>{{ salida.observacion|default:"-" }}</td>
+          <td>{{ atraso.observacion|default:"-" }}</td>
           <td>
             <a
-              href="{% url 'salidas:delete' salida.pk %}"
+              href="{% url 'atrasos:delete' atraso.pk %}"
               class="btn btn-sm btn-danger"
               title="Eliminar"
             >
@@ -91,7 +91,7 @@
         </tr>
         {% empty %}
         <tr>
-          <td colspan="7" class="text-center">No hay salidas registradas.</td>
+          <td colspan="7" class="text-center">No hay atrasos registrados.</td>
         </tr>
         {% endfor %}
       </tbody>

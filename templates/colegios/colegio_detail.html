@@ -1,6 +1,5 @@
 {% extends 'base.html' %} {% load static %} 
-{% block title %}{{ colegio.nombre}}{% endblock %}
-{% block content %}
+{% block title %}{{colegio.nombre}}{% endblock %} {% block content %}
 <div class="container py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
@@ -200,13 +199,22 @@
         <div class="card-body">
           <h6 class="card-title mb-3">Acciones Rápidas</h6>
           <div class="d-grid gap-2">
-            <a href="#" class="btn btn-outline-primary">
+            <a
+              href="{% url 'estudiantes:create_with_colegio' colegio.id %}"
+              class="btn btn-outline-primary"
+            >
               <i class="fas fa-user-plus me-2"></i>Agregar Estudiante
             </a>
-            <a href="#" class="btn btn-outline-primary">
+            <a
+              href="{% url 'usuarios:create_with_colegio' colegio.id %}"
+              class="btn btn-outline-primary"
+            >
               <i class="fas fa-chalkboard-teacher me-2"></i>Agregar Profesor
             </a>
-            <a href="#" class="btn btn-outline-primary">
+            <a
+              href="{% url 'cursos:create_with_colegio' colegio.id %}"
+              class="btn btn-outline-primary"
+            >
               <i class="fas fa-book me-2"></i>Crear Curso
             </a>
           </div>

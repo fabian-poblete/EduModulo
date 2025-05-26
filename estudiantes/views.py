@@ -39,7 +39,7 @@ def estudiante_list(request):
 
 
 @login_required
-def estudiante_create(request):
+def estudiante_create(request, colegio_id=None):
     # Verificar permisos
     if not (request.user.is_superuser or request.user.perfil.tipo_usuario == 'admin_colegio'):
         messages.error(request, 'No tienes permiso para crear estudiantes.')
@@ -332,3 +332,5 @@ def descargar_formato(request):
                 writer, sheet_name='Cursos Disponibles', index=False)
 
     return response
+
+

@@ -1,9 +1,9 @@
 from django import forms
-from .models import Salida
+from .models import Atraso
 from estudiantes.models import Estudiante
 
 
-class SalidaForm(forms.ModelForm):
+class AtrasoForm(forms.ModelForm):
     rut_estudiante = forms.CharField(
         label='RUT del Estudiante',
         max_length=12,
@@ -14,7 +14,7 @@ class SalidaForm(forms.ModelForm):
     )
 
     class Meta:
-        model = Salida
+        model = Atraso
         fields = ['justificado', 'observacion']
         widgets = {
             'justificado': forms.CheckboxInput(attrs={'class': 'form-check-input'}),

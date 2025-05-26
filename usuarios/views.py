@@ -82,7 +82,7 @@ def usuario_detail(request, pk):
 
 @login_required
 @transaction.atomic
-def usuario_create(request):
+def usuario_create(request, colegio_id=None):
     # Superusuarios tienen acceso total
     if request.user.is_superuser:
         can_create_any = True
@@ -113,7 +113,7 @@ def usuario_create(request):
                 if not can_create_any:
                     perfil.colegio = request.user.perfil.colegio
                 else:
-                    perfil.colegio = perfil_form.cleaned_data['colegio']
+                    perfil.colegio = colegio_id
 
                 perfil.save()
 

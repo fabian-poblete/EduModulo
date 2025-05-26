@@ -32,7 +32,7 @@ def curso_list(request):
 
 
 @login_required
-def curso_create(request):
+def curso_create(request, colegio_id=None):
     # Verificar permisos
     if not (request.user.is_superuser or request.user.perfil.tipo_usuario == 'admin_colegio'):
         messages.error(request, 'No tienes permiso para crear cursos.')

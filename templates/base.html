@@ -459,10 +459,15 @@
             <div class="sidebar-section-title">Actividades</div>
             <ul class="sidebar-menu">
               <li class="sidebar-menu-item">
-                <a class="sidebar-menu-link" href="{% url 'salidas:lista_salidas' %}" data-tooltip="Salidas">
+                <a class="sidebar-menu-link" href="{% url 'salidas:list' %}" data-tooltip="Salidas">
                   <i class="fas fa-door-open sidebar-menu-icon"></i>
                   <span class="sidebar-menu-text">Salidas</span>
                 </a>
+                <a class="sidebar-menu-link" href="{% url 'atrasos:list' %}" data-tooltip="Atrasos">
+                  <i class="fas fa-clock sidebar-menu-icon"></i>
+                  <span class="sidebar-menu-text">Atrasos</span>
+                </a>
+                
               </li>
             </ul>
           </div>
