@@ -30,7 +30,8 @@ INSTALLED_APPS = [
     'comunicaciones',
     'revision_pruebas',
     'salidas',
-    'atrasos'
+    'atrasos',
+    'inventario',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,292 @@
+{% extends 'base.html' %} 
+{% block title %}Panel de Inventario{% endblock %} 
+
+{% block content %}
+<div class="container-fluid px-4 py-5">
+  <!-- Header Section -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="display-5 fw-bold text-dark mb-2">Panel de Inventario</h1>
+          <p class="text-muted fs-6 mb-0">Gestiona y supervisa tu inventario de manera eficiente</p>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-download me-2"></i>Exportar
+          </button>
+          <a href="{% url 'inventario:add' %} " class="btn btn-primary btn-sm">
+            <i class="fas fa-plus me-2"></i> Nuevo Artículo
+          </a>
+                   
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Métricas Principales -->
+  <div class="row g-4 mb-5">
+    <div class="col-xl-3 col-md-6">
+      <div class="card border-0 shadow-sm h-100 metric-card">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0">
+              <div class="metric-icon bg-primary bg-gradient">
+                <i class="fas fa-tags text-white"></i>
+              </div>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <div class="metric-value">{{ total_categorias }}</div>
+              <div class="metric-label">Categorías</div>
+              <div class="metric-change text-success">
+                <i class="fas fa-arrow-up me-1"></i>+2.5%
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6">
+      <div class="card border-0 shadow-sm h-100 metric-card">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0">
+              <div class="metric-icon bg-success bg-gradient">
+                <i class="fas fa-map-marker-alt text-white"></i>
+              </div>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <div class="metric-value">{{ total_ubicaciones }}</div>
+              <div class="metric-label">Ubicaciones</div>
+              <div class="metric-change text-success">
+                <i class="fas fa-arrow-up me-1"></i>+1.2%
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6">
+      <div class="card border-0 shadow-sm h-100 metric-card">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0">
+              <div class="metric-icon bg-info bg-gradient">
+                <i class="fas fa-clipboard-check text-white"></i>
+              </div>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <div class="metric-value">{{ total_estados }}</div>
+              <div class="metric-label">Estados</div>
+              <div class="metric-change text-muted">
+                <i class="fas fa-minus me-1"></i>Sin cambios
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6">
+      <div class="card border-0 shadow-sm h-100 metric-card">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0">
+              <div class="metric-icon bg-warning bg-gradient">
+                <i class="fas fa-boxes text-white"></i>
+              </div>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <div class="metric-value">{{ total_articulos }}</div>
+              <div class="metric-label">Artículos</div>
+              <div class="metric-change text-success">
+                <i class="fas fa-arrow-up me-1"></i>+5.8%
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accesos Rápidos -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h3 class="fw-semibold text-dark mb-3">Accesos Rápidos</h3>
+      <p class="text-muted mb-4">Gestiona los diferentes aspectos de tu inventario</p>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-xl-3 col-lg-4 col-md-6">
+      <a href="{% url 'inventario:categoria_list' %}" class="text-decoration-none">
+        <div class="card border-0 shadow-sm h-100 quick-access-card">
+          <div class="card-body p-4 text-center">
+            <div class="quick-access-icon bg-primary bg-gradient mb-3">
+              <i class="fas fa-tags text-white"></i>
+            </div>
+            <h5 class="card-title fw-semibold mb-2">Categorías</h5>
+            <p class="card-text text-muted small mb-3">Organiza y gestiona las categorías de tus artículos</p>
+            <div class="quick-access-arrow">
+              <i class="fas fa-arrow-right text-primary"></i>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+    
+    <div class="col-xl-3 col-lg-4 col-md-6">
+      <a href="{% url 'inventario:ubicacion_list' %}" class="text-decoration-none">
+        <div class="card border-0 shadow-sm h-100 quick-access-card">
+          <div class="card-body p-4 text-center">
+            <div class="quick-access-icon bg-success bg-gradient mb-3">
+              <i class="fas fa-map-marker-alt text-white"></i>
+            </div>
+            <h5 class="card-title fw-semibold mb-2">Ubicaciones</h5>
+            <p class="card-text text-muted small mb-3">Administra las ubicaciones físicas del inventario</p>
+            <div class="quick-access-arrow">
+              <i class="fas fa-arrow-right text-success"></i>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+    
+    <div class="col-xl-3 col-lg-4 col-md-6">
+      <a href="{% url 'inventario:estado_list' %}" class="text-decoration-none">
+        <div class="card border-0 shadow-sm h-100 quick-access-card">
+          <div class="card-body p-4 text-center">
+            <div class="quick-access-icon bg-info bg-gradient mb-3">
+              <i class="fas fa-clipboard-check text-white"></i>
+            </div>
+            <h5 class="card-title fw-semibold mb-2">Estados</h5>
+            <p class="card-text text-muted small mb-3">Define y controla los estados de los artículos</p>
+            <div class="quick-access-arrow">
+              <i class="fas fa-arrow-right text-info"></i>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+    
+    <div class="col-xl-3 col-lg-4 col-md-6">
+      <a href="{% url 'inventario:list' %}" class="text-decoration-none">
+        <div class="card border-0 shadow-sm h-100 quick-access-card">
+          <div class="card-body p-4 text-center">
+            <div class="quick-access-icon bg-warning bg-gradient mb-3">
+              <i class="fas fa-boxes text-white"></i>
+            </div>
+            <h5 class="card-title fw-semibold mb-2">Artículos</h5>
+            <p class="card-text text-muted small mb-3">Visualiza y gestiona todos los artículos del inventario</p>
+            <div class="quick-access-arrow">
+              <i class="fas fa-arrow-right text-warning"></i>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Estilos personalizados para el dashboard */
+.metric-card {
+  transition: all 0.3s ease;
+  border-radius: 12px;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+}
+
+.metric-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2d3748;
+  line-height: 1;
+}
+
+.metric-label {
+  font-size: 0.875rem;
+  color: #718096;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.metric-change {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.quick-access-card {
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.quick-access-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12) !important;
+}
+
+.quick-access-card:hover .quick-access-arrow {
+  transform: translateX(4px);
+}
+
+.quick-access-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin: 0 auto;
+}
+
+.quick-access-arrow {
+  transition: transform 0.3s ease;
+  font-size: 14px;
+}
+
+.card-title {
+  color: #2d3748;
+}
+
+.display-5 {
+  color: #1a202c;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .metric-value {
+    font-size: 1.5rem;
+  }
+  
+  .quick-access-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 20px;
+  }
+}
+</style>
+{% endblock %}

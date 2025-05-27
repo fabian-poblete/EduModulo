@@ -1,0 +1,62 @@
+[
+    {
+        "model": "inventario.estado",
+        "pk": 1,
+        "fields": {
+            "nombre": "Nuevo",
+            "descripcion": "Artículo en perfecto estado, sin uso",
+            "colegio": 1,
+            "activo": true,
+            "fecha_creacion": "2024-05-25T00:00:00Z",
+            "fecha_actualizacion": "2024-05-25T00:00:00Z"
+        }
+    },
+    {
+        "model": "inventario.estado",
+        "pk": 2,
+        "fields": {
+            "nombre": "Bueno",
+            "descripcion": "Artículo en buen estado, con uso normal",
+            "colegio": 1,
+            "activo": true,
+            "fecha_creacion": "2024-05-25T00:00:00Z",
+            "fecha_actualizacion": "2024-05-25T00:00:00Z"
+        }
+    },
+    {
+        "model": "inventario.estado",
+        "pk": 3,
+        "fields": {
+            "nombre": "Regular",
+            "descripcion": "Artículo con desgaste normal, requiere mantenimiento",
+            "colegio": 1,
+            "activo": true,
+            "fecha_creacion": "2024-05-25T00:00:00Z",
+            "fecha_actualizacion": "2024-05-25T00:00:00Z"
+        }
+    },
+    {
+        "model": "inventario.estado",
+        "pk": 4,
+        "fields": {
+            "nombre": "En Reparación",
+            "descripcion": "Artículo en proceso de reparación",
+            "colegio": 1,
+            "activo": true,
+            "fecha_creacion": "2024-05-25T00:00:00Z",
+            "fecha_actualizacion": "2024-05-25T00:00:00Z"
+        }
+    },
+    {
+        "model": "inventario.estado",
+        "pk": 5,
+        "fields": {
+            "nombre": "Obsoleto",
+            "descripcion": "Artículo obsoleto o fuera de servicio",
+            "colegio": 1,
+            "activo": true,
+            "fecha_creacion": "2024-05-25T00:00:00Z",
+            "fecha_actualizacion": "2024-05-25T00:00:00Z"
+        }
+    }
+] 

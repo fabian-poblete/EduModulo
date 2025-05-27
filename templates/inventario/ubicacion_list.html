@@ -1,0 +1,63 @@
+{% extends 'base.html' %} {% block title %}Ubicaciones de Inventario{% endblock%}
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Ubicaciones de Inventario</h1>
+    {% if can_add %}
+    <a href="{% url 'inventario:ubicacion_create' %}" class="btn btn-primary">
+      <i class="fas fa-plus"></i> Agregar Ubicación
+    </a>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Tipo</th>
+              <th>Ubicación Padre</th>
+              <th>Colegio</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ubicacion in ubicaciones %}
+            <tr>
+              <td>{{ ubicacion.nombre }}</td>
+              <td>{{ ubicacion.get_tipo_display }}</td>
+              <td>{{ ubicacion.ubicacion_padre.nombre|default:"-" }}</td>
+              <td>{{ ubicacion.colegio.nombre }}</td>
+              <td>
+                <a
+                  href="{% url 'inventario:ubicacion_update' ubicacion.pk %}"
+                  class="btn btn-sm btn-warning"
+                  title="Editar"
+                >
+                  <i class="fas fa-edit"></i>
+                </a>
+                <a
+                  href="{% url 'inventario:ubicacion_delete' ubicacion.pk %}"
+                  class="btn btn-sm btn-danger"
+                  title="Eliminar"
+                >
+                  <i class="fas fa-trash"></i>
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="text-center">
+                No hay ubicaciones registradas.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

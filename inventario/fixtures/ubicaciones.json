@@ -1,0 +1,72 @@
+[
+    {
+        "model": "inventario.ubicacion",
+        "pk": 1,
+        "fields": {
+            "nombre": "Edificio Principal",
+            "tipo": "edificio",
+            "descripcion": "Edificio principal del colegio",
+            "colegio": 1,
+            "ubicacion_padre": null,
+            "activo": true,
+            "fecha_creacion": "2024-05-25T00:00:00Z",
+            "fecha_actualizacion": "2024-05-25T00:00:00Z"
+        }
+    },
+    {
+        "model": "inventario.ubicacion",
+        "pk": 2,
+        "fields": {
+            "nombre": "Oficina de Administración",
+            "tipo": "oficina",
+            "descripcion": "Oficina principal de administración",
+            "colegio": 1,
+            "ubicacion_padre": 1,
+            "activo": true,
+            "fecha_creacion": "2024-05-25T00:00:00Z",
+            "fecha_actualizacion": "2024-05-25T00:00:00Z"
+        }
+    },
+    {
+        "model": "inventario.ubicacion",
+        "pk": 3,
+        "fields": {
+            "nombre": "Sala de Computación",
+            "tipo": "sala",
+            "descripcion": "Laboratorio de computación",
+            "colegio": 1,
+            "ubicacion_padre": 1,
+            "activo": true,
+            "fecha_creacion": "2024-05-25T00:00:00Z",
+            "fecha_actualizacion": "2024-05-25T00:00:00Z"
+        }
+    },
+    {
+        "model": "inventario.ubicacion",
+        "pk": 4,
+        "fields": {
+            "nombre": "Biblioteca",
+            "tipo": "sala",
+            "descripcion": "Biblioteca escolar",
+            "colegio": 1,
+            "ubicacion_padre": 1,
+            "activo": true,
+            "fecha_creacion": "2024-05-25T00:00:00Z",
+            "fecha_actualizacion": "2024-05-25T00:00:00Z"
+        }
+    },
+    {
+        "model": "inventario.ubicacion",
+        "pk": 5,
+        "fields": {
+            "nombre": "Bodega",
+            "tipo": "sala",
+            "descripcion": "Bodega de almacenamiento",
+            "colegio": 1,
+            "ubicacion_padre": 1,
+            "activo": true,
+            "fecha_creacion": "2024-05-25T00:00:00Z",
+            "fecha_actualizacion": "2024-05-25T00:00:00Z"
+        }
+    }
+] 

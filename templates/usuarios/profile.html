@@ -55,8 +55,7 @@
               <div class="col-md-6">
                 <label class="form-label">Colegio</label>
                 <div class="form-control bg-light">
-                  {% if user.is_superuser %} {% if user.perfil.colegio %} {{
-                  user.perfil.colegio.nombre }} {% else %} No asignado {% endif%}
+                  {% if user.is_superuser %} {% if user.perfil.colegio %} {{ user.perfil.colegio.nombre }} {% else %} No asignado {% endif%}
                   {% else %} {{ user.perfil.colegio.nombre }} {% endif %}
                 </div>
               </div>
