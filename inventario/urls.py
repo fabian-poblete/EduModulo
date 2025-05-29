@@ -49,6 +49,3 @@ urlpatterns = [
 ]
 
 
-@login_required
-def inventario_dashboard(request):
-    return render(request, 'inventario/dashboard.html')

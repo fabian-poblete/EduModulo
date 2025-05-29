@@ -2,17 +2,23 @@
 {% block extra_css %}
 <style>
   .dashboard-container {
-    padding: 2rem 1.5rem;
+    padding: 1.5rem;
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     min-height: calc(100vh - 120px);
   }
 
+  @media (max-width: 768px) {
+    .dashboard-container {
+      padding: 1rem;
+    }
+  }
+
   .dashboard-header {
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
   }
 
   .dashboard-title {
-    font-size: 2.5rem;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
     font-weight: 800;
     color: #1e293b;
     margin-bottom: 0.5rem;
@@ -24,20 +30,27 @@
 
   .dashboard-subtitle {
     color: #64748b;
-    font-size: 1.1rem;
+    font-size: clamp(0.875rem, 2vw, 1.1rem);
     font-weight: 500;
   }
 
   .stats-card {
     background: white;
     border-radius: 1rem;
-    padding: 1.5rem;
+    padding: 1.25rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
       0 2px 4px -1px rgba(0, 0, 0, 0.06);
     border: 1px solid #e2e8f0;
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    height: 100%;
+  }
+
+  @media (max-width: 768px) {
+    .stats-card {
+      padding: 1rem;
+    }
   }
 
   .stats-card::before {
@@ -73,8 +86,8 @@
   }
 
   .stats-icon {
-    width: 3rem;
-    height: 3rem;
+    width: clamp(2.5rem, 5vw, 3rem);
+    height: clamp(2.5rem, 5vw, 3rem);
     border-radius: 0.75rem;
     display: flex;
     align-items: center;
@@ -82,11 +95,11 @@
     margin-bottom: 1rem;
     background: var(--card-color);
     color: white;
-    font-size: 1.25rem;
+    font-size: clamp(1rem, 2vw, 1.25rem);
   }
 
   .stats-number {
-    font-size: 2.25rem;
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
     font-weight: 800;
     color: #1e293b;
     margin-bottom: 0.25rem;
@@ -94,14 +107,14 @@
   }
 
   .stats-label {
-    font-size: 0.875rem;
+    font-size: clamp(0.75rem, 1.5vw, 0.875rem);
     font-weight: 600;
     color: #475569;
     margin-bottom: 0.5rem;
   }
 
   .stats-subtitle {
-    font-size: 0.75rem;
+    font-size: clamp(0.625rem, 1.25vw, 0.75rem);
     color: #64748b;
     display: flex;
     align-items: center;
@@ -111,7 +124,7 @@
   .quick-access-card {
     background: white;
     border-radius: 1rem;
-    padding: 2rem 1.5rem;
+    padding: clamp(1.25rem, 2vw, 2rem) clamp(1rem, 1.5vw, 1.5rem);
     text-align: center;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     border: 1px solid #e2e8f0;
@@ -149,8 +162,8 @@
   }
 
   .quick-access-icon {
-    width: 4rem;
-    height: 4rem;
+    width: clamp(3rem, 6vw, 4rem);
+    height: clamp(3rem, 6vw, 4rem);
     border-radius: 1rem;
     display: flex;
     align-items: center;
@@ -162,12 +175,12 @@
       var(--accent-color)
     );
     color: white;
-    font-size: 1.5rem;
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
     opacity: 0.9;
   }
 
   .quick-access-title {
-    font-size: 1.125rem;
+    font-size: clamp(1rem, 2vw, 1.125rem);
     font-weight: 700;
     color: #1e293b;
     margin-bottom: 1rem;
@@ -180,23 +193,28 @@
     border: 1px solid #e2e8f0;
     overflow: hidden;
     transition: all 0.3s ease;
-  }
-
-  .data-card:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    height: 100%;
   }
 
   .data-card-header {
     background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-    padding: 1.5rem;
+    padding: 1.25rem;
     border-bottom: 1px solid #e2e8f0;
     display: flex;
-    justify-content: between;
+    justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .data-card-header {
+      padding: 1rem;
+    }
   }
 
   .data-card-title {
-    font-size: 1.25rem;
+    font-size: clamp(1rem, 2vw, 1.25rem);
     font-weight: 700;
     color: #1e293b;
     margin: 0;
@@ -209,42 +227,35 @@
   .modern-table {
     margin: 0;
     border: none;
+    width: 100%;
   }
 
-  .modern-table thead th {
-    background: #f8fafc;
-    border: none;
-    padding: 1rem 1.5rem;
-    font-weight: 600;
-    color: #475569;
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  .modern-table th {
+    white-space: nowrap;
+    padding: 1rem;
+    font-size: clamp(0.75rem, 1.5vw, 0.875rem);
   }
 
-  .modern-table tbody td {
-    padding: 1rem 1.5rem;
-    border: none;
-    border-bottom: 1px solid #f1f5f9;
-    color: #334155;
-    font-weight: 500;
+  .modern-table td {
+    padding: 1rem;
+    font-size: clamp(0.75rem, 1.5vw, 0.875rem);
   }
 
-  .modern-table tbody tr:hover {
-    background: #f8fafc;
-  }
-
-  .modern-table tbody tr:last-child td {
-    border-bottom: none;
+  @media (max-width: 768px) {
+    .modern-table th,
+    .modern-table td {
+      padding: 0.75rem;
+    }
   }
 
   .status-badge {
     padding: 0.375rem 0.75rem;
     border-radius: 0.5rem;
-    font-size: 0.75rem;
+    font-size: clamp(0.625rem, 1.25vw, 0.75rem);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    white-space: nowrap;
   }
 
   .status-badge.active {
@@ -261,12 +272,13 @@
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: clamp(0.75rem, 1.5vw, 0.875rem);
     border: none;
     transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    white-space: nowrap;
   }
 
   .btn-modern:hover {
@@ -281,32 +293,86 @@
 
   .empty-state {
     text-align: center;
-    padding: 3rem 2rem;
+    padding: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 3vw, 2rem);
     color: #64748b;
   }
 
   .empty-state-icon {
-    font-size: 3rem;
+    font-size: clamp(2rem, 4vw, 3rem);
     margin-bottom: 1rem;
     opacity: 0.5;
   }
 
   .section-spacing {
-    margin-bottom: 3rem;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+
+  /* Responsive grid adjustments */
+  @media (max-width: 1200px) {
+    .col-lg-3 {
+      width: 50%;
+    }
   }
 
   @media (max-width: 768px) {
-    .dashboard-container {
-      padding: 1rem;
+    .col-lg-3,
+    .col-lg-4 {
+      width: 100%;
     }
 
-    .dashboard-title {
-      font-size: 2rem;
+    .row {
+      margin-left: -0.5rem;
+      margin-right: -0.5rem;
     }
 
-    .stats-card,
-    .quick-access-card {
+    .col-lg-3,
+    .col-lg-4,
+    .col-md-6 {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+  }
+
+  /* Table responsive improvements */
+  .table-responsive {
+    margin: 0;
+    border: none;
+  }
+
+  @media (max-width: 768px) {
+    .table-responsive {
+      border-radius: 0;
+    }
+
+    .modern-table thead {
+      display: none;
+    }
+
+    .modern-table tbody tr {
+      display: block;
       margin-bottom: 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+    }
+
+    .modern-table tbody td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      border: none;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .modern-table tbody td:last-child {
+      border-bottom: none;
+    }
+
+    .modern-table tbody td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: #475569;
     }
   }
 </style>
@@ -321,8 +387,8 @@
   </div>
 
   <!-- Statistics Cards -->
-  <div class="row section-spacing">
-    <div class="col-lg-3 col-md-6 mb-4">
+  <div class="row g-3 section-spacing">
+    <div class="col-lg-3 col-md-6">
       <div class="stats-card primary">
         <div class="stats-icon">
           <i class="fas fa-chalkboard"></i>
@@ -336,7 +402,7 @@
       </div>
     </div>
 
-    <div class="col-lg-3 col-md-6 mb-4">
+    <div class="col-lg-3 col-md-6">
       <div class="stats-card success">
         <div class="stats-icon">
           <i class="fas fa-user-graduate"></i>
@@ -350,10 +416,8 @@
       </div>
     </div>
 
-    
-
     {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
-    <div class="col-lg-3 col-md-6 mb-4">
+    <div class="col-lg-3 col-md-6">
       <div class="stats-card warning">
         <div class="stats-icon">
           <i class="fas fa-users"></i>
@@ -367,7 +431,8 @@
       </div>
     </div>
     {% endif %}
-    <div class="col-lg-3 col-md-6 mb-4">
+
+    <div class="col-lg-3 col-md-6">
       <div class="stats-card info">
         <div class="stats-icon">
           <i class="fas fa-boxes"></i>
@@ -380,7 +445,6 @@
         </div>
       </div>
     </div>
-    
   </div>
 
   <!-- Quick Access Section -->
@@ -414,8 +478,7 @@
         </a>
       </div>
     </div>
-    {% endif %} 
-    {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor' %}
+    {% endif %} {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor' %}
     <div class="col-lg-3 col-md-6 mb-4">
       <div class="quick-access-card warning">
         <div class="quick-access-icon">
@@ -448,9 +511,9 @@
   </div>
 
   <!-- Data Tables Section -->
-  <div class="row section-spacing">
+  <div class="row g-3">
     <!-- Recent Courses -->
-    <div class="col-lg-4 mb-4">
+    <div class="col-lg-4 col-md-6">
       <div class="data-card">
         <div class="data-card-header">
           <h5 class="data-card-title">Últimos Cursos</h5>
@@ -475,11 +538,11 @@
               <tbody>
                 {% for curso in ultimos_cursos %}
                 <tr>
-                  <td>
+                  <td data-label="Nombre">
                     <div class="fw-semibold">{{ curso.nombre }}</div>
                   </td>
-                  <td>{{ curso.colegio.nombre }}</td>
-                  <td>
+                  <td data-label="Colegio">{{ curso.colegio.nombre }}</td>
+                  <td data-label="Estado">
                     {% if curso.activo %}
                     <span class="status-badge active">Activo</span>
                     {% else %}
@@ -504,11 +567,11 @@
     </div>
 
     <!-- Recent Students -->
-    <div class="col-lg-4 mb-4">
+    <div class="col-lg-4 col-md-6">
       <div class="data-card">
         <div class="data-card-header">
           <h5 class="data-card-title">Últimos Estudiantes</h5>
-          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
+          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'  %}
           <a
             href="{% url 'estudiantes:create' %}"
             class="btn btn-modern primary"
@@ -532,11 +595,11 @@
               <tbody>
                 {% for estudiante in ultimos_estudiantes %}
                 <tr>
-                  <td>
+                  <td data-label="Nombre">
                     <div class="fw-semibold">{{ estudiante.nombre }}</div>
                   </td>
-                  <td>{{ estudiante.curso.nombre }}</td>
-                  <td>
+                  <td data-label="Curso">{{ estudiante.curso.nombre }}</td>
+                  <td data-label="Estado">
                     {% if estudiante.activo %}
                     <span class="status-badge active">Activo</span>
                     {% else %}
@@ -561,7 +624,7 @@
     </div>
 
     <!-- Recent Inventory -->
-    <div class="col-lg-4 mb-4">
+    <div class="col-lg-4 col-md-6">
       <div class="data-card">
         <div class="data-card-header">
           <h5 class="data-card-title">Últimos Artículos</h5>
@@ -586,10 +649,10 @@
               <tbody>
                 {% for articulo in ultimos_articulos %}
                 <tr>
-                  <td>
+                  <td data-label="Nombre">
                     <div class="fw-semibold">{{ articulo.nombre }}</div>
                   </td>
-                  <td>
+                  <td data-label="Cantidad">
                     <div class="d-flex align-items-center">
                       <span class="me-2">{{ articulo.cantidad }}</span>
                       {% if articulo.cantidad <= articulo.stock_minimo %}
@@ -600,7 +663,7 @@
                       {% endif %}
                     </div>
                   </td>
-                  <td>
+                  <td data-label="Estado">
                     {% if articulo.estado %}
                     <span
                       class="status-badge"
@@ -633,7 +696,7 @@
 
   <!-- Recent Users (Admin Only) -->
   {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
-  <div class="row">
+  <div class="row g-3 mt-3">
     <div class="col-12">
       <div class="data-card">
         <div class="data-card-header">
@@ -659,7 +722,7 @@
               <tbody>
                 {% for usuario in ultimos_usuarios %}
                 <tr>
-                  <td>
+                  <td data-label="Usuario">
                     <div class="d-flex align-items-center">
                       <div
                         class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3"
@@ -680,14 +743,16 @@
                       </div>
                     </div>
                   </td>
-                  <td>{{ usuario.email }}</td>
-                  <td>
+                  <td data-label="Email">{{ usuario.email }}</td>
+                  <td data-label="Tipo">
                     <span class="badge bg-light text-dark"
                       >{{ usuario.perfil.get_tipo_usuario_display }}</span
                     >
                   </td>
-                  <td>{{ usuario.perfil.colegio.nombre }}</td>
-                  <td>
+                  <td data-label="Colegio">
+                    {{ usuario.perfil.colegio.nombre }}
+                  </td>
+                  <td data-label="Estado">
                     {% if usuario.is_active %}
                     <span class="status-badge active">Activo</span>
                     {% else %}

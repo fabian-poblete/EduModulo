@@ -663,12 +663,12 @@ function toggleView(view) {
 function confirmDelete(id, name) {
   document.getElementById('itemName').textContent = name;
   const form = document.getElementById('deleteForm');
-  form.action = `/inventario/${id}/eliminar/`;
+  form.action = `/inventario/${id}/`;
   new bootstrap.Modal(document.getElementById('deleteModal')).show();
 }
 
 function viewDetails(id) {
-  window.location.href = `/inventario/detail/${id}/`;
+  window.location.href = `/inventario/${id}/`;
 }
 
 function clearFilters() {
