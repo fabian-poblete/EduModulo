@@ -1,30 +1,198 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mensajes{% endblock %}
 
 {% block content %}
-  <h2>Mensajes Recibidos</h2>
-  <ul>
-    {% for mensaje in mensajes_recibidos %}
-      <li>
-        <strong>{{ mensaje.remitente }}</strong>: {{ mensaje.contenido }} ({{ mensaje.fecha_envio }})
-        {% if not mensaje.leido %}
-          <span style="color: red">(No leído)</span>
-        {% endif %}
-      </li>
-    {% empty %}
-      <li>No hay mensajes recibidos.</li>
-    {% endfor %}
-  </ul>
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Mensajes</h2>
+            {% if no_leidos > 0 %}
+            <p class="text-muted mb-0">
+                <span class="badge bg-danger">{{ no_leidos }}</span> mensajes no leídos
+            </p>
+            {% endif %}
+        </div>
+        <a href="{% url 'comunicaciones:enviar_mensaje' %}" class="btn btn-primary">
+            <i class="fas fa-paper-plane me-2"></i>Nuevo Mensaje
+        </a>
+    </div>
 
-  <h2>Mensajes Enviados</h2>
-  <ul>
-    {% for mensaje in mensajes_enviados %}
-      <li>
-        <strong>Para {{ mensaje.destinatario }}</strong>: {{ mensaje.contenido }} ({{ mensaje.fecha_envio }})
-      </li>
-    {% empty %}
-      <li>No hay mensajes enviados.</li>
-    {% endfor %}
-  </ul>
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" name="q" class="form-control" placeholder="Buscar en mensajes..." value="{{ busqueda|default:'' }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Estado</label>
+                    <select name="estado" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="no_leidos" {% if estado == 'no_leidos' %}selected{% endif %}>No leídos</option>
+                        <option value="leidos" {% if estado == 'leidos' %}selected{% endif %}>Leídos</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Prioridad</label>
+                    <select name="prioridad" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="baja" {% if prioridad == 'baja' %}selected{% endif %}>Baja</option>
+                        <option value="normal" {% if prioridad == 'normal' %}selected{% endif %}>Normal</option>
+                        <option value="alta" {% if prioridad == 'alta' %}selected{% endif %}>Alta</option>
+                        <option value="urgente" {% if prioridad == 'urgente' %}selected{% endif %}>Urgente</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-2"></i>Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-  <a href="{% url 'comunicaciones:enviar_mensaje' %}">Enviar nuevo mensaje</a>
+    <!-- Mensajes Recibidos -->
+    <div class="card mb-4">
+        <div class="card-header bg-white">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-inbox me-2"></i>Mensajes Recibidos
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+                {% for mensaje in mensajes_recibidos %}
+                <a href="{% url 'comunicaciones:ver_mensaje' mensaje.pk %}" class="list-group-item list-group-item-action {% if not mensaje.leido %}bg-light{% endif %}">
+                    <div class="d-flex w-100 justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-primary text-white me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px">
+                                {{ mensaje.remitente.get_iniciales }}
+                            </div>
+                            <div>
+                                <h6 class="mb-1 {% if not mensaje.leido %}fw-bold{% endif %}">
+                                    {{ mensaje.asunto }}
+                                    {% if mensaje.prioridad == 'urgente' %}
+                                    <span class="badge bg-danger ms-2">Urgente</span>
+                                    {% elif mensaje.prioridad == 'alta' %}
+                                    <span class="badge bg-warning ms-2">Alta</span>
+                                    {% endif %}
+                                </h6>
+                                <p class="mb-1 text-muted">
+                                    {% if mensaje.asunto|slice:":3" == "Re:" %}
+                                        <span class="badge bg-info me-2">Respuesta</span>
+                                    {% else %}
+                                        <span class="badge bg-primary me-2">Mensaje</span>
+                                    {% endif %}
+                                    {{ mensaje.contenido|truncatechars:100 }}
+                                </p>
+                                <p class="mb-1 text-muted">
+                                    De: {{ mensaje.remitente.user.get_full_name|default:mensaje.remitente.user.username }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">{{ mensaje.tiempo_transcurrido }}</small>
+                            {% if not mensaje.leido %}
+                            <span class="badge bg-primary ms-2">Nuevo</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+                {% empty %}
+                <div class="list-group-item text-center py-4">
+                    <i class="fas fa-inbox fa-2x text-muted mb-3"></i>
+                    <p class="text-muted mb-0">No hay mensajes recibidos</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensajes Enviados -->
+    <div class="card">
+        <div class="card-header bg-white">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-paper-plane me-2"></i>Mensajes Enviados
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+                {% for mensaje in mensajes_enviados %}
+                <a href="{% url 'comunicaciones:ver_mensaje' mensaje.pk %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-success text-white me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px">
+                                {{ mensaje.destinatario.get_iniciales }}
+                            </div>
+                            <div>
+                                <h6 class="mb-1">
+                                    {{ mensaje.asunto }}
+                                    {% if mensaje.prioridad == 'urgente' %}
+                                    <span class="badge bg-danger ms-2">Urgente</span>
+                                    {% elif mensaje.prioridad == 'alta' %}
+                                    <span class="badge bg-warning ms-2">Alta</span>
+                                    {% endif %}
+                                </h6>
+                                <p class="mb-1 text-muted">
+                                    Para: {{ mensaje.destinatario.user.get_full_name|default:mensaje.destinatario.user.username }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">{{ mensaje.tiempo_transcurrido }}</small>
+                            {% if mensaje.leido %}
+                            <span class="badge bg-success ms-2">Leído</span>
+                            {% else %}
+                            <span class="badge bg-secondary ms-2">No leído</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+                {% empty %}
+                <div class="list-group-item text-center py-4">
+                    <i class="fas fa-paper-plane fa-2x text-muted mb-3"></i>
+                    <p class="text-muted mb-0">No hay mensajes enviados</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .list-group-item {
+        border-left: none;
+        border-right: none;
+        padding: 1rem;
+    }
+
+    .list-group-item:first-child {
+        border-top: none;
+    }
+
+    .list-group-item:last-child {
+        border-bottom: none;
+    }
+
+    .list-group-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 0.5em 0.8em;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+</style>
 {% endblock %}

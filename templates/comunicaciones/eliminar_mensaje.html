@@ -1,0 +1,116 @@
+{% extends 'base.html' %} {% load static %} 
+{% block title %}Eliminar Mensaje{%endblock %} 
+{% block content %}
+<div class="container py-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="mb-1">Eliminar Mensaje</h2>
+      <p class="text-muted mb-0">
+        ¿Estás seguro de que deseas eliminar este mensaje?
+      </p>
+    </div>
+    <a
+      href="{% url 'comunicaciones:lista_mensajes' %}"
+      class="btn btn-outline-secondary"
+    >
+      <i class="fas fa-arrow-left me-2"></i>Volver
+    </a>
+  </div>
+
+  <!-- Mensaje a eliminar -->
+  <div class="card mb-4">
+    <div class="card-header bg-white">
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">
+          {% if mensaje.prioridad == 'urgente' %}
+          <span class="badge bg-danger me-2">Urgente</span>
+          {% elif mensaje.prioridad == 'alta' %}
+          <span class="badge bg-warning me-2">Alta</span>
+          {% endif %} {{ mensaje.asunto }}
+        </h5>
+        <small class="text-muted">{{ mensaje.tiempo_transcurrido }}</small>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- Remitente/Destinatario -->
+      <div class="d-flex align-items-center mb-4">
+        <div
+          class="rounded-circle bg-primary text-white me-3 d-flex align-items-center justify-content-center"
+          style="width: 50px; height: 50px"
+        >
+          {{ mensaje.remitente.get_iniciales }}
+        </div>
+        <div>
+          <h6 class="mb-1">
+            {% if mensaje.remitente == request.user.perfil %} Para: {{mensaje.destinatario.user.get_full_name|default:mensaje.destinatario.user.username}} 
+            {% else %} De: {{ mensaje.remitente.user.get_full_name|default:mensaje.remitente.user.username}} 
+            {% endif %}
+          </h6>
+          <p class="text-muted mb-0">
+            <i class="fas fa-paper-plane me-1"></i>{{mensaje.fecha_envio|date:"d/m/Y H:i" }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Contenido -->
+      <div class="message-content mb-4">{{ mensaje.contenido|linebreaks }}</div>
+    </div>
+  </div>
+
+  <!-- Formulario de eliminación -->
+  <div class="card">
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="alert alert-warning">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          Esta acción no se puede deshacer. El mensaje será eliminado
+          permanentemente.
+        </div>
+        <div class="d-flex justify-content-end gap-2">
+          <a
+            href="{% url 'comunicaciones:lista_mensajes' %}"
+            class="btn btn-outline-secondary"
+          >
+            <i class="fas fa-times me-2"></i>Cancelar
+          </a>
+          <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash me-2"></i>Eliminar Mensaje
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .message-content {
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  .badge {
+    font-weight: 500;
+    padding: 0.5em 0.8em;
+  }
+
+  .alert {
+    border-radius: 0.5rem;
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+  }
+</style>
+{% endblock %}

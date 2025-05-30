@@ -1,8 +1,131 @@
-{% extends 'base.html' %} {% block content %}
-<h2>Enviar Mensaje</h2>
-<form method="post">
-  {% csrf_token %} {{ form.as_p }}
-  <button type="submit">Enviar</button>
-</form>
-<a href="{% url 'comunicaciones:lista_mensajes' %}">Volver a mensajes</a>
+{% extends 'base.html' %} {% load static %}
+{% block title %}Nuevo Mensaje{%endblock %} 
+{% block content %}
+<div class="container py-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="mb-1">Nuevo Mensaje</h2>
+      <p class="text-muted mb-0">Envía un mensaje a otro usuario del sistema</p>
+    </div>
+    <a
+      href="{% url 'comunicaciones:lista_mensajes' %}"
+      class="btn btn-outline-secondary"
+    >
+      <i class="fas fa-arrow-left me-2"></i>Volver
+    </a>
+  </div>
+
+  <!-- Formulario -->
+  <div class="card">
+    <div class="card-body">
+      <form method="post" id="messageForm">
+        {% csrf_token %}
+
+        <!-- Destinatario -->
+        <div class="mb-4">
+          <label for="{{ form.destinatario.id_for_label }}" class="form-label">
+            <i class="fas fa-user me-2"></i>Destinatario
+          </label>
+          {{ form.destinatario }} {% if form.destinatario.errors %}
+          <div class="invalid-feedback d-block">
+            {{ form.destinatario.errors }}
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Asunto -->
+        <div class="mb-4">
+          <label for="{{ form.asunto.id_for_label }}" class="form-label">
+            <i class="fas fa-heading me-2"></i>Asunto
+          </label>
+          {{ form.asunto }} {% if form.asunto.errors %}
+          <div class="invalid-feedback d-block">{{ form.asunto.errors }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Prioridad -->
+        <div class="mb-4">
+          <label for="{{ form.prioridad.id_for_label }}" class="form-label">
+            <i class="fas fa-flag me-2"></i>Prioridad
+          </label>
+          {{ form.prioridad }} {% if form.prioridad.errors %}
+          <div class="invalid-feedback d-block">
+            {{ form.prioridad.errors }}
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Contenido -->
+        <div class="mb-4">
+          <label for="{{ form.contenido.id_for_label }}" class="form-label">
+            <i class="fas fa-comment-alt me-2"></i>Mensaje
+          </label>
+          {{ form.contenido }} {% if form.contenido.errors %}
+          <div class="invalid-feedback d-block">
+            {{ form.contenido.errors }}
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-end gap-2">
+          <a
+            href="{% url 'comunicaciones:lista_mensajes' %}"
+            class="btn btn-outline-secondary"
+          >
+            <i class="fas fa-times me-2"></i>Cancelar
+          </a>
+          <button type="submit" class="btn btn-primary" id="submitMessage">
+            <i class="fas fa-paper-plane me-2"></i>Enviar Mensaje
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .form-label {
+    font-weight: 500;
+  }
+
+  .form-control,
+  .form-select {
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .form-control:focus,
+  .form-select:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+  }
+
+  textarea.form-control {
+    min-height: 200px;
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+  }
+</style>
+
+<script>
+  document
+    .getElementById("messageForm")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+      const submitButton = document.getElementById("submitMessage");
+      submitButton.disabled = true;
+      submitButton.innerHTML =
+        '<i class="fas fa-spinner fa-spin me-2"></i>Enviando...';
+      this.submit();
+    });
+</script>
 {% endblock %}
