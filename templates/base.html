@@ -7,13 +7,22 @@
     <title>{% block title %}EduModulo{% endblock %}</title>
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
 
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
 
     <!-- Custom CSS -->
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
@@ -29,7 +38,7 @@
       }
 
       body {
-        font-family: 'Inter', sans-serif;
+        font-family: "Inter", sans-serif;
       }
 
       .sidebar {
@@ -215,6 +224,11 @@
         margin-left: var(--sidebar-width-collapsed);
       }
 
+      /* Main content without sidebar */
+      .main-content.no-sidebar {
+        margin-left: 0;
+      }
+
       .navbar-authenticated {
         background: white !important;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -225,6 +239,11 @@
 
       .navbar-authenticated.sidebar-collapsed {
         margin-left: var(--sidebar-width-collapsed);
+      }
+
+      /* Navbar without sidebar */
+      .navbar-authenticated.no-sidebar {
+        margin-left: 0;
       }
 
       .navbar-authenticated .navbar-brand {
@@ -303,16 +322,16 @@
           transform: translateX(-100%);
           transition: transform 0.3s ease;
         }
-        
+
         .sidebar.mobile-open {
           transform: translateX(0);
         }
-        
+
         .main-content,
         .navbar-authenticated {
           margin-left: 0 !important;
         }
-        
+
         .sidebar-overlay {
           position: fixed;
           top: 0;
@@ -325,16 +344,16 @@
           visibility: hidden;
           transition: all 0.3s ease;
         }
-        
+
         .sidebar-overlay.show {
           opacity: 1;
           visibility: visible;
         }
-        
+
         .sidebar.collapsed {
           width: var(--sidebar-width);
         }
-        
+
         .sidebar.collapsed .sidebar-menu-text,
         .sidebar.collapsed .sidebar-brand,
         .sidebar.collapsed .sidebar-section-title,
@@ -342,21 +361,21 @@
           opacity: 1;
           width: auto;
         }
-        
+
         .sidebar.collapsed .sidebar-header {
           justify-content: flex-start;
           padding: 1.5rem 1rem;
         }
-        
+
         .sidebar.collapsed .sidebar-menu-link {
           justify-content: flex-start;
           padding: 0.75rem 1rem;
         }
-        
+
         .sidebar.collapsed .user-info {
           justify-content: flex-start;
         }
-        
+
         .sidebar.collapsed .sidebar-toggle {
           margin-left: auto;
         }
@@ -367,227 +386,338 @@
   </head>
 
   <body>
-    {% if user.is_authenticated %}
-      <!-- Sidebar Overlay for Mobile -->
-      <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    {% comment %} Determinar si mostrar sidebar: - Usuario debe estar
+    autenticado - No debe ser una ruta pública (home o public) {% endcomment %}
+    {% url 'public:home' as public_home_url %} {% url 'home' as home_url %} {%if user.is_authenticated and request.resolver_match.url_name != 'home' and request.resolver_match.namespace != 'public' %}
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-      <!-- Sidebar -->
-      <aside class="sidebar" id="sidebar">
-        <!-- Sidebar Header -->
-        <div class="sidebar-header">
-          <i class="fas fa-graduation-cap sidebar-menu-icon"></i>
-          <span class="sidebar-brand">EduModulo</span>
-          <button class="sidebar-toggle" id="sidebarToggle">
-            <i class="fas fa-chevron-left" id="toggleIcon"></i>
-          </button>
-        </div>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <!-- Sidebar Header -->
+      <div class="sidebar-header">
+        <i class="fas fa-graduation-cap sidebar-menu-icon"></i>
+        <span class="sidebar-brand">EduModulo</span>
+        <button class="sidebar-toggle" id="sidebarToggle">
+          <i class="fas fa-chevron-left" id="toggleIcon"></i>
+        </button>
+      </div>
 
-        <!-- Sidebar Navigation -->
-        <nav class="sidebar-nav">
-          <!-- Main Navigation -->
-          <div class="sidebar-section">
-            <div class="sidebar-section-title">Principal</div>
-            <ul class="sidebar-menu">
-              <li class="sidebar-menu-item">
-                <a class="sidebar-menu-link" href="{% url 'dashboard:index' %}" data-tooltip="Dashboard">
-                  <i class="fas fa-tachometer-alt sidebar-menu-icon"></i>
-                  <span class="sidebar-menu-text">Dashboard</span>
-                </a>
-              </li>
-              <li class="sidebar-menu-item">
-                <a class="sidebar-menu-link" href="{% url 'comunicaciones:lista_mensajes' %}" data-tooltip="Comunicaciones">
-                  <i class="fas fa-comments sidebar-menu-icon"></i>
-                  <span class="sidebar-menu-text">Comunicaciones</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Administration Section -->
-          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
-          <div class="sidebar-section">
-            <div class="sidebar-section-title">Administración</div>
-            <ul class="sidebar-menu">
-              {% if user.is_superuser %}
-              <li class="sidebar-menu-item">
-                <a class="sidebar-menu-link" href="{% url 'colegios:list' %}" data-tooltip="Colegios">
-                  <i class="fas fa-school sidebar-menu-icon"></i>
-                  <span class="sidebar-menu-text">Colegios</span>
-                </a>
-              </li>
-              {% endif %}
-              <li class="sidebar-menu-item">
-                <a class="sidebar-menu-link" href="{% url 'usuarios:list' %}" data-tooltip="Usuarios">
-                  <i class="fas fa-users sidebar-menu-icon"></i>
-                  <span class="sidebar-menu-text">Usuarios</span>
-                </a>
-              </li>
-              <li class="sidebar-menu-item">
-                <a class="sidebar-menu-link" href="{% url 'cursos:list' %}" data-tooltip="Cursos">
-                  <i class="fas fa-chalkboard sidebar-menu-icon"></i>
-                  <span class="sidebar-menu-text">Cursos</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-          {% endif %}
-
-          <!-- Academic Section -->
-          {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor' %}
-          <div class="sidebar-section">
-            <div class="sidebar-section-title">Académico</div>
-            <ul class="sidebar-menu">
-              <li class="sidebar-menu-item">
-                <a class="sidebar-menu-link" href="{% url 'estudiantes:list' %}" data-tooltip="Estudiantes">
-                  <i class="fas fa-user-graduate sidebar-menu-icon"></i>
-                  <span class="sidebar-menu-text">Estudiantes</span>
-                </a>
-              </li>
-              <li class="sidebar-menu-item">
-                <a class="sidebar-menu-link" href="{% url 'revision_pruebas:lista_revisiones' %}" data-tooltip="Revisión de Pruebas">
-                  <i class="fas fa-file-alt sidebar-menu-icon"></i>
-                  <span class="sidebar-menu-text">Revisión de Pruebas</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-          {% endif %}
-
-          <!-- Activities Section -->
-          {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor apoderado' %}
-          <div class="sidebar-section">
-            <div class="sidebar-section-title">Actividades</div>
-            <ul class="sidebar-menu">
-              <li class="sidebar-menu-item">
-                <a class="sidebar-menu-link" href="{% url 'salidas:list' %}" data-tooltip="Salidas">
-                  <i class="fas fa-door-open sidebar-menu-icon"></i>
-                  <span class="sidebar-menu-text">Salidas</span>
-                </a>
-                <a class="sidebar-menu-link" href="{% url 'atrasos:list' %}" data-tooltip="Atrasos">
-                  <i class="fas fa-clock sidebar-menu-icon"></i>
-                  <span class="sidebar-menu-text">Atrasos</span>
-                </a>
-                
-              </li>
-            </ul>
-          </div>
-          {% endif %}
-          <!-- Inventario Section -->
-          {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio' %}
-          <div class="sidebar-section">
-            <div class="sidebar-section-title">Inventario</div>
-            <ul class="sidebar-menu">
-              <li class="sidebar-menu-item">
-                <a class="sidebar-menu-link" href="{% url 'inventario:dashboard' %}" data-tooltip="Inventario">
-                  <i class="fas fa-door-open sidebar-menu-icon"></i>
-                  <span class="sidebar-menu-text">Inventario</span>
-                </a>
-                
-              </li>
-            </ul>
-          </div>
-          {% endif %}
-
-          <!-- Only show Users link for non-admin users -->
-          {% if not user.is_superuser and user.perfil.tipo_usuario != 'admin_colegio' %}
-          <div class="sidebar-section">
-            <div class="sidebar-section-title">Gestión</div>
-            <ul class="sidebar-menu">
-              <li class="sidebar-menu-item">
-                <a class="sidebar-menu-link" href="{% url 'usuarios:list' %}" data-tooltip="Usuarios">
-                  <i class="fas fa-users sidebar-menu-icon"></i>
-                  <span class="sidebar-menu-text">Usuarios</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-          {% endif %}
-        </nav>
-
-        <!-- User Dropdown -->
-        <div class="user-dropdown">
-          <div class="user-info" data-bs-toggle="dropdown" aria-expanded="false">
-            <div class="user-avatar">
-              {{ user.get_full_name|default:user.username|first|upper }}
-            </div>
-            <div class="user-details">
-              <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
-              <div class="user-role">
-                {% if user.is_superuser %}
-                  Super Administrador
-                {% elif user.perfil.tipo_usuario == 'admin_colegio' %}
-                  Admin. Colegio
-                {% elif user.perfil.tipo_usuario == 'profesor' %}
-                  Profesor
-                {% elif user.perfil.tipo_usuario == 'apoderado' %}
-                  Apoderado
-                {% else %}
-                  Usuario
-                {% endif %}
-              </div>
-            </div>
-            <i class="fas fa-chevron-up user-chevron"></i>
-          </div>
-          <ul class="dropdown-menu dropdown-menu-dark">
-            <li>
-              <a class="dropdown-item" href="{% url 'usuarios:profile' %}">
-                <i class="fas fa-user me-2"></i> Mi Perfil
+      <!-- Sidebar Navigation -->
+      <nav class="sidebar-nav">
+        <!-- Main Navigation -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Principal</div>
+          <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'dashboard:index' %}"
+                data-tooltip="Dashboard"
+              >
+                <i class="fas fa-tachometer-alt sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Dashboard</span>
               </a>
             </li>
-            <li><hr class="dropdown-divider" /></li>
-            <li>
-              <a class="dropdown-item text-danger" href="{% url 'usuarios:logout' %}">
-                <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'comunicaciones:lista_mensajes' %}"
+                data-tooltip="Comunicaciones"
+              >
+                <i class="fas fa-comments sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Comunicaciones</span>
               </a>
             </li>
           </ul>
         </div>
-      </aside>
 
-      <!-- Top Navbar for Authenticated Users -->
-      <nav class="navbar navbar-expand-lg navbar-authenticated" id="topNavbar">
-        <div class="container-fluid">
-          <button class="btn btn-link d-md-none" id="sidebarToggleMobile">
-            <i class="fas fa-bars"></i>
-          </button>
-          <span class="navbar-brand mb-0 h1">
-            <i class="fas fa-graduation-cap"></i> EduModulo
-          </span>
-          <div class="ms-auto">
-            <!-- You can add additional top navbar items here -->
+        <!-- Administration Section -->
+        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Administración</div>
+          <ul class="sidebar-menu">
+            {% if user.is_superuser %}
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'colegios:list' %}"
+                data-tooltip="Colegios"
+              >
+                <i class="fas fa-school sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Colegios</span>
+              </a>
+            </li>
+            {% endif %}
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'usuarios:list' %}"
+                data-tooltip="Usuarios"
+              >
+                <i class="fas fa-users sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Usuarios</span>
+              </a>
+            </li>
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'cursos:list' %}"
+                data-tooltip="Cursos"
+              >
+                <i class="fas fa-chalkboard sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Cursos</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        {% endif %}
+
+        <!-- Academic Section -->
+        {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor' %}
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Académico</div>
+          <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'estudiantes:list' %}"
+                data-tooltip="Estudiantes"
+              >
+                <i class="fas fa-user-graduate sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Estudiantes</span>
+              </a>
+            </li>
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'revision_pruebas:lista_revisiones' %}"
+                data-tooltip="Revisión de Pruebas"
+              >
+                <i class="fas fa-file-alt sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Revisión de Pruebas</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        {% endif %}
+
+        <!-- Activities Section -->
+        {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor apoderado' %}
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Actividades</div>
+          <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'salidas:list' %}"
+                data-tooltip="Salidas"
+              >
+                <i class="fas fa-door-open sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Salidas</span>
+              </a>
+            </li>
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'atrasos:list' %}"
+                data-tooltip="Atrasos"
+              >
+                <i class="fas fa-clock sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Atrasos</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        {% endif %}
+
+        <!-- Inventario Section -->
+        {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio' %}
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Inventario</div>
+          <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'inventario:dashboard' %}"
+                data-tooltip="Inventario"
+              >
+                <i class="fas fa-boxes sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Inventario</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        {% endif %}
+
+        <!-- Only show Users link for non-admin users -->
+        {% if not user.is_superuser and user.perfil.tipo_usuario != 'admin_colegio' %}
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Gestión</div>
+          <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'usuarios:list' %}"
+                data-tooltip="Usuarios"
+              >
+                <i class="fas fa-users sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Usuarios</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        {% endif %}
+      </nav>
+
+      <!-- User Dropdown -->
+      <div class="user-dropdown">
+        <div class="user-info" data-bs-toggle="dropdown" aria-expanded="false">
+          <div class="user-avatar">
+            {{ user.get_full_name|default:user.username|first|upper }}
+          </div>
+          <div class="user-details">
+            <div class="user-name">
+              {{ user.get_full_name|default:user.username }}
+            </div>
+            <div class="user-role">
+              {% if user.is_superuser %} Super Administrador {% elif user.perfil.tipo_usuario == 'admin_colegio' %} Admin. Colegio {% elif user.perfil.tipo_usuario == 'profesor' %} Profesor {% elif user.perfil.tipo_usuario == 'apoderado' %} Apoderado {% else %} Usuario {% endif %}
+            </div>
+          </div>
+          <i class="fas fa-chevron-up user-chevron"></i>
+        </div>
+        <ul class="dropdown-menu dropdown-menu-dark">
+          <li>
+            <a class="dropdown-item" href="{% url 'usuarios:profile' %}">
+              <i class="fas fa-user me-2"></i> Mi Perfil
+            </a>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li>
+            <a
+              class="dropdown-item text-danger"
+              href="{% url 'usuarios:logout' %}"
+            >
+              <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+            </a>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Top Navbar for Authenticated Users with Sidebar -->
+    <nav class="navbar navbar-expand-lg navbar-authenticated" id="topNavbar">
+      <div class="container-fluid">
+        <button class="btn btn-link d-md-none" id="sidebarToggleMobile">
+          <i class="fas fa-bars"></i>
+        </button>
+        <span class="navbar-brand mb-0 h1">
+          <i class="fas fa-graduation-cap"></i> EduModulo
+        </span>
+        <div class="ms-auto">
+          <!-- Additional navbar items can go here -->
+        </div>
+      </div>
+    </nav>
+    {% elif user.is_authenticated %}
+    <!-- Navbar for Authenticated Users WITHOUT Sidebar (Public/Home pages) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="{% url 'public:home' %}">
+          <i class="fas fa-graduation-cap"></i> EduModulo
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="{% url 'dashboard:index' %}">
+              <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+            </a>
+            <div class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+              >
+                <i class="fas fa-user me-1"></i> {{user.get_full_name|default:user.username }}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-dark">
+                <li>
+                  <a class="dropdown-item" href="{% url 'usuarios:profile' %}">
+                    <i class="fas fa-user me-2"></i> Mi Perfil
+                  </a>
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a
+                    class="dropdown-item text-danger"
+                    href="{% url 'usuarios:logout' %}"
+                  >
+                    <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
-      </nav>
+      </div>
+    </nav>
     {% else %}
-      <!-- Original Navbar for Non-Authenticated Users -->
-      <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-          <a class="navbar-brand" href="{% url 'public:home' %}">
-            <i class="fas fa-graduation-cap"></i> EduModulo
-          </a>
+    <!-- Original Navbar for Non-Authenticated Users -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="{% url 'public:home' %}">
+          <i class="fas fa-graduation-cap"></i> EduModulo
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
           <div class="navbar-nav ms-auto">
             <a class="nav-link" href="{% url 'login' %}">
               <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
             </a>
           </div>
         </div>
-      </nav>
+      </div>
+    </nav>
     {% endif %}
 
     <!-- Main Content -->
-    <main class="main-content" id="mainContent">
+    <main
+      class="main-content{% if not user.is_authenticated or request.resolver_match.url_name == 'home' or request.resolver_match.namespace == 'public' %} no-sidebar{% endif %}"
+      id="mainContent"
+    >
       {% if messages %}
-        <div class="container-fluid mt-3">
-          {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
-              {{ message }}
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-          {% endfor %}
+      <div class="container-fluid mt-3">
+        {% for message in messages %}
+        <div
+          class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm"
+          role="alert"
+        >
+          {{ message }}
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+          ></button>
         </div>
-      {% endif %}
-      
-      {% block content %}{% endblock %}
+        {% endfor %}
+      </div>
+      {% endif %} {% block content %}{% endblock %}
     </main>
 
     <!-- Footer -->
@@ -602,42 +732,46 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    {% if user.is_authenticated %}
+
+    {% comment %} Solo cargar scripts del sidebar si está presente {% endcomment%} 
+    {% if user.is_authenticated and request.resolver_match.url_name != 'home'
+    and request.resolver_match.namespace != 'public' %}
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        const topNavbar = document.getElementById('topNavbar');
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const sidebarToggleMobile = document.getElementById('sidebarToggleMobile');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const toggleIcon = document.getElementById('toggleIcon');
-        
-        let isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+      document.addEventListener("DOMContentLoaded", function () {
+        const sidebar = document.getElementById("sidebar");
+        const mainContent = document.getElementById("mainContent");
+        const topNavbar = document.getElementById("topNavbar");
+        const sidebarToggle = document.getElementById("sidebarToggle");
+        const sidebarToggleMobile = document.getElementById(
+          "sidebarToggleMobile"
+        );
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
+        const toggleIcon = document.getElementById("toggleIcon");
+
+        let isCollapsed = localStorage.getItem("sidebarCollapsed") === "true";
         let isMobile = window.innerWidth <= 768;
 
         function updateSidebar() {
           if (isMobile) {
             // Mobile behavior - sidebar is always hidden by default
-            sidebar.classList.remove('collapsed');
-            mainContent.classList.remove('sidebar-collapsed');
-            topNavbar.classList.remove('sidebar-collapsed');
-            
+            sidebar.classList.remove("collapsed");
+            mainContent.classList.remove("sidebar-collapsed");
+            if (topNavbar) topNavbar.classList.remove("sidebar-collapsed");
+
             // Reset toggle icon for mobile
-            toggleIcon.className = 'fas fa-chevron-left';
+            toggleIcon.className = "fas fa-chevron-left";
           } else {
             // Desktop behavior - sidebar is always visible
             if (isCollapsed) {
-              sidebar.classList.add('collapsed');
-              mainContent.classList.add('sidebar-collapsed');
-              topNavbar.classList.add('sidebar-collapsed');
-              toggleIcon.className = 'fas fa-chevron-right';
+              sidebar.classList.add("collapsed");
+              mainContent.classList.add("sidebar-collapsed");
+              if (topNavbar) topNavbar.classList.add("sidebar-collapsed");
+              toggleIcon.className = "fas fa-chevron-right";
             } else {
-              sidebar.classList.remove('collapsed');
-              mainContent.classList.remove('sidebar-collapsed');
-              topNavbar.classList.remove('sidebar-collapsed');
-              toggleIcon.className = 'fas fa-chevron-left';
+              sidebar.classList.remove("collapsed");
+              mainContent.classList.remove("sidebar-collapsed");
+              if (topNavbar) topNavbar.classList.remove("sidebar-collapsed");
+              toggleIcon.className = "fas fa-chevron-left";
             }
           }
         }
@@ -645,12 +779,12 @@
         function toggleSidebar() {
           if (isMobile) {
             // Mobile: toggle sidebar visibility
-            sidebar.classList.toggle('mobile-open');
-            sidebarOverlay.classList.toggle('show');
+            sidebar.classList.toggle("mobile-open");
+            if (sidebarOverlay) sidebarOverlay.classList.toggle("show");
           } else {
             // Desktop: toggle collapsed state
             isCollapsed = !isCollapsed;
-            localStorage.setItem('sidebarCollapsed', isCollapsed);
+            localStorage.setItem("sidebarCollapsed", isCollapsed);
             updateSidebar();
           }
         }
@@ -659,30 +793,28 @@
         updateSidebar();
 
         // Event listeners
-        sidebarToggle.addEventListener('click', toggleSidebar);
-        if (sidebarToggleMobile) {
-          sidebarToggleMobile.addEventListener('click', toggleSidebar);
-        }
-        
+        if (sidebarToggle)
+          sidebarToggle.addEventListener("click", toggleSidebar);
+        if (sidebarToggleMobile)
+          sidebarToggleMobile.addEventListener("click", toggleSidebar);
+
         if (sidebarOverlay) {
-          sidebarOverlay.addEventListener('click', function() {
-            sidebar.classList.remove('mobile-open');
-            sidebarOverlay.classList.remove('show');
+          sidebarOverlay.addEventListener("click", function () {
+            sidebar.classList.remove("mobile-open");
+            sidebarOverlay.classList.remove("show");
           });
         }
 
         // Handle window resize
-        window.addEventListener('resize', function() {
+        window.addEventListener("resize", function () {
           const wasMobile = isMobile;
           isMobile = window.innerWidth <= 768;
-          
+
           if (wasMobile !== isMobile) {
             // Close mobile sidebar when switching to desktop
             if (!isMobile) {
-              sidebar.classList.remove('mobile-open');
-              if (sidebarOverlay) {
-                sidebarOverlay.classList.remove('show');
-              }
+              sidebar.classList.remove("mobile-open");
+              if (sidebarOverlay) sidebarOverlay.classList.remove("show");
             }
             updateSidebar();
           }
@@ -690,17 +822,15 @@
 
         // Highlight active menu item
         const currentPath = window.location.pathname;
-        const menuLinks = document.querySelectorAll('.sidebar-menu-link');
-        
-        menuLinks.forEach(link => {
-          if (link.getAttribute('href') === currentPath) {
-            link.classList.add('active');
+        const menuLinks = document.querySelectorAll(".sidebar-menu-link");
+
+        menuLinks.forEach((link) => {
+          if (link.getAttribute("href") === currentPath) {
+            link.classList.add("active");
           }
         });
       });
     </script>
-    {% endif %}
-    
     {% block extra_js %}{% endblock %}
   </body>
 </html>
