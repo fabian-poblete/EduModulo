@@ -1,5 +1,6 @@
-{% extends 'base.html' %} {% block title %}{{ usuario.get_full_name }}{%
-endblock %} {% block content %}
+{% extends 'base.html' %} 
+{% block title %}{{ usuario.get_full_name }}{%endblock %}
+{% block content %}
 <div class="container py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>{{ usuario.get_full_name }}</h1>
@@ -22,27 +23,16 @@ endblock %} {% block content %}
     <div class="col-md-4">
       <div class="card mb-4">
         <div class="card-body text-center">
-          {% if usuario.perfil.foto %}
-          <img
-            src="{{ usuario.perfil.foto.url }}"
-            alt="{{ usuario.get_full_name }}"
-            class="rounded-circle mb-3"
-            style="width: 150px; height: 150px; object-fit: cover"
-          />
-          {% else %}
           <div
-            class="rounded-circle bg-secondary mb-3 mx-auto d-flex align-items-center justify-content-center"
-            style="width: 150px; height: 150px"
+            class="rounded-circle bg-primary text-white mb-3 mx-auto d-flex align-items-center justify-content-center"
+            style="width: 150px; height: 150px; font-size: 3rem"
           >
-            <i class="fas fa-user fa-4x text-white"></i>
+            {{ usuario.perfil.get_iniciales }}
           </div>
-          {% endif %}
           <h5 class="card-title">{{ usuario.get_full_name }}</h5>
           <p class="text-muted">@{{ usuario.username }}</p>
           <div class="d-flex justify-content-center">
-            <span class="badge bg-primary me-2"
-              >{{ usuario.perfil.get_tipo_usuario_display }}</span
-            >
+            <span class="badge bg-primary me-2">{{ usuario.perfil.get_tipo_usuario_display }}</span>
             {% if usuario.perfil.activo %}
             <span class="badge bg-success">Activo</span>
             {% else %}

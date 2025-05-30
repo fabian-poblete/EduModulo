@@ -28,10 +28,6 @@ class Perfil(models.Model):
         max_length=20, choices=NIVEL_ACCESO_CHOICES, default='basico')
     colegio = models.ForeignKey(
         Colegio, on_delete=models.SET_NULL, null=True, blank=True, related_name='usuarios')
-    
-   
-    foto = models.ImageField(
-        upload_to='usuarios/fotos/', null=True, blank=True)
     activo = models.BooleanField(default=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
@@ -46,6 +42,14 @@ class Perfil(models.Model):
 
     def get_tipo_usuario_display(self):
         return dict(self.TIPO_USUARIO_CHOICES).get(self.tipo_usuario, self.tipo_usuario)
+
+    def get_iniciales(self):
+        """Retorna las iniciales del nombre completo del usuario."""
+        nombre_completo = self.user.get_full_name() or self.user.username
+        palabras = nombre_completo.split()
+        if len(palabras) >= 2:
+            return f"{palabras[0][0]}{palabras[-1][0]}".upper()
+        return nombre_completo[0].upper()
 
     @property
     def es_equipo_soporte(self):

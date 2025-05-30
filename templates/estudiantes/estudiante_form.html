@@ -1,133 +1,164 @@
-{% extends 'base.html' %} {% block title %}{{ title }}{% endblock %} 
-{% block content %}
-<div class="container mt-4">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="card">
-        <div class="card-header">
-          <h2 class="mb-0">{{ title }}</h2>
-        </div>
-        <div class="card-body">
-          {% if messages %}
-          <div class="messages">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-            {% endfor %}
+  {% extends 'base.html' %}
+  {% block title %}{{ title }}{% endblock %}
+  {% block content %}
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-10 col-lg-8">
+        <div class="card border-0 shadow-lg">
+          <div class="card-header bg-primary text-white py-3">
+            <h2 class="mb-0">{{ title }}</h2>
           </div>
-          {% endif %}
+          <div class="card-body px-4 py-5">
 
-          <form method="post">
-            {% csrf_token %}
-
-            <div class="mb-3">
-              <label for="{{ form.nombre.id_for_label }}" class="form-label"
-                >Nombre</label
-              >
-              {{ form.nombre }} {% if form.nombre.errors %}
-              <div class="invalid-feedback d-block">
-                {{ form.nombre.errors }}
+            {% if messages %}
+            <div class="mb-4">
+              {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
-              {% endif %}
+              {% endfor %}
             </div>
+            {% endif %}
 
-            <div class="mb-3">
-              <label for="{{ form.rut.id_for_label }}" class="form-label"
-                >RUT</label
-              >
-              {{ form.rut }} {% if form.rut.errors %}
-              <div class="invalid-feedback d-block">{{ form.rut.errors }}</div>
-              {% endif %}
-              <div class="form-text">Formato: 12.345.678-9 o 12345678-9</div>
-            </div>
+            <form method="post" novalidate>
+              {% csrf_token %}
 
-            <div class="mb-3">
-              <label for="{{ form.curso.id_for_label }}" class="form-label"
-                >Curso</label
-              >
-              {{ form.curso }} {% if form.curso.errors %}
-              <div class="invalid-feedback d-block">
-                {{ form.curso.errors }}
+              <!-- Nombre -->
+              <div class="mb-4">
+                <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre <span class="text-danger">*</span></label>
+                <input type="text" class="form-control form-control-lg" id="{{ form.nombre.id_for_label }}"
+                      name="{{ form.nombre.name }}" value="{{ form.nombre.value|default_if_none:'' }}"
+                      placeholder="{{ form.nombre.field.widget.attrs.placeholder|default:'Ingresa el nombre completo' }}" required>
+                {% if form.nombre.errors %}
+                <div class="invalid-feedback d-block">{{ form.nombre.errors|striptags }}</div>
+                {% endif %}
               </div>
-              {% endif %}
-            </div>
 
-            <div class="mb-3">
-              <label
-                for="{{ form.email_estudiante.id_for_label }}"
-                class="form-label"
-                >Email Estudiante</label
-              >
-              {{ form.email_estudiante }} {% if form.email_estudiante.errors %}
-              <div class="invalid-feedback d-block">
-                {{ form.email_estudiante.errors }}
+              <!-- RUT -->
+              <div class="mb-4">
+                <label for="{{ form.rut.id_for_label }}" class="form-label">
+                  RUT <span class="text-danger">*</span>
+                  <i class="fas fa-info-circle text-muted ms-1" data-bs-toggle="tooltip" title="Formato: 12.345.678-9 o 12345678-9"></i>
+                </label>
+                <input type="text" class="form-control form-control-lg" id="{{ form.rut.id_for_label }}"
+                      name="{{ form.rut.name }}" value="{{ form.rut.value|default_if_none:'' }}" required>
+                {% if form.rut.errors %}
+                <div class="invalid-feedback d-block">{{ form.rut.errors|striptags }}</div>
+                {% endif %}
+                <div class="form-text">Formato: 12.345.678-9 o 12345678-9</div>
               </div>
-              {% endif %}
-            </div>
 
-            <div class="mb-3">
-              <label
-                for="{{ form.email_apoderado1.id_for_label }}"
-                class="form-label"
-                >Email Apoderado 1</label
-              >
-              {{ form.email_apoderado1 }} {% if form.email_apoderado1.errors %}
-              <div class="invalid-feedback d-block">
-                {{ form.email_apoderado1.errors }}
+              <!-- Curso -->
+              <div class="mb-4">
+                <label for="{{ form.curso.id_for_label }}" class="form-label">Curso <span class="text-danger">*</span></label>
+                <select class="form-select form-select-lg" name="{{ form.curso.name }}" id="{{ form.curso.id_for_label }}" required>
+                  {% for value, label in form.curso.field.choices %}
+                  <option value="{{ value }}" {% if value == form.curso.value %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+                {% if form.curso.errors %}
+                <div class="invalid-feedback d-block">{{ form.curso.errors|striptags }}</div>
+                {% endif %}
               </div>
-              {% endif %}
-            </div>
 
-            <div class="mb-3">
-              <label
-                for="{{ form.email_apoderado2.id_for_label }}"
-                class="form-label"
-                >Email Apoderado 2</label
-              >
-              {{ form.email_apoderado2 }} {% if form.email_apoderado2.errors %}
-              <div class="invalid-feedback d-block">
-                {{ form.email_apoderado2.errors }}
+              <!-- Emails -->
+              <div class="row mb-4">
+                <div class="col-md-12 mb-3">
+                  <label for="{{ form.email_estudiante.id_for_label }}" class="form-label">Email Estudiante <span class="text-danger">*</span></label>
+                  <input type="email" class="form-control form-control-lg" id="{{ form.email_estudiante.id_for_label }}"
+                        name="{{ form.email_estudiante.name }}" value="{{ form.email_estudiante.value|default_if_none:'' }}" required>
+                  {% if form.email_estudiante.errors %}
+                  <div class="invalid-feedback d-block">{{ form.email_estudiante.errors|striptags }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="{{ form.email_apoderado1.id_for_label }}" class="form-label">Email Apoderado 1</label>
+                  <input type="email" class="form-control form-control-lg" id="{{ form.email_apoderado1.id_for_label }}"
+                        name="{{ form.email_apoderado1.name }}" value="{{ form.email_apoderado1.value|default_if_none:'' }}">
+                  {% if form.email_apoderado1.errors %}
+                  <div class="invalid-feedback d-block">{{ form.email_apoderado1.errors|striptags }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="{{ form.email_apoderado2.id_for_label }}" class="form-label">Email Apoderado 2</label>
+                  <input type="email" class="form-control form-control-lg" id="{{ form.email_apoderado2.id_for_label }}"
+                        name="{{ form.email_apoderado2.name }}" value="{{ form.email_apoderado2.value|default_if_none:'' }}">
+                  {% if form.email_apoderado2.errors %}
+                  <div class="invalid-feedback d-block">{{ form.email_apoderado2.errors|striptags }}</div>
+                  {% endif %}
+                </div>
               </div>
-              {% endif %}
-            </div>
 
-            <div class="mb-3">
-              <label
-                for="{{ form.telefono_apoderado1.id_for_label }}"
-                class="form-label"
-                >Teléfono Apoderado 1</label
-              >
-              {{ form.telefono_apoderado1 }} {% if form.telefono_apoderado1.errors %}
-              <div class="invalid-feedback d-block">
-                {{ form.telefono_apoderado1.errors }}
+              <!-- Teléfonos -->
+              <div class="row mb-4">
+                <div class="col-md-6">
+                  <label for="{{ form.telefono_apoderado1.id_for_label }}" class="form-label">Teléfono Apoderado 1</label>
+                  <input type="tel" class="form-control form-control-lg" id="{{ form.telefono_apoderado1.id_for_label }}"
+                        name="{{ form.telefono_apoderado1.name }}" value="{{ form.telefono_apoderado1.value|default_if_none:'' }}">
+                  {% if form.telefono_apoderado1.errors %}
+                  <div class="invalid-feedback d-block">{{ form.telefono_apoderado1.errors|striptags }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                  <label for="{{ form.telefono_apoderado2.id_for_label }}" class="form-label">Teléfono Apoderado 2</label>
+                  <input type="tel" class="form-control form-control-lg" id="{{ form.telefono_apoderado2.id_for_label }}"
+                        name="{{ form.telefono_apoderado2.name }}" value="{{ form.telefono_apoderado2.value|default_if_none:'' }}">
+                  {% if form.telefono_apoderado2.errors %}
+                  <div class="invalid-feedback d-block">{{ form.telefono_apoderado2.errors|striptags }}</div>
+                  {% endif %}
+                </div>
               </div>
-              {% endif %}
-            </div>
 
-            <div class="mb-3">
-              <label
-                for="{{ form.telefono_apoderado2.id_for_label }}"
-                class="form-label"
-                >Teléfono Apoderado 2</label
-              >
-              {{ form.telefono_apoderado2 }} {% if form.telefono_apoderado2.errors %}
-              <div class="invalid-feedback d-block">
-                {{ form.telefono_apoderado2.errors }}
+              <!-- Acciones -->
+              <div class="d-flex justify-content-between mt-5">
+                <a href="{% url 'estudiantes:list' %}" class="btn btn-outline-secondary btn-lg">
+                  <i class="fas fa-arrow-left me-2"></i> Volver
+                </a>
+                <button type="submit" class="btn btn-success btn-lg px-4">
+                  <i class="fas fa-save me-2"></i> Guardar
+                </button>
               </div>
-              {% endif %}
-            </div>
+            </form>
 
-            <div class="d-flex justify-content-between">
-              <a href="{% url 'estudiantes:list' %}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Volver
-              </a>
-              <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> Guardar
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-{% endblock %}
+
+  {% block extra_js %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Tooltips
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      tooltipTriggerList.map(el => new bootstrap.Tooltip(el));
+
+      // Validación RUT
+      const rutInput = document.querySelector('#{{ form.rut.id_for_label }}');
+      if (rutInput) {
+        rutInput.addEventListener('input', function () {
+          const rutPattern = /^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$/;
+          const isValid = rutPattern.test(this.value.trim());
+          this.classList.toggle('is-valid', isValid);
+          this.classList.toggle('is-invalid', !isValid);
+        });
+      }
+
+      // Validación Emails
+      const emailInputs = document.querySelectorAll('input[type="email"]');
+      emailInputs.forEach(input => {
+        input.addEventListener('input', function () {
+          const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          const isValid = emailPattern.test(this.value.trim());
+          this.classList.toggle('is-valid', isValid && this.value !== '');
+          this.classList.toggle('is-invalid', !isValid && this.value !== '');
+        });
+      });
+    });
+  </script>
+  {% endblock %}
+  {% endblock %}

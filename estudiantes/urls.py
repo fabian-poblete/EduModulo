@@ -11,5 +11,8 @@ urlpatterns = [
     path('<int:pk>/update/', views.estudiante_update, name='update'),
     path('<int:pk>/delete/', views.estudiante_delete, name='delete'),
     path('carga-masiva/', views.carga_masiva, name='carga_masiva'),
+    path('edicion-masiva/', views.edicion_masiva, name='edicion_masiva'),
+    path('descargar-estudiantes/', views.descargar_estudiantes,
+         name='descargar_estudiantes'),
     path('descargar-formato/', views.descargar_formato, name='descargar_formato'),
 ]

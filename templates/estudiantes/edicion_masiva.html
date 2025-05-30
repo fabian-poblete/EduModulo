@@ -1,12 +1,11 @@
-{% extends 'base.html' %} 
-{% block title %}Carga Masiva de Estudiantes{%endblock%}
+{% extends 'base.html' %} {% block title %}Edición Masiva de Estudiantes{%endblock %} 
 {% block content %}
 <div class="container mt-4">
   <div class="row">
     <div class="col-md-8 offset-md-2">
       <div class="card">
         <div class="card-header">
-          <h4 class="mb-0">Carga Masiva de Estudiantes</h4>
+          <h4 class="mb-0">Edición Masiva de Estudiantes</h4>
         </div>
         <div class="card-body">
           {% if messages %}
@@ -21,40 +20,39 @@
             <h5 class="alert-heading">Instrucciones:</h5>
             <ol>
               <li>
-                Descarga el formato de ejemplo haciendo clic en el botón
-                "Descargar Formato"
+                Descarga el archivo con los estudiantes actuales haciendo clic
+                en el botón "Descargar Estudiantes"
               </li>
-              <li>
-                Completa el archivo Excel con los datos de los estudiantes
-              </li>
-              <li>Sube el archivo completado usando el formulario de abajo</li>
+              <li>Modifica los datos que necesites en el archivo Excel</li>
+              <li>Sube el archivo modificado usando el formulario de abajo</li>
             </ol>
             <p class="mb-0">
-              <strong>Nota:</strong> Los cursos que no existan se crearán
-              automáticamente.
+              <strong>Nota:</strong> No modifique la columna RUT, ya que es el
+              identificador único del estudiante.
             </p>
           </div>
 
           <div class="alert alert-warning">
             <h5 class="alert-heading">Consideraciones:</h5>
             <ul class="mb-0">
+              <li>
+                El RUT es el identificador único del estudiante y no debe
+                modificarse
+              </li>
               <li>El RUT debe ser válido según el algoritmo chileno</li>
-              <li>Los cursos se crearán automáticamente si no existen</li>
-              {% if user.is_superuser %}
-              <li>Debe especificar el colegio para cada estudiante</li>
-              {% endif %}
+              <li>El curso debe existir en el sistema</li>
               <li>Los emails son opcionales pero deben ser válidos</li>
               <li>Los teléfonos son opcionales</li>
-              <li>No se pueden cargar estudiantes con RUT duplicado</li>
+              <li>No se pueden agregar nuevos estudiantes en esta sección</li>
             </ul>
           </div>
 
           <div class="mb-4">
             <a
-              href="{% url 'estudiantes:descargar_formato' %}"
+              href="{% url 'estudiantes:descargar_estudiantes' %}"
               class="btn btn-primary"
             >
-              <i class="fas fa-download"></i> Descargar Formato
+              <i class="fas fa-download"></i> Descargar Estudiantes
             </a>
           </div>
 
@@ -78,7 +76,7 @@
                 <i class="fas fa-arrow-left"></i> Volver
               </a>
               <button type="submit" class="btn btn-success">
-                <i class="fas fa-upload"></i> Cargar Estudiantes
+                <i class="fas fa-upload"></i> Actualizar Estudiantes
               </button>
             </div>
           </form>

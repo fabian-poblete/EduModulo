@@ -1,5 +1,5 @@
-{% extends 'base.html' %} {% load static %} {% block title %} Mi Perfil {%endblock %}
-{% block content %}
+{% extends 'base.html' %} {% load static %}
+{% block title %} Mi Perfil{%endblock %} {% block content %}
 <div class="container py-4">
   <div class="row justify-content-center">
     <div class="col-lg-8">
@@ -7,24 +7,21 @@
       <div class="card profile-card mb-4">
         <div class="card-body text-center p-4">
           <div class="profile-image mb-3">
-            {% if user.perfil.foto %}
-            <img
-              src="{{ user.perfil.foto.url }}"
-              alt="Foto de perfil"
-              class="rounded-circle"
-            />
-            {% else %}
-            <div class="profile-image-placeholder">
-              <i class="fas fa-user"></i>
+            <div
+              class="rounded-circle bg-white text-primary d-flex align-items-center justify-content-center"
+              style="width: 120px; height: 120px; font-size: 2.5rem"
+            >
+              {{ user.perfil.get_iniciales }}
             </div>
-            {% endif %}
           </div>
           <h3 class="mb-1">{{ user.get_full_name|default:user.username }}</h3>
           <p class="text-muted mb-2">
             {% if user.is_superuser %}
             <span class="badge bg-warning">CTO</span>
             {% else %}
-            <span class="badge bg-info">{{ user.perfil.get_tipo_usuario_display }}</span>
+            <span class="badge bg-info"
+              >{{ user.perfil.get_tipo_usuario_display }}</span
+            >
             {% endif %}
           </p>
           <p class="text-muted small">
@@ -45,7 +42,8 @@
               <div class="col-md-6">
                 <label class="form-label">Tipo de Usuario</label>
                 <div class="form-control bg-light">
-                  {% if user.is_superuser %} CTO {% else %} {{user.perfil.get_tipo_usuario_display }} {% endif %}
+                  {% if user.is_superuser %} CTO {% else %}
+                  {{user.perfil.get_tipo_usuario_display }} {% endif %}
                 </div>
               </div>
             </div>
@@ -55,8 +53,7 @@
               <div class="col-md-6">
                 <label class="form-label">Colegio</label>
                 <div class="form-control bg-light">
-                  {% if user.is_superuser %} {% if user.perfil.colegio %} {{ user.perfil.colegio.nombre }} {% else %} No asignado {% endif%}
-                  {% else %} {{ user.perfil.colegio.nombre }} {% endif %}
+                  {% if user.is_superuser %} {% if user.perfil.colegio %} {{ user.perfil.colegio.nombre }} {% else %} No asignado {% endif%} {% else %} {{ user.perfil.colegio.nombre }} {% endif %}
                 </div>
               </div>
             </div>

@@ -63,9 +63,10 @@ class UserForm(forms.ModelForm):
 class PerfilForm(forms.ModelForm):
     class Meta:
         model = Perfil
-        fields = ['tipo_usuario', 'colegio', 'foto']
+        fields = ['tipo_usuario', 'colegio']
         widgets = {
-            'foto': forms.FileInput(attrs={'class': 'form-control'}),
+            'tipo_usuario': forms.Select(attrs={'class': 'form-select'}),
+            'colegio': forms.Select(attrs={'class': 'form-select'})
         }
 
     def __init__(self, *args, **kwargs):
@@ -101,12 +102,6 @@ class PerfilForm(forms.ModelForm):
                     {'readonly': 'readonly'})
 
         self.fields['tipo_usuario'].choices = tipo_usuario_choices
-        self.fields['tipo_usuario'].widget.attrs.update(
-            {'class': 'form-select'})
-        self.fields['colegio'].widget.attrs.update({'class': 'form-select'})
-
-        # Hacer el campo colegio requerido para todos los tipos de usuario excepto soporte
-        self.fields['colegio'].required = True
 
     def clean(self):
         cleaned_data = super().clean()

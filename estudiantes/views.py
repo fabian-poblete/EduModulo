@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Estudiante, Curso
+from colegios.models import Colegio
 from .forms import EstudianteForm
 from django.http import HttpResponse
 import pandas as pd
@@ -14,11 +15,10 @@ import re
 
 @login_required
 def estudiante_list(request):
-    # Superusuarios ven todos los estudiantes
+    # Superusuarios y admin de colegio ven todos los estudiantes de su colegio
     if request.user.is_superuser:
         estudiantes = Estudiante.objects.all()
         can_edit = True
-    # Admin de colegio ve estudiantes de su colegio
     elif request.user.perfil.tipo_usuario == 'admin_colegio':
         estudiantes = Estudiante.objects.filter(
             curso__colegio=request.user.perfil.colegio)
@@ -34,7 +34,8 @@ def estudiante_list(request):
 
     return render(request, 'estudiantes/estudiante_list.html', {
         'estudiantes': estudiantes,
-        'can_edit': can_edit
+        'can_edit': can_edit,
+        'is_admin': request.user.is_superuser or request.user.perfil.tipo_usuario == 'admin_colegio'
     })
 
 
@@ -220,6 +221,7 @@ def carga_masiva(request):
             # Procesar cada fila
             exitosos = 0
             errores = []
+            cursos_creados = set()
 
             for index, row in df.iterrows():
                 try:
@@ -229,32 +231,55 @@ def carga_masiva(request):
                     if not rut_validado:
                         raise Exception(f'RUT inválido: {rut}')
 
-                    # Buscar el curso por nombre
+                    # Verificar si el estudiante ya existe
+                    if Estudiante.objects.filter(rut=rut_validado).exists():
+                        raise Exception(
+                            f'El estudiante con RUT {rut_validado} ya existe')
+
+                    # Buscar o crear el curso
                     curso_nombre = str(row['curso']).strip()
                     if colegio:
-                        curso = Curso.objects.filter(
-                            nombre=curso_nombre, colegio=colegio).first()
+                        curso, creado = Curso.objects.get_or_create(
+                            nombre=curso_nombre,
+                            colegio=colegio,
+                            defaults={'activo': True}
+                        )
                     else:
-                        curso = Curso.objects.filter(
-                            nombre=curso_nombre).first()
+                        # Si es superusuario, necesita especificar el colegio
+                        if 'colegio' not in df.columns:
+                            raise Exception(
+                                'Para superusuarios, el archivo debe incluir la columna "colegio"')
+                        colegio_nombre = str(row['colegio']).strip()
+                        colegio_obj = Colegio.objects.filter(
+                            nombre=colegio_nombre).first()
+                        if not colegio_obj:
+                            raise Exception(
+                                f'No se encontró el colegio: {colegio_nombre}')
+                        curso, creado = Curso.objects.get_or_create(
+                            nombre=curso_nombre,
+                            colegio=colegio_obj,
+                            defaults={'activo': True}
+                        )
 
-                    if not curso:
-                        raise Exception(
-                            f'No se encontró el curso: {curso_nombre}')
+                    if creado:
+                        cursos_creados.add(curso_nombre)
 
-                    # Crear o actualizar estudiante
-                    estudiante, created = Estudiante.objects.update_or_create(
+                    # Crear estudiante
+                    estudiante = Estudiante.objects.create(
+                        nombre=row['nombre'],
                         rut=rut_validado,
-                        defaults={
-                            'nombre': row['nombre'],
-                            'curso': curso,
-                            'email_estudiante': row['email_estudiante'] if pd.notna(row['email_estudiante']) else None,
-                            'email_apoderado1': row['email_apoderado1'] if pd.notna(row['email_apoderado1']) else None,
-                            'email_apoderado2': row['email_apoderado2'] if pd.notna(row['email_apoderado2']) else None,
-                            'telefono_apoderado1': row['telefono_apoderado1'] if pd.notna(row['telefono_apoderado1']) else None,
-                            'telefono_apoderado2': row['telefono_apoderado2'] if pd.notna(row['telefono_apoderado2']) else None,
-                            'activo': True
-                        }
+                        curso=curso,
+                        email_estudiante=row['email_estudiante'] if pd.notna(
+                            row['email_estudiante']) else None,
+                        email_apoderado1=row['email_apoderado1'] if pd.notna(
+                            row['email_apoderado1']) else None,
+                        email_apoderado2=row['email_apoderado2'] if pd.notna(
+                            row['email_apoderado2']) else None,
+                        telefono_apoderado1=row['telefono_apoderado1'] if pd.notna(
+                            row['telefono_apoderado1']) else None,
+                        telefono_apoderado2=row['telefono_apoderado2'] if pd.notna(
+                            row['telefono_apoderado2']) else None,
+                        activo=True
                     )
                     exitosos += 1
                 except Exception as e:
@@ -263,6 +288,9 @@ def carga_masiva(request):
             if exitosos > 0:
                 messages.success(
                     request, f'Se procesaron {exitosos} estudiantes exitosamente.')
+            if cursos_creados:
+                messages.info(
+                    request, f'Se crearon {len(cursos_creados)} cursos nuevos: {", ".join(cursos_creados)}')
             if errores:
                 messages.warning(
                     request, f'Hubo {len(errores)} errores durante la carga.')
@@ -278,6 +306,164 @@ def carga_masiva(request):
 
 
 @login_required
+def edicion_masiva(request):
+    if not request.user.is_superuser and request.user.perfil.tipo_usuario != 'admin_colegio':
+        messages.error(request, 'No tienes permiso para realizar esta acción.')
+        return redirect('estudiantes:list')
+
+    if request.method == 'POST':
+        if 'archivo' not in request.FILES:
+            messages.error(request, 'No se ha seleccionado ningún archivo.')
+            return redirect('estudiantes:edicion_masiva')
+
+        archivo = request.FILES['archivo']
+        if not archivo.name.endswith('.xlsx'):
+            messages.error(request, 'El archivo debe ser un Excel (.xlsx)')
+            return redirect('estudiantes:edicion_masiva')
+
+        try:
+            # Leer el archivo Excel
+            df = pd.read_excel(archivo)
+
+            # Validar columnas requeridas
+            columnas_requeridas = ['rut', 'nombre', 'curso', 'email_estudiante',
+                                   'email_apoderado1', 'email_apoderado2', 'telefono_apoderado1', 'telefono_apoderado2']
+            for col in columnas_requeridas:
+                if col not in df.columns:
+                    messages.error(
+                        request, f'El archivo debe contener la columna: {col}')
+                    return redirect('estudiantes:edicion_masiva')
+
+            # Obtener el colegio del usuario
+            colegio = request.user.perfil.colegio if not request.user.is_superuser else None
+
+            # Procesar cada fila
+            exitosos = 0
+            errores = []
+
+            for index, row in df.iterrows():
+                try:
+                    # Validar RUT
+                    rut = str(row['rut']).strip()
+                    rut_validado = validar_rut(rut)
+                    if not rut_validado:
+                        raise Exception(f'RUT inválido: {rut}')
+
+                    # Buscar el estudiante por RUT
+                    estudiante = Estudiante.objects.filter(
+                        rut=rut_validado).first()
+                    if not estudiante:
+                        raise Exception(
+                            f'No se encontró el estudiante con RUT {rut_validado}')
+
+                    # Verificar permisos
+                    if not request.user.is_superuser and estudiante.curso.colegio != colegio:
+                        raise Exception(
+                            f'No tienes permiso para editar este estudiante')
+
+                    # Buscar el curso por nombre
+                    curso_nombre = str(row['curso']).strip()
+                    if colegio:
+                        curso = Curso.objects.filter(
+                            nombre=curso_nombre, colegio=colegio).first()
+                    else:
+                        curso = Curso.objects.filter(
+                            nombre=curso_nombre).first()
+
+                    if not curso:
+                        raise Exception(
+                            f'No se encontró el curso: {curso_nombre}')
+
+                    # Actualizar estudiante
+                    estudiante.nombre = row['nombre']
+                    estudiante.curso = curso
+                    estudiante.email_estudiante = row['email_estudiante'] if pd.notna(
+                        row['email_estudiante']) else None
+                    estudiante.email_apoderado1 = row['email_apoderado1'] if pd.notna(
+                        row['email_apoderado1']) else None
+                    estudiante.email_apoderado2 = row['email_apoderado2'] if pd.notna(
+                        row['email_apoderado2']) else None
+                    estudiante.telefono_apoderado1 = row['telefono_apoderado1'] if pd.notna(
+                        row['telefono_apoderado1']) else None
+                    estudiante.telefono_apoderado2 = row['telefono_apoderado2'] if pd.notna(
+                        row['telefono_apoderado2']) else None
+                    estudiante.save()
+                    exitosos += 1
+                except Exception as e:
+                    errores.append(f'Error en fila {index + 2}: {str(e)}')
+
+            if exitosos > 0:
+                messages.success(
+                    request, f'Se actualizaron {exitosos} estudiantes exitosamente.')
+            if errores:
+                messages.warning(
+                    request, f'Hubo {len(errores)} errores durante la actualización.')
+                for error in errores:
+                    messages.error(request, error)
+
+        except Exception as e:
+            messages.error(request, f'Error al procesar el archivo: {str(e)}')
+
+        return redirect('estudiantes:list')
+
+    return render(request, 'estudiantes/edicion_masiva.html')
+
+
+@login_required
+def descargar_estudiantes(request):
+    if not request.user.is_superuser and request.user.perfil.tipo_usuario != 'admin_colegio':
+        messages.error(request, 'No tienes permiso para realizar esta acción.')
+        return redirect('estudiantes:list')
+
+    # Obtener estudiantes según permisos
+    if request.user.is_superuser:
+        estudiantes = Estudiante.objects.all()
+    else:
+        estudiantes = Estudiante.objects.filter(
+            curso__colegio=request.user.perfil.colegio)
+
+    # Crear DataFrame con los datos
+    data = []
+    for estudiante in estudiantes:
+        data.append({
+            'rut': estudiante.rut,
+            'nombre': estudiante.nombre,
+            'curso': estudiante.curso.nombre,
+            'email_estudiante': estudiante.email_estudiante,
+            'email_apoderado1': estudiante.email_apoderado1,
+            'email_apoderado2': estudiante.email_apoderado2,
+            'telefono_apoderado1': estudiante.telefono_apoderado1,
+            'telefono_apoderado2': estudiante.telefono_apoderado2
+        })
+
+    df = pd.DataFrame(data)
+
+    # Crear el archivo Excel
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=estudiantes.xlsx'
+
+    # Crear el archivo Excel con dos hojas
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, sheet_name='Estudiantes', index=False)
+
+        # Crear hoja de instrucciones
+        instrucciones = pd.DataFrame({
+            'Instrucciones': [
+                '1. No modifique la columna RUT, ya que es el identificador único del estudiante',
+                '2. El RUT debe ser válido según el algoritmo chileno',
+                '3. El curso debe existir en el sistema',
+                '4. Los emails son opcionales pero deben ser válidos',
+                '5. Los teléfonos son opcionales',
+                '6. Guarde el archivo y súbalo en la sección de Edición Masiva'
+            ]
+        })
+        instrucciones.to_excel(writer, sheet_name='Instrucciones', index=False)
+
+    return response
+
+
+@login_required
 def descargar_formato(request):
     if not request.user.is_superuser and request.user.perfil.tipo_usuario != 'admin_colegio':
         messages.error(request, 'No tienes permiso para realizar esta acción.')
@@ -286,9 +472,11 @@ def descargar_formato(request):
     # Obtener los cursos disponibles
     if request.user.is_superuser:
         cursos = Curso.objects.filter(activo=True)
+        colegios = Colegio.objects.filter(activo=True)
     else:
         cursos = Curso.objects.filter(
             colegio=request.user.perfil.colegio, activo=True)
+        colegios = [request.user.perfil.colegio]
 
     # Crear un DataFrame con las columnas requeridas
     df = pd.DataFrame(columns=[
@@ -302,24 +490,32 @@ def descargar_formato(request):
         'telefono_apoderado2'
     ])
 
+    # Si es superusuario, agregar columna de colegio
+    if request.user.is_superuser:
+        df['colegio'] = None
+
     # Agregar una fila de ejemplo
-    df.loc[0] = [
-        'Juan Pérez',
-        '12345678-9',
-        cursos.first().nombre if cursos.exists() else '1°A',
-        'juan.perez@email.com',
-        'apoderado1@email.com',
-        'apoderado2@email.com',
-        '+56912345678',
-        '+56987654321'
-    ]
+    ejemplo = {
+        'nombre': 'Juan Pérez',
+        'rut': '12345678-9',
+        'curso': cursos.first().nombre if cursos.exists() else '1°A',
+        'email_estudiante': 'juan.perez@email.com',
+        'email_apoderado1': 'apoderado1@email.com',
+        'email_apoderado2': 'apoderado2@email.com',
+        'telefono_apoderado1': '56912345678',
+        'telefono_apoderado2': '56987654321'
+    }
+    if request.user.is_superuser:
+        ejemplo['colegio'] = colegios.first(
+        ).nombre if colegios.exists() else 'Colegio Ejemplo'
+    df.loc[0] = ejemplo
 
     # Crear el archivo Excel
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=formato_estudiantes.xlsx'
 
-    # Crear el archivo Excel con dos hojas
+    # Crear el archivo Excel con hojas informativas
     with pd.ExcelWriter(response, engine='openpyxl') as writer:
         df.to_excel(writer, sheet_name='Formato', index=False)
 
@@ -331,6 +527,13 @@ def descargar_formato(request):
             cursos_df.to_excel(
                 writer, sheet_name='Cursos Disponibles', index=False)
 
+        # Si es superusuario, agregar hoja de colegios
+        if request.user.is_superuser:
+            colegios_df = pd.DataFrame(
+                list(colegios.values('nombre')))
+            if not colegios_df.empty:
+                colegios_df.columns = ['Nombre del Colegio']
+                colegios_df.to_excel(
+                    writer, sheet_name='Colegios Disponibles', index=False)
+
     return response
-
-
