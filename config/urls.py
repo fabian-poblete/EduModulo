@@ -14,8 +14,8 @@ urlpatterns = [
     path('estudiantes/', include('estudiantes.urls')),
     path('comunicaciones/', include('comunicaciones.urls', namespace='comunicaciones')),
     path('salidas/', include('salidas.urls', namespace='salidas')),
-    path('revision_pruebas/', include('revision_pruebas.urls',
-         namespace='revision_pruebas')),
+    # path('revision_pruebas/', include('revision_pruebas.urls',
+    #      namespace='revision_pruebas')),
     path('atrasos/', include('atrasos.urls', namespace='atrasos')),
     path('inventario/', include('inventario.urls', namespace='inventario')),
     
