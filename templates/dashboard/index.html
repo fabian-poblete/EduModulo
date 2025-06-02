@@ -449,7 +449,7 @@
 
   <!-- Quick Access Section -->
   <div class="row section-spacing">
-    {% if user.is_authenticated %}
+    {% comment %} {% if user.is_authenticated %}
     <div class="col-lg-3 col-md-6 mb-4">
       <div class="quick-access-card primary">
         <div class="quick-access-icon">
@@ -465,7 +465,8 @@
         </a>
       </div>
     </div>
-    {% endif %} {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor apoderado' %}
+    {% endif %}  {% endcomment %}
+    {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor apoderado' %}
     <div class="col-lg-3 col-md-6 mb-4">
       <div class="quick-access-card success">
         <div class="quick-access-icon">
