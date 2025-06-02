@@ -1,43 +1,200 @@
-{% extends 'base.html' %}
-
-{% block title %}EduModulo - Sistema de Gestión Educativa{% endblock %}
-
-{% block extra_css %}
+{% extends 'base.html' %} {% load static %} 
+{% block title %}EduModulo - Sistema de Gestión Educativa Líder | Transforma tu Institución{% endblock %} 
+{% block meta_description %}
+<meta
+  name="description"
+  content="EduModulo es la plataforma de gestión educativa más completa. Controla asistencia, calificaciones, comunicaciones y más. +500 colegios confían en nosotros. ¡Prueba gratis!"
+/>
+<meta
+  name="keywords"
+  content="sistema gestión educativa, software colegio, plataforma educativa, gestión escolar, EduModulo"
+/>
+<meta name="author" content="EduModulo" />
+<meta
+  property="og:title"
+  content="EduModulo - Transforma la Gestión de tu Institución Educativa"
+/>
+<meta
+  property="og:description"
+  content="La plataforma educativa que conecta estudiantes, profesores y apoderados. +50 colegios y 50K+ estudiantes ya confían en nosotros."
+/>
+<meta property="og:image" content="{% static 'images/og-image.jpg' %}" />
+<meta property="og:url" content="{{ request.build_absolute_uri }}" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta
+  name="twitter:title"
+  content="EduModulo - Sistema de Gestión Educativa Líder"
+/>
+<meta
+  name="twitter:description"
+  content="Transforma tu institución educativa con nuestra plataforma integral. Prueba gratis por 30 días."
+/>
+<meta name="twitter:image" content="{% static 'images/twitter-card.jpg' %}" />
+<link rel="canonical" href="{{ request.build_absolute_uri }}" />
+{% endblock %} {% block structured_data %}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "EduModulo",
+    "description": "Sistema integral de gestión educativa para instituciones de todos los tamaños",
+    "url": "{{ request.build_absolute_uri }}",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "CLP",
+      "description": "Prueba gratuita de 14 días"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "2.5",
+      "reviewCount": "50"
+    }
+  }
+</script>
+{% endblock %} {% block extra_css %}
 <style>
-  /* Override sidebar styles for public pages */
+  /* Reset y base */
   .main-content {
     margin-left: 0 !important;
   }
-  
+
   .navbar-authenticated {
     margin-left: 0 !important;
   }
 
-  /* Public page specific styles */
   .public-container {
     width: 100%;
     margin: 0;
     padding: 0;
   }
 
-  /* Hero Section */
+  /* Variables CSS para consistencia */
+  :root {
+    --primary-color: #3b82f6;
+    --primary-dark: #1d4ed8;
+    --secondary-color: #10b981;
+    --accent-color: #f59e0b;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-light: #94a3b8;
+    --bg-light: #f8fafc;
+    --bg-white: #ffffff;
+    --border-light: #e2e8f0;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+  }
+
+  /* Animaciones y transiciones */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  .animate-pulse {
+    animation: pulse 2s infinite;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.8s ease-out;
+  }
+
+  /* Hero Section Mejorado */
   .hero-section {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+    background: linear-gradient(
+      135deg,
+      #0f172a 0%,
+      #1e293b 25%,
+      #334155 50%,
+      #475569 75%,
+      #64748b 100%
+    );
     color: white;
-    padding: 6rem 0;
+    padding: 8rem 0 6rem;
     position: relative;
     overflow: hidden;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
   }
 
   .hero-section::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"/><circle cx="800" cy="300" r="150" fill="url(%23a)"/><circle cx="400" cy="700" r="120" fill="url(%23a)"/></svg>');
-    opacity: 0.1;
+    background: radial-gradient(
+        circle at 20% 20%,
+        rgba(59, 130, 246, 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 80%,
+        rgba(16, 185, 129, 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 40% 60%,
+        rgba(245, 158, 11, 0.1) 0%,
+        transparent 50%
+      );
+    animation: float 6s ease-in-out infinite;
   }
 
   .hero-content {
@@ -45,35 +202,56 @@
     z-index: 2;
   }
 
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 2rem;
+    backdrop-filter: blur(10px);
+  }
+
   .hero-title {
-    font-size: 3.5rem;
-    font-weight: 800;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 900;
     margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, #ffffff, #e2e8f0);
+    background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #cbd5e1 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    line-height: 1.2;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
   }
 
   .hero-subtitle {
     font-size: 1.25rem;
-    margin-bottom: 2.5rem;
-    color: #e2e8f0;
+    margin-bottom: 3rem;
+    color: #cbd5e1;
     line-height: 1.6;
+    max-width: 600px;
   }
 
   .hero-buttons {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+    margin-bottom: 3rem;
   }
 
   .btn-hero-primary {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    background: linear-gradient(
+      135deg,
+      var(--primary-color),
+      var(--primary-dark)
+    );
     border: none;
-    padding: 1rem 2rem;
-    border-radius: 0.75rem;
+    padding: 1rem 2.5rem;
+    border-radius: var(--radius-lg);
     color: white;
     font-weight: 600;
     font-size: 1.1rem;
@@ -81,21 +259,43 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-hero-primary::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left 0.5s;
+  }
+
+  .btn-hero-primary:hover::before {
+    left: 100%;
   }
 
   .btn-hero-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5);
     color: white;
   }
 
   .btn-hero-secondary {
     background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    padding: 1rem 2rem;
-    border-radius: 0.75rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    padding: 1rem 2.5rem;
+    border-radius: var(--radius-lg);
     color: white;
     font-weight: 600;
     font-size: 1.1rem;
@@ -103,123 +303,389 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(10px);
   }
 
   .btn-hero-secondary:hover {
     background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-3px);
     color: white;
   }
 
-  .hero-image {
+  .hero-trust-indicators {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #cbd5e1;
+    font-size: 0.875rem;
+  }
+
+  /* Dashboard Mockup */
+  .dashboard-mockup {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    box-shadow: var(--shadow-xl);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dashboard-header {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: between;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .dashboard-nav {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .nav-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ef4444;
+  }
+
+  .nav-dot:nth-child(2) {
+    background: #f59e0b;
+  }
+
+  .nav-dot:nth-child(3) {
+    background: #10b981;
+  }
+
+  .dashboard-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .dashboard-card {
+    background: white;
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+  }
+
+  .dashboard-card h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+  }
+
+  .dashboard-metric {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+  }
+
+  .dashboard-chart {
+    height: 60px;
+    background: linear-gradient(
+      135deg,
+      var(--primary-color),
+      var(--secondary-color)
+    );
+    border-radius: var(--radius-sm);
+    opacity: 0.1;
+    margin-top: 1rem;
+  }
+
+  /* Illustration Styles */
+  .hero-illustration {
+    position: relative;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .illustration-bg {
+    background: linear-gradient(
+      135deg,
+      rgba(59, 130, 246, 0.1),
+      rgba(16, 185, 129, 0.1)
+    );
+    border-radius: 50%;
+    width: 400px;
+    height: 400px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse 4s ease-in-out infinite;
+  }
+
+  .about-illustration {
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    border-radius: var(--radius-xl);
+    padding: 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-illustration::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      circle,
+      rgba(59, 130, 246, 0.05) 0%,
+      transparent 70%
+    );
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .illustration-icon {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(
+      135deg,
+      var(--primary-color),
+      var(--secondary-color)
+    );
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    font-size: 3rem;
+    color: white;
+    position: relative;
+    z-index: 2;
+  }
+
+  .illustration-features {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .mini-feature {
+    background: white;
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+  }
+
+  .mini-feature-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-color);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.5rem;
+    color: white;
+    font-size: 1rem;
+  }
+
+  .mini-feature-text {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  /* Stats Section Mejorado */
+  .stats-section {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    color: white;
+    padding: 5rem 0;
     position: relative;
   }
 
-  .hero-image img {
-    border-radius: 1rem;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  .stats-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
   }
 
-  /* Features Section */
+  .stat-item {
+    text-align: center;
+    padding: 2rem 1rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .stat-number {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 1.125rem;
+    color: #e2e8f0;
+    font-weight: 500;
+  }
+
+  /* Features Section Mejorado */
   .features-section {
-    padding: 6rem 0;
-    background: #f8fafc;
+    padding: 8rem 0;
+    background: var(--bg-light);
+    position: relative;
   }
 
   .section-title {
-    font-size: 2.5rem;
-    font-weight: 800;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
     text-align: center;
-    margin-bottom: 3rem;
-    color: #1e293b;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+  }
+
+  .section-subtitle {
+    font-size: 1.25rem;
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 4rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .feature-card {
-    background: white;
-    border: none;
-    border-radius: 1rem;
-    padding: 2rem;
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    padding: 2.5rem;
     height: 100%;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
   }
 
   .feature-card::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 4px;
-    background: var(--feature-color, #3b82f6);
+    background: var(--feature-color, var(--primary-color));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  .feature-card:hover::before {
+    transform: scaleX(1);
   }
 
   .feature-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--feature-color, var(--primary-color));
   }
 
-  .feature-card.feature-1 { --feature-color: #f59e0b; }
-  .feature-card.feature-2 { --feature-color: #10b981; }
-  .feature-card.feature-3 { --feature-color: #3b82f6; }
-  .feature-card.feature-4 { --feature-color: #8b5cf6; }
-  .feature-card.feature-5 { --feature-color: #ef4444; }
-  .feature-card.feature-6 { --feature-color: #06b6d4; }
+  .feature-card.feature-1 {
+    --feature-color: #f59e0b;
+  }
+  .feature-card.feature-2 {
+    --feature-color: #10b981;
+  }
+  .feature-card.feature-3 {
+    --feature-color: #3b82f6;
+  }
+  .feature-card.feature-4 {
+    --feature-color: #8b5cf6;
+  }
+  .feature-card.feature-5 {
+    --feature-color: #ef4444;
+  }
+  .feature-card.feature-6 {
+    --feature-color: #06b6d4;
+  }
 
   .feature-icon {
     width: 4rem;
     height: 4rem;
-    background: var(--feature-color, #3b82f6);
-    border-radius: 1rem;
+    background: var(--feature-color, var(--primary-color));
+    border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 1.5rem;
     color: white;
     font-size: 1.5rem;
+    transition: transform 0.3s ease;
+  }
+
+  .feature-card:hover .feature-icon {
+    transform: scale(1.1);
   }
 
   .feature-title {
-    font-size: 1.25rem;
+    font-size: 1.375rem;
     font-weight: 700;
     margin-bottom: 1rem;
-    color: #1e293b;
+    color: var(--text-primary);
     text-align: center;
   }
 
   .feature-description {
-    color: #64748b;
+    color: var(--text-secondary);
     line-height: 1.6;
     text-align: center;
   }
 
-  /* About Section */
+  /* About Section Mejorado */
   .about-section {
-    padding: 6rem 0;
-    background: white;
-  }
-
-  .about-image img {
-    border-radius: 1rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 8rem 0;
+    background: var(--bg-white);
   }
 
   .about-title {
-    font-size: 2.25rem;
-    font-weight: 800;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 900;
     margin-bottom: 1.5rem;
-    color: #1e293b;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
   }
 
   .about-subtitle {
-    font-size: 1.125rem;
-    color: #64748b;
-    margin-bottom: 2rem;
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: 2.5rem;
     line-height: 1.6;
   }
 
@@ -228,40 +694,104 @@
     align-items: center;
     gap: 1rem;
     margin-bottom: 1rem;
-    padding: 0.75rem;
-    background: #f8fafc;
-    border-radius: 0.5rem;
+    padding: 1rem;
+    background: var(--bg-light);
+    border-radius: var(--radius-md);
     transition: all 0.2s ease;
+    border: 1px solid transparent;
   }
 
   .check-item:hover {
-    background: #e2e8f0;
+    background: #e0f2fe;
+    border-color: var(--secondary-color);
+    transform: translateX(5px);
   }
 
   .check-icon {
     width: 1.5rem;
     height: 1.5rem;
-    color: #10b981;
+    color: var(--secondary-color);
     flex-shrink: 0;
   }
 
   .check-text {
     margin: 0;
-    color: #334155;
+    color: var(--text-primary);
     font-weight: 500;
   }
 
-  /* Contact Section */
+  /* Testimonials Section */
+  .testimonials-section {
+    padding: 8rem 0;
+    background: var(--bg-light);
+  }
+
+  .testimonial-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    padding: 2.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%;
+  }
+
+  .testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .testimonial-text {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    font-style: italic;
+  }
+
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .testimonial-avatar {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+  }
+
+  .testimonial-info h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .testimonial-info p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  /* Contact Section Mejorado */
   .contact-section {
-    padding: 6rem 0;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 8rem 0;
+    background: linear-gradient(135deg, var(--bg-light) 0%, #e2e8f0 100%);
   }
 
   .contact-card {
-    background: white;
-    border: none;
-    border-radius: 1rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
     overflow: hidden;
   }
 
@@ -271,32 +801,44 @@
 
   .form-label {
     font-weight: 600;
-    color: #374151;
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
+    display: block;
   }
 
   .form-control {
-    border: 2px solid #e5e7eb;
-    border-radius: 0.5rem;
-    padding: 0.75rem 1rem;
-    font-size: 0.875rem;
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
     transition: all 0.2s ease;
+    width: 100%;
+    background: var(--bg-white);
   }
 
   .form-control:focus {
-    border-color: #3b82f6;
+    border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    outline: none;
   }
 
   .btn-contact {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    background: linear-gradient(
+      135deg,
+      var(--primary-color),
+      var(--primary-dark)
+    );
     border: none;
-    padding: 0.875rem 2rem;
-    border-radius: 0.5rem;
+    padding: 1rem 2.5rem;
+    border-radius: var(--radius-md);
     color: white;
     font-weight: 600;
     font-size: 1rem;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .btn-contact:hover {
@@ -304,102 +846,224 @@
     box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
   }
 
-  /* Stats Section */
-  .stats-section {
-    background: linear-gradient(135deg, #1e293b, #334155);
+  /* CTA Section */
+  .cta-section {
+    background: linear-gradient(
+      135deg,
+      var(--primary-color),
+      var(--primary-dark)
+    );
     color: white;
-    padding: 4rem 0;
-  }
-
-  .stat-item {
+    padding: 6rem 0;
     text-align: center;
-    padding: 2rem 1rem;
   }
 
-  .stat-number {
-    font-size: 3rem;
-    font-weight: 800;
-    margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .cta-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
+    margin-bottom: 1rem;
   }
 
-  .stat-label {
-    font-size: 1.125rem;
+  .cta-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2.5rem;
     color: #e2e8f0;
-    font-weight: 500;
   }
 
-  /* Responsive Design */
+  .cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* Responsive Design Mejorado */
   @media (max-width: 768px) {
-    .hero-title {
-      font-size: 2.5rem;
+    .hero-section {
+      padding: 6rem 0 4rem;
+      min-height: auto;
     }
-    
-    .hero-subtitle {
-      font-size: 1.125rem;
-    }
-    
+
     .hero-buttons {
       justify-content: center;
     }
-    
+
     .btn-hero-primary,
     .btn-hero-secondary {
       width: 100%;
       justify-content: center;
     }
-    
-    .section-title {
-      font-size: 2rem;
+
+    .hero-trust-indicators {
+      justify-content: center;
     }
-    
-    .about-title {
-      font-size: 1.875rem;
-    }
-    
+
     .contact-form {
       padding: 2rem;
     }
+
+    .testimonial-author {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .dashboard-content {
+      grid-template-columns: 1fr;
+    }
+
+    .illustration-features {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Accessibility improvements */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Focus styles for accessibility */
+  .btn-hero-primary:focus,
+  .btn-hero-secondary:focus,
+  .btn-contact:focus {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+  }
+
+  .form-control:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+
+  /* Loading states */
+  .loading {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 </style>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 <div class="public-container">
   <!-- Hero Section -->
-  <section class="hero-section">
+  <section class="hero-section" id="inicio">
     <div class="container">
       <div class="row align-items-center">
         <div class="col-lg-6">
-          <div class="hero-content">
-            <h1 class="hero-title">Transforma la Gestión Educativa</h1>
+          <div class="hero-content animate-fade-in-up">
+            <div class="hero-badge">
+              <i class="fas fa-star"></i>
+              <span>Líder en gestión educativa</span>
+            </div>
+            <h1 class="hero-title">
+              Transforma tu Institución Educativa con EduModulo
+            </h1>
             <p class="hero-subtitle">
-              EduModulo es una plataforma integral que simplifica la administración
-              escolar, conectando estudiantes, profesores y administradores en un
-              ecosistema digital moderno y eficiente.
+              La plataforma integral que conecta estudiantes, profesores y
+              apoderados en un ecosistema digital moderno. Gestiona asistencia,
+              calificaciones, comunicaciones y más desde una sola plataforma.
             </p>
             <div class="hero-buttons">
-              <a href="{% url 'login' %}" class="btn-hero-primary">
-                <i class="fas fa-sign-in-alt"></i>
-                Iniciar Sesión
+              <a
+                href="{% url 'login' %}"
+                class="btn-hero-primary"
+                aria-label="Iniciar sesión en EduModulo"
+              >
+                <i class="fas fa-rocket"></i>
+                Comenzar Ahora
               </a>
-              <a href="#features" class="btn-hero-secondary">
-                <i class="fas fa-info-circle"></i>
-                Conoce Más
+              <a
+                href="#contact"
+                class="btn-hero-secondary"
+                aria-label="Conocer más sobre EduModulo"
+              >
+                <i class="fas fa-play-circle"></i>
+                Ver Demo
               </a>
+            </div>
+            <div class="hero-trust-indicators">
+              <div class="trust-item">
+                <i class="fas fa-shield-alt"></i>
+                <span>100% Seguro</span>
+              </div>
+              <div class="trust-item">
+                <i class="fas fa-clock"></i>
+                <span>Soporte 24/7</span>
+              </div>
+              <div class="trust-item">
+                <i class="fas fa-sync-alt"></i>
+                <span>Actualizaciones Constantes</span>
+              </div>
             </div>
           </div>
         </div>
         <div class="col-lg-6 d-none d-lg-block">
-          <div class="hero-image">
-            <img
-              src="/placeholder.svg?height=500&width=600"
-              alt="EduModulo Platform"
-              class="img-fluid"
-            />
+          <div class="hero-illustration animate-slide-in-right">
+            <div class="illustration-bg"></div>
+            <div class="dashboard-mockup">
+              <div class="dashboard-header">
+                <div class="dashboard-nav">
+                  <div class="nav-dot"></div>
+                  <div class="nav-dot"></div>
+                  <div class="nav-dot"></div>
+                </div>
+                <div
+                  style="
+                    margin-left: auto;
+                    font-size: 0.875rem;
+                    color: #64748b;
+                    font-weight: 500;
+                  "
+                >
+                  EduModulo Dashboard
+                </div>
+              </div>
+              <div class="dashboard-content">
+                <div class="dashboard-card">
+                  <h4>Atrasos Hoy</h4>
+                  <div class="dashboard-metric">15</div>
+                  <div class="dashboard-chart"></div>
+                </div>
+                <div class="dashboard-card">
+                  <h4>Salidas Anticipadas</h4>
+                  <div class="dashboard-metric">5</div>
+                  <div class="dashboard-chart"></div>
+                </div>
+                <div class="dashboard-card">
+                  <h4>Mensajes No Leídos</h4>
+                  <div class="dashboard-metric">8</div>
+                  <div class="dashboard-chart"></div>
+                </div>
+                <div class="dashboard-card">
+                  <h4>Estudiantes Totales</h4>
+                  <div class="dashboard-metric">1247</div>
+                  <div class="dashboard-chart"></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -407,31 +1071,31 @@
   </section>
 
   <!-- Stats Section -->
-  <section class="stats-section">
+  <section class="stats-section" aria-label="Estadísticas de EduModulo">
     <div class="container">
       <div class="row">
         <div class="col-md-3 col-6">
-          <div class="stat-item">
-            <div class="stat-number">500+</div>
-            <div class="stat-label">Colegios</div>
+          <div class="stat-item animate-fade-in-up">
+            <div class="stat-number" data-count="50">50+</div>
+            <div class="stat-label">Instituciones Educativas</div>
           </div>
         </div>
         <div class="col-md-3 col-6">
-          <div class="stat-item">
-            <div class="stat-number">50K+</div>
-            <div class="stat-label">Estudiantes</div>
+          <div class="stat-item animate-fade-in-up">
+            <div class="stat-number" data-count="50000">50K+</div>
+            <div class="stat-label">Estudiantes Activos</div>
           </div>
         </div>
         <div class="col-md-3 col-6">
-          <div class="stat-item">
-            <div class="stat-number">5K+</div>
-            <div class="stat-label">Profesores</div>
+          <div class="stat-item animate-fade-in-up">
+            <div class="stat-number" data-count="2500">2.5K+</div>
+            <div class="stat-label">Profesores Conectados</div>
           </div>
         </div>
         <div class="col-md-3 col-6">
-          <div class="stat-item">
+          <div class="stat-item animate-fade-in-up">
             <div class="stat-number">99.9%</div>
-            <div class="stat-label">Uptime</div>
+            <div class="stat-label">Tiempo de Actividad</div>
           </div>
         </div>
       </div>
@@ -439,90 +1103,261 @@
   </section>
 
   <!-- Features Section -->
-  <section id="features" class="features-section">
+  <section
+    id="features"
+    class="features-section"
+    aria-label="Características principales de EduModulo"
+  >
     <div class="container">
-      <h2 class="section-title">Módulos Principales</h2>
+      <h2 class="section-title">Módulos que Transforman la Educación</h2>
+      <p class="section-subtitle">
+        Cada módulo está diseñado para resolver desafíos específicos de la
+        gestión educativa moderna
+      </p>
       <div class="row g-4">
         <div class="col-lg-4 col-md-6">
-          <div class="card feature-card feature-1">
+          <div class="card feature-card feature-1 animate-fade-in-up">
             <div class="card-body">
               <div class="feature-icon">
-                <i class="fas fa-clock"></i>
+                <i class="fas fa-clock" aria-hidden="true"></i>
               </div>
-              <h3 class="feature-title">Control de Atrasos</h3>
+              <h3 class="feature-title">Control Inteligente de Atrasos</h3>
               <p class="feature-description">
-                Gestión eficiente de llegadas tardías, registro automático y
-                seguimiento de patrones de asistencia para mejorar la puntualidad.
+                Sistema automatizado que registra llegadas tardías, genera
+                reportes de patrones y envía notificaciones automáticas a
+                apoderados para mejorar la puntualidad estudiantil.
               </p>
             </div>
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
-          <div class="card feature-card feature-2">
+          <div class="card feature-card feature-2 animate-fade-in-up">
             <div class="card-body">
               <div class="feature-icon">
-                <i class="fas fa-door-open"></i>
+                <i class="fas fa-door-open" aria-hidden="true"></i>
               </div>
-              <h3 class="feature-title">Control de Salidas</h3>
+              <h3 class="feature-title">Gestión Segura de Salidas</h3>
               <p class="feature-description">
-                Registro y autorización de salidas anticipadas, con notificaciones
-                automáticas a apoderados y seguimiento en tiempo real.
+                Control total de salidas anticipadas con autorización digital,
+                códigos QR para retiro seguro y notificaciones en tiempo real a
+                apoderados autorizados.
               </p>
             </div>
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
-          <div class="card feature-card feature-3">
+          <div class="card feature-card feature-3 animate-fade-in-up">
             <div class="card-body">
               <div class="feature-icon">
-                <i class="fas fa-comments"></i>
+                <i class="fas fa-comments" aria-hidden="true"></i>
               </div>
-              <h3 class="feature-title">Comunicaciones</h3>
+              <h3 class="feature-title">Comunicación Directa</h3>
               <p class="feature-description">
-                Canal directo de comunicación entre profesores y apoderados, con
-                historial de conversaciones y notificaciones instantáneas.
+                Plataforma de mensajería integrada que conecta profesores y
+                apoderados con historial completo, archivos adjuntos y
+                notificaciones push instantáneas.
               </p>
             </div>
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
-          <div class="card feature-card feature-4">
+          <div class="card feature-card feature-4 animate-fade-in-up">
             <div class="card-body">
               <div class="feature-icon">
-                <i class="fas fa-file-alt"></i>
+                <i class="fas fa-file-alt" aria-hidden="true"></i>
               </div>
-              <h3 class="feature-title">Revisión de Pruebas</h3>
+              <h3 class="feature-title">Evaluaciones Digitales</h3>
               <p class="feature-description">
-                Sistema completo para la gestión, revisión y análisis de
-                evaluaciones, con retroalimentación personalizada para estudiantes.
+                Sistema completo de evaluaciones online con corrección
+                automática, retroalimentación personalizada y análisis
+                estadístico del rendimiento estudiantil.
               </p>
             </div>
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
-          <div class="card feature-card feature-5">
+          <div class="card feature-card feature-5 animate-fade-in-up">
             <div class="card-body">
               <div class="feature-icon">
-                <i class="fas fa-school"></i>
+                <i class="fas fa-school" aria-hidden="true"></i>
               </div>
-              <h3 class="feature-title">Gestión de Colegios</h3>
+              <h3 class="feature-title">Administración Centralizada</h3>
               <p class="feature-description">
-                Administración centralizada de múltiples sedes, personal y
-                recursos con herramientas de gestión eficiente.
+                Gestión unificada de múltiples sedes, personal docente y
+                recursos institucionales con dashboards ejecutivos y reportes
+                administrativos avanzados.
               </p>
             </div>
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
-          <div class="card feature-card feature-6">
+          <div class="card feature-card feature-6 animate-fade-in-up">
             <div class="card-body">
               <div class="feature-icon">
-                <i class="fas fa-users"></i>
+                <i class="fas fa-users" aria-hidden="true"></i>
               </div>
-              <h3 class="feature-title">Gestión de Usuarios</h3>
+              <h3 class="feature-title">Perfiles Personalizados</h3>
               <p class="feature-description">
-                Control de acceso personalizado para estudiantes, profesores y
-                administradores con perfiles específicos.
+                Sistema de roles y permisos granular para estudiantes,
+                profesores, administrativos y apoderados con acceso
+                personalizado según responsabilidades.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% comment %} 
+  <!-- Testimonials Section -->
+  <section class="testimonials-section" aria-label="Testimonios de clientes">
+    <div class="container">
+      <h2 class="section-title">Lo que Dicen Nuestros Clientes</h2>
+      <p class="section-subtitle">
+        Más de 500 instituciones confían en EduModulo para transformar su
+        gestión educativa
+      </p>
+      <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+          <div class="testimonial-card animate-fade-in-up">
+            <p class="testimonial-text">
+              "EduModulo revolucionó nuestra gestión. La comunicación con
+              apoderados mejoró un 90% y el control de asistencia es ahora
+              completamente automático."
+            </p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">MR</div>
+              <div class="testimonial-info">
+                <h4>María Rodríguez</h4>
+                <p>Directora, Colegio San Patricio</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="testimonial-card animate-fade-in-up">
+            <p class="testimonial-text">
+              "La plataforma es intuitiva y completa. Nuestros profesores
+              adoptaron el sistema en menos de una semana. El soporte técnico es
+              excepcional."
+            </p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">CL</div>
+              <div class="testimonial-info">
+                <h4>Carlos López</h4>
+                <p>Coordinador TI, Instituto Moderno</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="testimonial-card animate-fade-in-up">
+            <p class="testimonial-text">
+              "Como apoderada, valoro la transparencia y comunicación constante.
+              Recibo notificaciones inmediatas y puedo seguir el progreso de mi
+              hijo en tiempo real."
+            </p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">AG</div>
+              <div class="testimonial-info">
+                <h4>Ana García</h4>
+                <p>Apoderada, Liceo Técnico</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section> {% endcomment %}
+
+  <!-- About Section -->
+  <section id="about" class="about-section" aria-label="Acerca de EduModulo">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+          <div class="about-illustration animate-fade-in-up">
+            <div class="illustration-icon">
+              <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h3
+              style="
+                color: var(--text-primary);
+                font-weight: 700;
+                margin-bottom: 1rem;
+              "
+            >
+              Tecnología Educativa Avanzada
+            </h3>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem">
+              Desarrollado específicamente para el entorno educativo chileno
+            </p>
+            <div class="illustration-features">
+              <div class="mini-feature">
+                <div class="mini-feature-icon">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="mini-feature-text">Seguridad Total</div>
+              </div>
+              <div class="mini-feature">
+                <div class="mini-feature-icon">
+                  <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="mini-feature-text">Diseño Adaptable</div>
+              </div>
+              
+              <div class="mini-feature">
+                <div class="mini-feature-icon">
+                  <i class="fas fa-cloud"></i>
+                </div>
+                <div class="mini-feature-text">En la Nube</div>
+              </div>
+              <div class="mini-feature">
+                <div class="mini-feature-icon">
+                  <i class="fas fa-headset"></i>
+                </div>
+                <div class="mini-feature-text">Soporte 24/7</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="animate-fade-in-up">
+            <h2 class="about-title">
+              ¿Por qué EduModulo es la Mejor Elección?
+            </h2>
+            <p class="about-subtitle">
+              Desarrollado por educadores para educadores, EduModulo combina
+              años de experiencia en gestión educativa con la tecnología más
+              avanzada para crear la plataforma más completa del mercado.
+            </p>
+            <div class="check-item">
+              <i class="fas fa-check-circle check-icon" aria-hidden="true"></i>
+              <p class="check-text">
+                Interfaz diseñada específicamente para el entorno educativo
+              </p>
+            </div>
+            <div class="check-item">
+              <i class="fas fa-check-circle check-icon" aria-hidden="true"></i>
+              <p class="check-text">
+                Soporte técnico especializado disponible 24/7
+              </p>
+            </div>
+            <div class="check-item">
+              <i class="fas fa-check-circle check-icon" aria-hidden="true"></i>
+              <p class="check-text">
+                Actualizaciones automáticas sin interrupciones
+              </p>
+            </div>
+            <div class="check-item">
+              <i class="fas fa-check-circle check-icon" aria-hidden="true"></i>
+              <p class="check-text">
+                Cumplimiento total con normativas de protección de datos
+              </p>
+            </div>
+            <div class="check-item">
+              <i class="fas fa-check-circle check-icon" aria-hidden="true"></i>
+              <p class="check-text">
+                Capacitación incluida para todo el personal
               </p>
             </div>
           </div>
@@ -531,98 +1366,143 @@
     </div>
   </section>
 
-  <!-- About Section -->
-  <section id="about" class="about-section">
+  <!-- CTA Section -->
+  <section class="cta-section" aria-label="Llamada a la acción">
     <div class="container">
-      <div class="row align-items-center">
-        <div class="col-lg-6 mb-4 mb-lg-0">
-          <img
-            src="/placeholder.svg?height=400&width=600"
-            alt="About EduModulo"
-            class="img-fluid"
-          />
-        </div>
-        <div class="col-lg-6">
-          <h2 class="about-title">¿Por qué elegir EduModulo?</h2>
-          <p class="about-subtitle">
-            EduModulo nace de la necesidad de modernizar y simplificar la gestión
-            educativa, ofreciendo una solución completa, segura y fácil de usar
-            para instituciones educativas de todos los tamaños.
-          </p>
-          <div class="check-item">
-            <i class="fas fa-check-circle check-icon"></i>
-            <p class="check-text">Interfaz intuitiva y fácil de usar</p>
-          </div>
-          <div class="check-item">
-            <i class="fas fa-check-circle check-icon"></i>
-            <p class="check-text">Soporte técnico 24/7 especializado</p>
-          </div>
-          <div class="check-item">
-            <i class="fas fa-check-circle check-icon"></i>
-            <p class="check-text">Actualizaciones constantes y mejoras</p>
-          </div>
-          <div class="check-item">
-            <i class="fas fa-check-circle check-icon"></i>
-            <p class="check-text">Seguridad y privacidad garantizadas</p>
-          </div>
+      <div class="animate-fade-in-up">
+        <h2 class="cta-title">¿Listo para Transformar tu Institución?</h2>
+        <p class="cta-subtitle">
+          Únete a más de 50 instituciones que ya confían en EduModulo. Prueba
+          gratuita por 14 días, sin compromiso.
+        </p>
+        <div class="cta-buttons">
+          <a href="#contact" class="btn-hero-primary">
+            <i class="fas fa-rocket"></i>
+            Comenzar Prueba Gratuita
+          </a>
+          <a href="#contact" class="btn-hero-secondary">
+            <i class="fas fa-calendar-alt"></i>
+            Agendar Demo
+          </a>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Contact Section -->
-  <section id="contact" class="contact-section">
+  <section
+    id="contact"
+    class="contact-section"
+    aria-label="Formulario de contacto"
+  >
     <div class="container">
-      <h2 class="section-title">Contáctanos</h2>
+      <h2 class="section-title">Contáctanos Hoy</h2>
+      <p class="section-subtitle">
+        Nuestro equipo de especialistas está listo para ayudarte a implementar
+        EduModulo en tu institución
+      </p>
       <div class="row justify-content-center">
         <div class="col-lg-8">
-          <div class="card contact-card">
+          <div class="card contact-card animate-fade-in-up">
             <div class="contact-form">
-              <form>
+              <form id="contactForm" novalidate>
                 <div class="row">
                   <div class="col-md-6 mb-3">
-                    <label for="name" class="form-label">Nombre Completo</label>
-                    <input type="text" class="form-control" id="name" required />
+                    <label for="name" class="form-label"
+                      >Nombre Completo *</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="name"
+                      name="name"
+                      required
+                      aria-describedby="nameError"
+                    />
+                    <div id="nameError" class="invalid-feedback"></div>
                   </div>
                   <div class="col-md-6 mb-3">
-                    <label for="email" class="form-label">Correo Electrónico</label>
-                    <input type="email" class="form-control" id="email" required />
+                    <label for="email" class="form-label"
+                      >Correo Electrónico *</label
+                    >
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="email"
+                      name="email"
+                      required
+                      aria-describedby="emailError"
+                    />
+                    <div id="emailError" class="invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-md-6 mb-3">
                     <label for="phone" class="form-label">Teléfono</label>
-                    <input type="tel" class="form-control" id="phone" />
+                    <input
+                      type="tel"
+                      class="form-control"
+                      id="phone"
+                      name="phone"
+                      aria-describedby="phoneHelp"
+                    />
+                    <small id="phoneHelp" class="form-text text-muted"
+                      >Opcional - Para contacto directo</small
+                    >
                   </div>
                   <div class="col-md-6 mb-3">
-                    <label for="institution" class="form-label">Institución</label>
-                    <input type="text" class="form-control" id="institution" />
+                    <label for="institution" class="form-label"
+                      >Institución *</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="institution"
+                      name="institution"
+                      required
+                      aria-describedby="institutionError"
+                    />
+                    <div id="institutionError" class="invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="mb-3">
-                  <label for="subject" class="form-label">Asunto</label>
-                  <select class="form-control" id="subject" required>
-                    <option value="">Selecciona un asunto</option>
-                    <option value="demo">Solicitar Demo</option>
+                  <label for="subject" class="form-label"
+                    >Tipo de Consulta *</label
+                  >
+                  <select
+                    class="form-control"
+                    id="subject"
+                    name="subject"
+                    required
+                    aria-describedby="subjectError"
+                  >
+                    <option value="">Selecciona una opción</option>
+                    <option value="demo">Solicitar Demostración</option>
                     <option value="pricing">Información de Precios</option>
+                    <option value="implementation">Implementación</option>
                     <option value="support">Soporte Técnico</option>
-                    <option value="other">Otro</option>
+                    <option value="partnership">Alianzas Estratégicas</option>
+                    <option value="other">Otra Consulta</option>
                   </select>
+                  <div id="subjectError" class="invalid-feedback"></div>
                 </div>
                 <div class="mb-4">
-                  <label for="message" class="form-label">Mensaje</label>
+                  <label for="message" class="form-label">Mensaje *</label>
                   <textarea
                     class="form-control"
                     id="message"
+                    name="message"
                     rows="5"
-                    placeholder="Cuéntanos sobre tu institución y cómo podemos ayudarte..."
+                    placeholder="Cuéntanos sobre tu institución, número de estudiantes, desafíos actuales y cómo podemos ayudarte..."
                     required
+                    aria-describedby="messageError"
                   ></textarea>
+                  <div id="messageError" class="invalid-feedback"></div>
                 </div>
                 <div class="text-center">
-                  <button type="submit" class="btn btn-contact">
+                  <button type="submit" class="btn btn-contact" id="submitBtn">
                     <i class="fas fa-paper-plane me-2"></i>
-                    Enviar Mensaje
+                    <span>Enviar Mensaje</span>
                   </button>
                 </div>
               </form>
@@ -633,4 +1513,172 @@
     </div>
   </section>
 </div>
+
+<script>
+  // Form validation and submission
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("contactForm");
+    const submitBtn = document.getElementById("submitBtn");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      if (validateForm()) {
+        submitForm();
+      }
+    });
+
+    function validateForm() {
+      let isValid = true;
+      const fields = ["name", "email", "institution", "subject", "message"];
+
+      fields.forEach((field) => {
+        const input = document.getElementById(field);
+        const errorDiv = document.getElementById(field + "Error");
+
+        if (!input.value.trim()) {
+          showError(input, errorDiv, "Este campo es obligatorio");
+          isValid = false;
+        } else if (field === "email" && !isValidEmail(input.value)) {
+          showError(input, errorDiv, "Ingresa un email válido");
+          isValid = false;
+        } else {
+          clearError(input, errorDiv);
+        }
+      });
+
+      return isValid;
+    }
+
+    function showError(input, errorDiv, message) {
+      input.classList.add("is-invalid");
+      errorDiv.textContent = message;
+      errorDiv.style.display = "block";
+    }
+
+    function clearError(input, errorDiv) {
+      input.classList.remove("is-invalid");
+      errorDiv.style.display = "none";
+    }
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function submitForm() {
+      const form = document.getElementById("contactForm");
+      const formData = new FormData(form);
+      const submitBtn = document.getElementById("submitBtn");
+
+      submitBtn.classList.add("loading");
+      submitBtn.disabled = true;
+
+      fetch("/contact/", {
+        // Send data to the new backend endpoint
+        method: "POST",
+        body: formData,
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"), // Include CSRF token
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            alert(data.message); // Show success message from backend
+            form.reset();
+          } else {
+            // Handle server-side validation errors or other issues
+            alert(
+              "Error al enviar el mensaje: " +
+                (data.message || "Error desconocido")
+            );
+          }
+        })
+        .catch((error) => {
+          console.error("Error en la solicitud:", error);
+          alert("Ocurrió un error al enviar el mensaje.");
+        })
+        .finally(() => {
+          submitBtn.classList.remove("loading");
+          submitBtn.disabled = false;
+        });
+    }
+
+    // Helper function to get CSRF token (needed for POST requests in Django)
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+      anchor.addEventListener("click", function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute("href"));
+        if (target) {
+          target.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      });
+    });
+
+    // Animate stats on scroll
+    const observerOptions = {
+      threshold: 0.5,
+      rootMargin: "0px 0px -100px 0px",
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          animateStats();
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    const statsSection = document.querySelector(".stats-section");
+    if (statsSection) {
+      observer.observe(statsSection);
+    }
+
+    function animateStats() {
+      const statNumbers = document.querySelectorAll(".stat-number[data-count]");
+
+      statNumbers.forEach((stat) => {
+        const target = parseInt(stat.dataset.count);
+        const duration = 2000;
+        const step = target / (duration / 16);
+        let current = 0;
+
+        const timer = setInterval(() => {
+          current += step;
+          if (current >= target) {
+            current = target;
+            clearInterval(timer);
+          }
+
+          if (target >= 1000) {
+            stat.textContent = Math.floor(current / 1000) + "K+";
+          } else {
+            stat.textContent = Math.floor(current) + "+";
+          }
+        }, 16);
+      });
+    }
+  });
+</script>
 {% endblock %}

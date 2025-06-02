@@ -1,225 +1,182 @@
-{% extends 'base.html' %} {% load static %} {% block title %}{{ mensaje.asunto}}
-{% endblock %} {% block content %}
+{% extends 'base.html' %} {% load static %} {% block title %}{{ mensaje.asunto
+}} {% endblock %} {% block content %}
 <div class="container py-4">
-  <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <a
-        href="{% url 'comunicaciones:lista_mensajes' %}"
-        class="btn btn-outline-secondary"
-      >
-        <i class="fas fa-arrow-left me-2"></i>Volver
-      </a>
-    </div>
-    <div>
-      <a
-        href="{% url 'comunicaciones:eliminar_mensaje' mensaje.pk %}"
-        class="btn btn-outline-danger"
-      >
-        <i class="fas fa-trash me-2"></i>Eliminar
-      </a>
-    </div>
-  </div>
-
-  <!-- Mensaje Original -->
-  <div class="card mb-4">
-    <div class="card-header bg-white">
-      <div class="d-flex justify-content-between align-items-center">
-        <h5 class="card-title mb-0">
-          {% if mensaje.prioridad == 'urgente' %}
-          <span class="badge bg-danger me-2">Urgente</span>
-          {% elif mensaje.prioridad == 'alta' %}
-          <span class="badge bg-warning me-2">Alta</span>
-          {% endif %} {{ mensaje.asunto }}
-        </h5>
-        <small class="text-muted">{{ mensaje.tiempo_transcurrido }}</small>
-      </div>
-    </div>
-    <div class="card-body">
-      <!-- Remitente -->
-      <div class="d-flex align-items-center mb-4">
-        <div
-          class="rounded-circle bg-primary text-white me-3 d-flex align-items-center justify-content-center"
-          style="width: 50px; height: 50px"
-        >
-          {{ mensaje.remitente.get_iniciales }}
-        </div>
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h6 class="mb-1">
-            {{mensaje.remitente.user.get_full_name|default:mensaje.remitente.user.username}}
-          </h6>
+          <h2 class="mb-1">{{ mensaje.asunto }}</h2>
           <p class="text-muted mb-0">
-            <i class="fas fa-envelope me-1"></i>{{mensaje.remitente.user.email}}
+            <span
+              class="badge {% if mensaje.prioridad == 'alta' %}bg-danger{% elif mensaje.prioridad == 'media' %}bg-warning{% else %}bg-success{% endif %}"
+            >
+              {{ mensaje.get_prioridad_display }}
+            </span>
+            {% if mensaje.tipo_envio != 'individual' %}
+            <span class="badge bg-info ms-2"
+              >{{ mensaje.get_tipo_envio_display }}</span
+            >
+            {% endif %}
           </p>
         </div>
-      </div>
-
-      <!-- Contenido -->
-      <div class="message-content mb-4">{{ mensaje.contenido|linebreaks }}</div>
-
-      <!-- Metadatos -->
-      <div class="border-top pt-3">
-        <div class="row">
-          <div class="col-md-6">
-            <p class="text-muted mb-1">
-              <i class="fas fa-paper-plane me-2"></i>Enviado:
-              {{mensaje.fecha_envio|date:"d/m/Y H:i" }}
-            </p>
-            {% if mensaje.fecha_lectura %}
-            <p class="text-muted mb-0">
-              <i class="fas fa-check-double me-2"></i>Leído:
-              {{mensaje.fecha_lectura|date:"d/m/Y H:i" }}
-            </p>
-            {% endif %}
-          </div>
-          <div class="col-md-6 text-md-end">
-            <p class="text-muted mb-1">
-              <i class="fas fa-user me-2"></i>Prioridad:
-              {{mensaje.get_prioridad_display }}
-            </p>
-            <p class="text-muted mb-0">
-              <i class="fas fa-building me-2"></i>Colegio:
-              {{mensaje.remitente.colegio.nombre }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Respuestas -->
-  {% if mensaje.mensajes_enviados.all or mensaje.mensajes_recibidos.all %}
-  <div class="card mb-4">
-    <div class="card-header bg-white">
-      <h5 class="card-title mb-0">
-        <i class="fas fa-reply-all me-2"></i>Respuestas
-      </h5>
-    </div>
-    <div class="card-body p-0">
-      <div class="list-group list-group-flush">
-        {% for respuesta in mensaje.mensajes_enviados.all %}
-        <div class="list-group-item">
-          <div class="d-flex align-items-center mb-3">
-            <div
-              class="rounded-circle bg-success text-white me-3 d-flex align-items-center justify-content-center"
-              style="width: 40px; height: 40px"
-            >
-              {{ respuesta.remitente.get_iniciales }}
-            </div>
-            <div>
-              <h6 class="mb-1">
-                {{respuesta.remitente.user.get_full_name|default:respuesta.remitente.user.username}}
-              </h6>
-              <small class="text-muted">{{ respuesta.tiempo_transcurrido }}</small>
-            </div>
-          </div>
-          <div class="message-content">
-            {{ respuesta.contenido|linebreaks }}
-          </div>
-        </div>
-        {% endfor %} 
-        {% for respuesta in mensaje.mensajes_recibidos.all %}
-        <div class="list-group-item">
-          <div class="d-flex align-items-center mb-3">
-            <div
-              class="rounded-circle bg-primary text-white me-3 d-flex align-items-center justify-content-center"
-              style="width: 40px; height: 40px"
-            >
-              {{ respuesta.remitente.get_iniciales }}
-            </div>
-            <div>
-              <h6 class="mb-1">
-                {{respuesta.remitente.user.get_full_name|default:respuesta.remitente.user.username}}
-              </h6>
-              <small class="text-muted" >{{ respuesta.tiempo_transcurrido }}</small>
-            </div>
-          </div>
-          <div class="message-content">
-            {{ respuesta.contenido|linebreaks }}
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-  {% endif %}
-
-  <!-- Responder -->
-  <div class="card">
-    <div class="card-header bg-white">
-      <h5 class="card-title mb-0">
-        <i class="fas fa-reply me-2"></i>Responder
-      </h5>
-    </div>
-    <div class="card-body">
-      <form
-        method="post"
-        action="{% url 'comunicaciones:responder_mensaje' mensaje.pk %}"
-        id="replyForm"
-      >
-        {% csrf_token %}
-        <div class="mb-3">
-          <textarea
-            name="contenido"
-            class="form-control"
-            rows="4"
-            placeholder="Escribe tu respuesta..."
-            required
-          ></textarea>
-        </div>
-        <div class="d-flex justify-content-end">
-          <button type="submit" class="btn btn-primary" id="submitReply">
-            <i class="fas fa-paper-plane me-2"></i>Enviar Respuesta
+        <div class="btn-group">
+          <a
+            href="{% url 'comunicaciones:lista_mensajes' %}"
+            class="btn btn-outline-secondary"
+          >
+            <i class="fas fa-arrow-left me-2"></i>Volver
+          </a>
+          <button
+            type="button"
+            class="btn btn-outline-danger"
+            data-bs-toggle="modal"
+            data-bs-target="#eliminarModal"
+          >
+            <i class="fas fa-trash me-2"></i>Eliminar
           </button>
         </div>
-      </form>
+      </div>
+
+      <!-- Contenido del mensaje -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-4">
+            <div>
+              <h6 class="mb-1">
+                De: {{ mensaje.remitente.user.get_full_name }}
+              </h6>
+              <p class="text-muted mb-0">
+                <i class="fas fa-envelope me-2"></i>{{
+                mensaje.remitente.user.email }}
+              </p>
+            </div>
+            <small class="text-muted">
+              <i class="fas fa-clock me-2"></i>{{
+              mensaje.fecha_envio|date:"d/m/Y H:i" }}
+            </small>
+          </div>
+
+          <div class="mb-4">
+            <h6 class="mb-2">Para:</h6>
+            {% if mensaje.tipo_envio == 'individual' %}
+            <div class="list-group">
+              {% for destinatario in mensaje.destinatarios.all %}
+              <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="mb-1">{{ destinatario.user.get_full_name }}</h6>
+                    <p class="text-muted mb-0">
+                      <i class="fas fa-envelope me-2"></i>{{
+                      destinatario.user.email }}
+                    </p>
+                  </div>
+                  {% if destinatario.id == request.user.perfil.id %}
+                  <span class="badge bg-primary">Tú</span>
+                  {% endif %}
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle me-2"></i>
+              {% if mensaje.tipo_envio == 'curso' %} Mensaje enviado a todos los
+              estudiantes del curso {{ mensaje.curso.nombre }} {% elif
+              mensaje.tipo_envio == 'profesores' %} Mensaje enviado a todos los
+              profesores del colegio {% elif mensaje.tipo_envio == 'estudiantes'
+              %} Mensaje enviado a todos los estudiantes del colegio {% elif
+              mensaje.tipo_envio == 'apoderados' %} Mensaje enviado a todos los
+              apoderados del colegio {% endif %}
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="message-content">{{ mensaje.contenido|linebreaks }}</div>
+        </div>
+      </div>
+
+      <!-- Formulario de respuesta -->
+      {% if mensaje.remitente.id != request.user.perfil.id %}
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-4">Responder mensaje</h5>
+          <form
+            method="post"
+            action="{% url 'comunicaciones:responder_mensaje' mensaje.pk %}"
+            id="respuestaForm"
+          >
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="contenido" class="form-label">Tu respuesta</label>
+              <textarea
+                name="contenido"
+                id="contenido"
+                class="form-control"
+                rows="4"
+                required
+              ></textarea>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-reply me-2"></i>Enviar respuesta
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      {% endif %}
     </div>
   </div>
 </div>
 
-<style>
-  .card {
-    border: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-
-  .card-header {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  }
-
-  .message-content {
-    font-size: 1.1rem;
-    line-height: 1.6;
-  }
-
-  .badge {
-    font-weight: 500;
-    padding: 0.5em 0.8em;
-  }
-
-  .list-group-item {
-    border-left: none;
-    border-right: none;
-    padding: 1.5rem;
-  }
-
-  .list-group-item:first-child {
-    border-top: none;
-  }
-
-  .list-group-item:last-child {
-    border-bottom: none;
-  }
-</style>
-
+<!-- Modal de confirmación de eliminación -->
+<div class="modal fade" id="eliminarModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmar eliminación</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          ¿Estás seguro de que deseas eliminar este mensaje? Esta acción no se
+          puede deshacer.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <form
+          method="post"
+          action="{% url 'comunicaciones:eliminar_mensaje' mensaje.pk %}"
+          class="d-inline"
+        >
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash me-2"></i>Eliminar
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
 <script>
-  document.getElementById("replyForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const submitButton = document.getElementById("submitReply");
-    submitButton.disabled = true;
-    submitButton.innerHTML =
-      '<i class="fas fa-spinner fa-spin me-2"></i>Enviando...';
-    this.submit();
-  });
+  document
+    .getElementById("respuestaForm")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+      const submitButton = this.querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+      submitButton.innerHTML =
+        '<i class="fas fa-spinner fa-spin me-2"></i>Enviando...';
+      this.submit();
+    });
 </script>
 {% endblock %}

@@ -27,6 +27,7 @@ class Ubicacion(models.Model):
         ('edificio', 'Edificio'),
         ('sala', 'Sala'),
         ('oficina', 'Oficina'),
+        ('bodega', 'Bodega'),
     ]
 
     nombre = models.CharField(max_length=100)
