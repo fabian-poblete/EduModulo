@@ -420,6 +420,26 @@
                         </li> {% endcomment %}
                     </ul>
                 </div>
+                <!-- Activities Section -->
+                {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor apoderado' %}
+                    <div class="sidebar-section">
+                        <div class="sidebar-section-title">Actividades</div>
+                        <ul class="sidebar-menu">
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-link" href="{% url 'salidas:list' %}" data-tooltip="Salidas">
+                                    <i class="fas fa-door-open sidebar-menu-icon"></i>
+                                    <span class="sidebar-menu-text">Salidas</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a class="sidebar-menu-link" href="{% url 'atrasos:list' %}" data-tooltip="Atrasos">
+                                    <i class="fas fa-clock sidebar-menu-icon"></i>
+                                    <span class="sidebar-menu-text">Atrasos</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                {% endif %}
 
                 <!-- Administration Section -->
                 {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
@@ -471,26 +491,7 @@
                     </div>
                 {% endif %}
 
-                <!-- Activities Section -->
-                {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor apoderado' %}
-                    <div class="sidebar-section">
-                        <div class="sidebar-section-title">Actividades</div>
-                        <ul class="sidebar-menu">
-                            <li class="sidebar-menu-item">
-                                <a class="sidebar-menu-link" href="{% url 'salidas:list' %}" data-tooltip="Salidas">
-                                    <i class="fas fa-door-open sidebar-menu-icon"></i>
-                                    <span class="sidebar-menu-text">Salidas</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-menu-item">
-                                <a class="sidebar-menu-link" href="{% url 'atrasos:list' %}" data-tooltip="Atrasos">
-                                    <i class="fas fa-clock sidebar-menu-icon"></i>
-                                    <span class="sidebar-menu-text">Atrasos</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                {% endif %}
+                
 
                 <!-- Inventario Section -->
                 {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio' %}
@@ -507,7 +508,7 @@
                     </div>
                 {% endif %}
 
-                <!-- Only show Users link for non-admin users -->
+                {% comment %} <!-- Only show Users link for non-admin users -->
                 {% if not user.is_superuser and user.perfil.tipo_usuario != 'admin_colegio' %}
                     <div class="sidebar-section">
                         <div class="sidebar-section-title">Gestión</div>
@@ -520,7 +521,7 @@
                             </li>
                         </ul>
                     </div>
-                {% endif %}
+                {% endif %} {% endcomment %}
             </nav>
 
             <!-- User Dropdown -->

@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+{% block title %}Reportes de Salidas{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Reportes de Salidas</h1>
+        <a href="{% url 'salidas:list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <div class="card mb-4 no-print">
+        <div class="card-body">
+            <form method="get" class="row g-3" id="filtrosForm">
+                <div class="col-md-3">
+                    <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
+                    <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" 
+                           value="{{ fecha_inicio|date:'Y-m-d'|default:'' }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="fecha_fin" class="form-label">Fecha Fin</label>
+                    <input type="date" class="form-control" id="fecha_fin" name="fecha_fin"
+                           value="{{ fecha_fin|date:'Y-m-d'|default:'' }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="curso" class="form-label">Curso</label>
+                    <select class="form-select" id="curso" name="curso">
+                        <option value="">Todos los cursos</option>
+                        {% for curso in cursos %}
+                        <option value="{{ curso.id }}" {% if curso.id|stringformat:"s" == curso_id %}selected{% endif %}>
+                            {{ curso.nombre }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="estudiante" class="form-label">Estudiante</label>
+                    <select class="form-select" id="estudiante" name="estudiante">
+                        <option value="">Todos los estudiantes</option>
+                        {% for estudiante in estudiantes %}
+                        <option value="{{ estudiante.id }}" {% if estudiante.id|stringformat:"s" == estudiante_id %}selected{% endif %}>
+                            {{ estudiante.nombre }} - {{ estudiante.rut }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% comment %} <div class="col-md-3">
+                    <label for="tipo_salida" class="form-label">Tipo de Salida</label>
+                    <select class="form-select" id="tipo_salida" name="tipo_salida">
+                        <option value="">Todos los tipos</option>
+                        <option value="permanente" {% if tipo_salida == 'permanente' %}selected{% endif %}>Permanente</option>
+                        <option value="temporal" {% if tipo_salida == 'temporal' %}selected{% endif %}>Temporal</option>
+                    </select>
+                </div> {% endcomment %}
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Filtrar
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="window.print()">
+                        <i class="fas fa-print"></i> Imprimir Reporte
+                    </button>
+                    <a href="{% url 'salidas:reportes_salida' %}" class="btn btn-info">
+                        <i class="fas fa-eraser"></i> Limpiar Filtros
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resumen de filtros aplicados -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Filtros Aplicados:</h5>
+            <div class="row">
+                {% if fecha_inicio or fecha_fin %}
+                <div class="col-md-6">
+                    <strong>Período:</strong>
+                    {% if fecha_inicio and fecha_fin %}
+                        Del {{ fecha_inicio|date:"d/m/Y" }} al {{ fecha_fin|date:"d/m/Y" }}
+                    {% elif fecha_inicio %}
+                        Desde {{ fecha_inicio|date:"d/m/Y" }}
+                    {% elif fecha_fin %}
+                        Hasta {{ fecha_fin|date:"d/m/Y" }}
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                {% if curso_id %}
+                <div class="col-md-6">
+                    <strong>Curso:</strong>
+                    {% for curso in cursos %}
+                        {% if curso.id|stringformat:"s" == curso_id %}
+                            {{ curso.nombre }}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                {% if estudiante_id %}
+                <div class="col-md-6">
+                    <strong>Estudiante:</strong>
+                    {% for estudiante in estudiantes %}
+                        {% if estudiante.id|stringformat:"s" == estudiante_id %}
+                            {{ estudiante.nombre }} - {{ estudiante.rut }}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Estudiante</th>
+                    <th>RUT</th>
+                    <th>Curso</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    {% comment %} <th>Tipo</th> {% endcomment %}
+                    <th>Motivo</th>
+                    {% comment %} <th>Autorizado por</th> {% endcomment %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for salida in salidas %}
+                <tr>
+                    <td>{{ salida.estudiante.nombre }}</td>
+                    <td>{{ salida.estudiante.rut }}</td>
+                    <td>{{ salida.estudiante.curso.nombre }}</td>
+                    <td>{{ salida.fecha }}</td>
+                    <td>{{ salida.hora }}</td>
+                    {% comment %} <td>
+                        {% if salida.tipo_salida == 'permanente' %}
+                        <span class="badge bg-danger">Permanente</span>
+                        {% else %}
+                        <span class="badge bg-warning">Temporal</span>
+                        {% endif %}
+                    </td> {% endcomment %}
+                    <td>{{ salida.motivo }}</td>
+                    {% comment %} <td>{{ salida.autorizado_por.get_full_name }}</td> {% endcomment %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No hay salidas registradas en el período seleccionado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    @media print {
+        /* Ocultar elementos que no se deben imprimir */
+        .no-print {
+            display: none !important;
+        }
+        
+        /* Ajustes para la impresión */
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        /* Asegurar que la tabla se imprima correctamente */
+        .table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+        }
+        
+        .table th,
+        .table td {
+            border: 1px solid #ddd !important;
+            padding: 8px !important;
+        }
+        
+        .table thead th {
+            background-color: #f8f9fa !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        
+        /* Asegurar que los textos sean legibles */
+        .table td,
+        .table th {
+            font-size: 12pt !important;
+        }
+        
+        /* Evitar saltos de página dentro de las filas */
+        tr {
+            page-break-inside: avoid;
+        }
+
+        /* Estilos para el resumen de filtros en impresión */
+        .card {
+            border: 1px solid #ddd !important;
+            margin-bottom: 20px !important;
+        }
+        
+        .card-body {
+            padding: 15px !important;
+        }
+        
+        .card-title {
+            font-size: 14pt !important;
+            margin-bottom: 10px !important;
+        }
+        
+        .row {
+            margin: 0 !important;
+        }
+        
+        .col-md-6 {
+            margin-bottom: 10px !important;
+        }
+    }
+</style>
+{% endblock %}
+{{ estudiantes|json_script:"estudiantes-data" }}
+
+{% block extra_js %}
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        // Actualizar lista de estudiantes cuando se selecciona un curso
+        document.getElementById('curso').addEventListener('change', function() {
+            const cursoId = this.value;
+            const estudianteSelect = document.getElementById('estudiante');
+            const estudiantes = JSON.parse(document.getElementById('estudiantes-data').textContent);
+            
+            // Limpiar opciones actuales excepto la primera
+            while (estudianteSelect.options.length > 1) {
+                estudianteSelect.remove(1);
+            }
+            
+            if (cursoId) {
+                // Filtrar estudiantes por curso
+                Array.from(estudianteSelect.options).forEach(option => {
+                    if (option.value) {
+                        const estudiante = estudiantes.find(e => e.id == option.value);
+                        if (estudiante && estudiante.curso_id != cursoId) {
+                            option.style.display = 'none';
+                        } else {
+                            option.style.display = '';
+                        }
+                    }
+                });
+            } else {
+                // Mostrar todos los estudiantes
+                Array.from(estudianteSelect.options).forEach(option => {
+                    option.style.display = '';
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

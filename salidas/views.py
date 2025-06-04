@@ -8,6 +8,7 @@ from django.http import HttpResponseForbidden, JsonResponse
 from django.contrib import messages
 from django.db.models import Q
 from datetime import datetime, date
+from cursos.models import Curso
 
 
 def puede_ver_salidas(user):
@@ -69,7 +70,9 @@ def registrar_salida(request):
                 salida.save()
                 messages.success(request, 'Salida registrada exitosamente.')
                 # Assuming 'list' is the URL name for the list view
-                return redirect('salidas:list')
+                # return redirect('salidas:list')
+                return redirect('salidas:imprimir', salida.id)
+
             except Exception as e:
                 messages.error(
                     request, f'Error al registrar la salida: {str(e)}')
@@ -170,3 +173,76 @@ def salida_delete(request, pk):
     return render(request, 'salidas/salida_confirm_delete.html', {
         'salida': salida
     })
+
+
+@login_required
+@user_passes_test(puede_ver_salidas)
+def imprimir_salida(request, salida_id):
+    salida = get_object_or_404(Salida, id=salida_id)
+    return render(request, 'salidas/imprimir_salida.html', {
+        'salida': salida
+    })
+
+
+@login_required
+def reportes_salida(request):
+    # Obtener los datos para el reporte
+    salidas = Salida.objects.all()
+
+    # Filtrar por fecha si se proporciona
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+
+    if fecha_inicio and fecha_fin:
+        try:
+            fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d').date()
+            fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d').date()
+            salidas = salidas.filter(fecha__range=[fecha_inicio, fecha_fin])
+        except ValueError:
+            messages.error(request, 'Formato de fecha inválido')
+    elif fecha_inicio:  # Si solo se proporciona fecha inicio
+        try:
+            fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d').date()
+            salidas = salidas.filter(fecha__gte=fecha_inicio)
+        except ValueError:
+            messages.error(request, 'Formato de fecha inválido')
+    elif fecha_fin:  # Si solo se proporciona fecha fin
+        try:
+            fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d').date()
+            salidas = salidas.filter(fecha__lte=fecha_fin)
+        except ValueError:
+            messages.error(request, 'Formato de fecha inválido')
+
+    # Filtrar por estudiante si se proporciona
+    estudiante_id = request.GET.get('estudiante')
+    if estudiante_id:
+        salidas = salidas.filter(estudiante_id=estudiante_id)
+
+    # Filtrar por curso si se proporciona
+    curso_id = request.GET.get('curso')
+    if curso_id:
+        salidas = salidas.filter(estudiante__curso_id=curso_id)
+
+    # Filtrar por tipo de salida si se proporciona
+    tipo_salida = request.GET.get('tipo_salida')
+    if tipo_salida:
+        salidas = salidas.filter(tipo_salida=tipo_salida)
+
+    # Obtener lista de estudiantes para el filtro
+    estudiantes = Estudiante.objects.filter(activo=True)
+
+    # Obtener lista de cursos para el filtro
+    cursos = Curso.objects.all()
+
+    context = {
+        'salidas': salidas,
+        'estudiantes': estudiantes,
+        'cursos': cursos,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin,
+        'estudiante_id': estudiante_id,
+        'curso_id': curso_id,
+        'tipo_salida': tipo_salida,
+    }
+
+    return render(request, 'salidas/reportes_salida.html', context)

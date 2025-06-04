@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Comprobante de Atraso{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <div class="border p-4">
+    <h2>Comprobante de Atraso</h2>
+    <p><strong>Nombre:</strong> {{ atraso.estudiante.nombre }}</p>
+    <p><strong>RUT:</strong> {{ atraso.estudiante.rut }}</p>
+    <p><strong>Curso:</strong> {{ atraso.estudiante.curso }}</p>
+    <p><strong>Fecha y hora:</strong> {{ atraso.fecha_hora }}</p>
+    <p><strong>Justificado:</strong> {{ atraso.justificado|yesno:"Sí,No" }}</p>
+    <p><strong>Observación:</strong> {{ atraso.observacion }}</p>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+  window.onload = function () {
+    window.print();
+
+    // Esperar un poco antes de redirigir para dar tiempo a que se cierre el cuadro de impresión
+    setTimeout(function () {
+      window.location.href = "{% url 'atrasos:create' %}";
+    }, 1000); // 1000 milisegundos = 1 segundo
+  };
+</script>
+{% endblock %}

@@ -2,11 +2,17 @@
 {% block content %}
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Salidas</h1>
-    <a href="{% url 'salidas:registrar_salida' %}" class="btn btn-primary">
-      <i class="fas fa-plus"></i> Registrar Salida
-    </a>
+    <h1 class="mb-0">Salidas</h1>
+    <div class="d-flex gap-2">
+      <a href="{% url 'salidas:reportes_salida' %}" class="btn btn-success">
+        <i class="fas fa-chart-line"></i> Reportes
+      </a>
+      <a href="{% url 'salidas:registrar_salida' %}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Registrar Salida
+      </a>
+    </div>
   </div>
+  
 
   {% comment %} {% if messages %}
   <div class="messages">

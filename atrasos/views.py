@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from .models import Atraso
 from .forms import AtrasoForm
@@ -7,8 +7,16 @@ from django.db.models import Q
 from datetime import datetime, date
 from django.http import JsonResponse
 from estudiantes.models import Estudiante
+from cursos.models import Curso
+
 
 # Create your views here.
+
+
+def puede_ver_atrasos(user):
+    if not user.is_authenticated:
+        return False
+    return user.is_superuser or user.perfil.tipo_usuario in ['admin_colegio', 'profesor', 'apoderado']
 
 
 @login_required
@@ -60,7 +68,9 @@ def atraso_create(request):
                 atraso.estudiante = form.cleaned_data['rut_estudiante']
                 atraso.save()
                 messages.success(request, 'Atraso registrado exitosamente.')
-                return redirect('atrasos:list')
+                # return redirect('atrasos:list')
+                return redirect('atrasos:imprimir', atraso.id)
+
             except Exception as e:
                 messages.error(
                     request, f'Error al registrar el atraso: {str(e)}')
@@ -146,3 +156,75 @@ def atraso_delete(request, pk):
     return render(request, 'atrasos/atraso_confirm_delete.html', {
         'atraso': atraso
     })
+
+
+@login_required
+@user_passes_test(puede_ver_atrasos)
+def imprimir_atraso(request, atraso_id):
+    atraso = get_object_or_404(Atraso, id=atraso_id)
+    return render(request, 'atrasos/imprimir_atraso.html', {
+        'atraso': atraso
+    })
+
+
+@login_required
+def reportes_atraso(request):
+    # Obtener los datos para el reporte
+    atrasos = Atraso.objects.all()
+
+    # Filtrar por fecha si se proporciona
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+
+    if fecha_inicio and fecha_fin:
+        try:
+            fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d').date()
+            fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d').date()
+            atrasos = atrasos.filter(fecha__range=[fecha_inicio, fecha_fin])
+        except ValueError:
+            messages.error(request, 'Formato de fecha inválido')
+    elif fecha_inicio:  # Si solo se proporciona fecha inicio
+        try:
+            fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d').date()
+            atrasos = atrasos.filter(fecha__gte=fecha_inicio)
+        except ValueError:
+            messages.error(request, 'Formato de fecha inválido')
+    elif fecha_fin:  # Si solo se proporciona fecha fin
+        try:
+            fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d').date()
+            atrasos = atrasos.filter(fecha__lte=fecha_fin)
+        except ValueError:
+            messages.error(request, 'Formato de fecha inválido')
+
+    # Filtrar por estudiante si se proporciona
+    estudiante_id = request.GET.get('estudiante')
+    if estudiante_id:
+        atrasos = atrasos.filter(estudiante_id=estudiante_id)
+
+    # Filtrar por curso si se proporciona
+    curso_id = request.GET.get('curso')
+    if curso_id:
+        atrasos = atrasos.filter(estudiante__curso_id=curso_id)
+
+    # Filtrar por tipo de salida si se proporciona
+    # tipo_salida = request.GET.get('tipo_salida')
+    # if tipo_salida:
+    #     salidas = salidas.filter(tipo_salida=tipo_salida)
+
+    # Obtener lista de estudiantes para el filtro
+    estudiantes = Estudiante.objects.filter(activo=True)
+
+    # Obtener lista de cursos para el filtro
+    cursos = Curso.objects.all()
+
+    context = {
+        'atrasos': atrasos,
+        'estudiantes': estudiantes,
+        'cursos': cursos,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin,
+        'estudiante_id': estudiante_id,
+        'curso_id': curso_id,
+    }
+
+    return render(request, 'atrasos/reportes_atraso.html', context)

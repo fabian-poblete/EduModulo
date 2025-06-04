@@ -9,4 +9,7 @@ urlpatterns = [
     path('buscar-estudiantes/', views.buscar_estudiantes,
          name='buscar_estudiantes'),
     path('<int:pk>/delete/', views.atraso_delete, name='delete'),
+    path('imprimir/<int:atraso_id>/', views.imprimir_atraso, name='imprimir'),
+    path('reportes/', views.reportes_atraso, name='reportes_atraso'),
+
 ]

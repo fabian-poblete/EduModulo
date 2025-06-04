@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Comprobante de Salida{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <div class="border p-4">
+    <h2>Comprobante de Salida</h2>
+    <p><strong>Nombre:</strong> {{ salida.estudiante.nombre }}</p>
+    <p><strong>RUT:</strong> {{ salida.estudiante.rut }}</p>
+    <p><strong>Curso:</strong> {{ salida.estudiante.curso }}</p>
+    <p><strong>Fecha y hora:</strong> {{ salida.fecha_hora }}</p>
+    <p><strong>Justificado:</strong> {{ salida.justificado|yesno:"Sí,No" }}</p>
+    <p><strong>Observación:</strong> {{ salida.observacion }}</p>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+  window.onload = function () {
+    window.print();
+
+    // Esperar un poco antes de redirigir para dar tiempo a que se cierre el cuadro de impresión
+    setTimeout(function () {
+      window.location.href = "{% url 'salidas:registrar_salida' %}";
+    }, 1000); // 1000 milisegundos = 1 segundo
+  };
+</script>
+{% endblock %}

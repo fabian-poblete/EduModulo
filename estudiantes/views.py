@@ -9,22 +9,27 @@ import pandas as pd
 from datetime import datetime
 import os
 import re
+from django.db import models
 
 # Create your views here.
 
 
 @login_required
 def estudiante_list(request):
-    # Superusuarios y admin de colegio ven todos los estudiantes de su colegio
+    # Obtener los cursos disponibles según el tipo de usuario
     if request.user.is_superuser:
+        cursos = Curso.objects.filter(activo=True)
         estudiantes = Estudiante.objects.all()
         can_edit = True
     elif request.user.perfil.tipo_usuario == 'admin_colegio':
+        cursos = Curso.objects.filter(
+            colegio=request.user.perfil.colegio, activo=True)
         estudiantes = Estudiante.objects.filter(
             curso__colegio=request.user.perfil.colegio)
         can_edit = True
-    # Profesores ven estudiantes de su colegio pero no pueden editar
     elif request.user.perfil.tipo_usuario == 'profesor':
+        cursos = Curso.objects.filter(
+            colegio=request.user.perfil.colegio, activo=True)
         estudiantes = Estudiante.objects.filter(
             curso__colegio=request.user.perfil.colegio)
         can_edit = False
@@ -32,10 +37,31 @@ def estudiante_list(request):
         messages.error(request, 'No tienes permiso para ver esta página.')
         return redirect('dashboard:index')
 
+    # Aplicar filtros
+    curso_id = request.GET.get('curso')
+    estado = request.GET.get('estado')
+    busqueda = request.GET.get('busqueda')
+
+    if curso_id:
+        estudiantes = estudiantes.filter(curso_id=curso_id)
+
+    if estado is not None:
+        estudiantes = estudiantes.filter(activo=estado == '1')
+
+    if busqueda:
+        estudiantes = estudiantes.filter(
+            models.Q(nombre__icontains=busqueda) |
+            models.Q(rut__icontains=busqueda)
+        )
+
     return render(request, 'estudiantes/estudiante_list.html', {
         'estudiantes': estudiantes,
+        'cursos': cursos,
         'can_edit': can_edit,
-        'is_admin': request.user.is_superuser or request.user.perfil.tipo_usuario == 'admin_colegio'
+        'is_admin': request.user.is_superuser or request.user.perfil.tipo_usuario == 'admin_colegio',
+        'curso_id': curso_id,
+        'estado': estado,
+        'busqueda': busqueda
     })
 
 

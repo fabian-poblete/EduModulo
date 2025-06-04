@@ -21,6 +21,84 @@
     </div>
   </div>
 
+  <!-- Filtros de búsqueda -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <form method="get" class="row g-3">
+        <div class="col-md-4">
+          <label for="curso" class="form-label">Curso</label>
+          <select class="form-select" id="curso" name="curso">
+            <option value="">Todos los cursos</option>
+            {% for curso in cursos %}
+            <option value="{{ curso.id }}" {% if curso.id|stringformat:"s" == curso_id %}selected{% endif %}>
+              {{ curso.nombre }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="estado" class="form-label">Estado</label>
+          <select class="form-select" id="estado" name="estado">
+            <option value="1" {% if estado == '1' %}selected{% endif %}>Activo</option>
+            <option value="0" {% if estado == '0' %}selected{% endif %}>Inactivo</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="busqueda" class="form-label">Buscar por nombre o RUT</label>
+          <input type="text" class="form-control" id="busqueda" name="busqueda" 
+                 placeholder="Ingrese nombre o RUT" value="{{ busqueda|default:'' }}">
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-search"></i> Filtrar
+          </button>
+          <a href="{% url 'estudiantes:list' %}" class="btn btn-info">
+            <i class="fas fa-eraser"></i> Limpiar Filtros
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Resumen de filtros aplicados -->
+  {% if curso_id or estado or busqueda %}
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Filtros Aplicados:</h5>
+      <div class="row">
+        {% if curso_id %}
+        <div class="col-md-4">
+          <strong>Curso:</strong>
+          {% for curso in cursos %}
+            {% if curso.id|stringformat:"s" == curso_id %}
+              {{ curso.nombre }}
+            {% endif %}
+          {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% if estado %}
+        <div class="col-md-4">
+          <strong>Estado:</strong>
+          {% if estado == '1' %}
+            Activo
+          {% else %}
+            Inactivo
+          {% endif %}
+        </div>
+        {% endif %}
+        
+        {% if busqueda %}
+        <div class="col-md-4">
+          <strong>Búsqueda:</strong>
+          {{ busqueda }}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
   <div class="table-responsive">
     <table class="table table-striped">
       <thead>
@@ -77,4 +155,26 @@
     </table>
   </div>
 </div>
+
+<style>
+  @media print {
+    .card, .btn {
+      display: none !important;
+    }
+    .table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+    }
+    .table th,
+    .table td {
+      border: 1px solid #ddd !important;
+      padding: 8px !important;
+    }
+    .table thead th {
+      background-color: #f8f9fa !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+</style>
 {% endblock %}
