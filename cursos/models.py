@@ -17,4 +17,4 @@ class Curso(models.Model):
         unique_together = ['nombre', 'colegio']
 
     def __str__(self):
-        return f"{self.nombre} - {self.colegio.nombre}"
+        return f"{self.nombre} "

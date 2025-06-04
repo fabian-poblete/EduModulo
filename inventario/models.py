@@ -19,7 +19,7 @@ class Categoria(models.Model):
         unique_together = ['nombre', 'colegio']
 
     def __str__(self):
-        return f"{self.nombre} - {self.colegio.nombre}"
+        return f"{self.nombre}"
 
 
 class Ubicacion(models.Model):
@@ -74,7 +74,7 @@ class Estado(models.Model):
         unique_together = ['nombre', 'colegio']
 
     def __str__(self):
-        return f"{self.nombre} - {self.colegio.nombre}"
+        return f"{self.nombre} "
 
 
 class Articulo(models.Model):
@@ -109,7 +109,7 @@ class Articulo(models.Model):
         ordering = ['colegio', 'categoria', 'nombre']
 
     def __str__(self):
-        return f"{self.nombre} ({self.cantidad}) - {self.colegio.nombre}"
+        return f"{self.nombre} ({self.cantidad}) "
 
     def necesita_reposicion(self):
         return self.cantidad <= self.stock_minimo
