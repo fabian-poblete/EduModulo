@@ -1,11 +1,12 @@
-{% extends 'base.html' %} {% block title %}Registrar Salida{% endblock %} 
-{%block content %}
-<div class="container mt-4">
+{% extends 'base.html' %}
+{% block title %}Registrar Salida{% endblock %}
+{% block content %}
+<div class="container mt-5">
   <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="card">
+    <div class="col-lg-10">
+      <div class="card p-4 shadow">
         <div class="card-header">
-          <h2 class="mb-0">Registrar Salida</h2>
+          <h2 class="mb-0 display-6">Registrar Salida</h2>
         </div>
         <div class="card-body">
           {% if messages %}
@@ -19,13 +20,11 @@
           <form method="post">
             {% csrf_token %}
 
-            <div class="mb-3">
-              <label for="buscar_estudiante" class="form-label"
-                >Buscar Estudiante</label
-              >
+            <div class="mb-4">
+              <label for="buscar_estudiante" class="form-label fs-5">Buscar Estudiante</label>
               <input
                 type="text"
-                class="form-control"
+                class="form-control form-control-lg"
                 id="buscar_estudiante"
                 placeholder="Ingrese nombre o RUT del estudiante"
               />
@@ -36,14 +35,12 @@
               ></div>
             </div>
 
-            <div class="mb-3" style="display: none">
-              <label
-                for="{{ form.rut_estudiante.id_for_label }}"
-                class="form-label"
-              >
+            <div class="mb-4" style="display: none">
+              <label for="{{ form.rut_estudiante.id_for_label }}" class="form-label fs-5">
                 {{ form.rut_estudiante.label }}
               </label>
-              {{ form.rut_estudiante }} {% if form.rut_estudiante.errors %}
+              {{ form.rut_estudiante }}
+              {% if form.rut_estudiante.errors %}
               <div class="invalid-feedback d-block">
                 {{ form.rut_estudiante.errors }}
               </div>
@@ -53,13 +50,10 @@
               </div>
             </div>
 
-            <div class="mb-3">
-              <div class="form-check">
+            <div class="mb-4">
+              <div class="form-check form-switch fs-5">
                 {{ form.justificado }}
-                <label
-                  class="form-check-label"
-                  for="{{ form.justificado.id_for_label }}"
-                >
+                <label class="form-check-label" for="{{ form.justificado.id_for_label }}">
                   Salida Justificada
                 </label>
               </div>
@@ -70,25 +64,21 @@
               {% endif %}
             </div>
 
-            <div class="mb-3">
-              <label
-                for="{{ form.observacion.id_for_label }}"
-                class="form-label"
-              >
-                Observación
-              </label>
-              {{ form.observacion }} {% if form.observacion.errors %}
+            <div class="mb-4">
+              <label for="{{ form.observacion.id_for_label }}" class="form-label fs-5">Observación</label>
+              {{ form.observacion }}
+              {% if form.observacion.errors %}
               <div class="invalid-feedback d-block">
                 {{ form.observacion.errors }}
               </div>
               {% endif %}
             </div>
 
-            <div class="d-flex justify-content-between">
-              <a href="{% url 'salidas:list' %}" class="btn btn-secondary">
+            <div class="d-flex justify-content-between mt-4">
+              <a href="{% url 'salidas:list' %}" class="btn btn-secondary btn-lg">
                 <i class="fas fa-arrow-left"></i> Volver
               </a>
-              <button type="submit" class="btn btn-primary">
+              <button type="submit" class="btn btn-primary btn-lg">
                 <i class="fas fa-save"></i> Registrar Salida
               </button>
             </div>
@@ -98,7 +88,9 @@
     </div>
   </div>
 </div>
-{% endblock %} {% block extra_js %}
+{% endblock %}
+
+{% block extra_js %}
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const buscarInput = document.getElementById("buscar_estudiante");
@@ -117,9 +109,7 @@
 
       timeoutId = setTimeout(() => {
         fetch(
-          `{% url 'salidas:buscar_estudiantes' %}?q=${encodeURIComponent(
-            query
-          )}`
+          `{% url 'salidas:buscar_estudiantes' %}?q=${encodeURIComponent(query)}`
         )
           .then((response) => response.json())
           .then((data) => {
@@ -150,12 +140,8 @@
       }, 300);
     });
 
-    // Cerrar resultados al hacer clic fuera
     document.addEventListener("click", function (e) {
-      if (
-        !buscarInput.contains(e.target) &&
-        !resultadosDiv.contains(e.target)
-      ) {
+      if (!buscarInput.contains(e.target) && !resultadosDiv.contains(e.target)) {
         resultadosDiv.style.display = "none";
       }
     });

@@ -85,7 +85,7 @@
           <td>{{ atraso.observacion|default:"-" }}</td>
           <td>
             <button
-              onclick="imprimirVoucherLista('{{ atraso.estudiante.nombre }}', '{{ atraso.estudiante.rut }}', '{{ atraso.fecha }}', '{{ atraso.justificado }}', '{{ atraso.observacion|default:"-" }}')"
+              onclick="imprimirVoucherLista('{{ atraso.estudiante.nombre }}', '{{ atraso.estudiante.rut }}', '{{ atraso.fecha }}', '{{ atraso.hora }}', '{{ atraso.justificado }}', '{{ atraso.observacion|default:"-" }}')"
               class="btn btn-sm btn-info me-1"
               title="Imprimir"
             >
@@ -120,8 +120,10 @@
       <p style="margin: 2px 0;"><strong>Estudiante:</strong><br><span id="voucherNombre"></span></p>
       <p style="margin: 2px 0;"><strong>RUT:</strong><br><span id="voucherRut"></span></p>
       <p style="margin: 2px 0;"><strong>Fecha:</strong><br><span id="voucherFecha"></span></p>
+      <p style="margin: 2px 0;"><strong>Hora:</strong><br><span id="voucherHora"></span></p>
       <p style="margin: 2px 0;"><strong>Estado:</strong><br><span id="voucherEstado"></span></p>
       <p style="margin: 2px 0;"><strong>Observación:</strong><br><span id="voucherObservacion"></span></p>
+      <p style="margin: 2px 0;"><strong>Fecha y hora de impresión:</strong><br><span id="voucherFechaHoraImpresion"></span></p>
     </div>
     <div style="text-align: center; margin-top: 20px; border-top: 1px dashed #000; padding-top: 10px;">
       <p style="margin: 2px 0;">_______________________</p>
@@ -136,20 +138,35 @@
 
 {% block extra_js %}
 <script>
-  function imprimirVoucherLista(nombre, rut, fecha, justificado, observacion) {
+  function imprimirVoucherLista(nombre, rut, fecha, hora, justificado, observacion) {
     const voucherTemplate = document.getElementById('voucherTemplate');
     const voucherNombre = document.getElementById('voucherNombre');
     const voucherRut = document.getElementById('voucherRut');
     const voucherFecha = document.getElementById('voucherFecha');
+    const voucherHora = document.getElementById('voucherHora');
     const voucherEstado = document.getElementById('voucherEstado');
     const voucherObservacion = document.getElementById('voucherObservacion');
+    const voucherFechaHoraImpresion = document.getElementById('voucherFechaHoraImpresion');
+
+    // Obtener fecha y hora actual
+    const ahora = new Date();
+    const fechaHoraImpresion = ahora.toLocaleString('es-CL', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
 
     // Llenar el template
     voucherNombre.textContent = nombre;
     voucherRut.textContent = rut;
     voucherFecha.textContent = fecha;
+    voucherHora.textContent = hora;
     voucherEstado.textContent = justificado === 'True' ? 'Justificado' : 'No Justificado';
     voucherObservacion.textContent = observacion;
+    voucherFechaHoraImpresion.textContent = fechaHoraImpresion;
 
     // Crear una ventana de impresión
     const ventanaImpresion = window.open('', '_blank');
