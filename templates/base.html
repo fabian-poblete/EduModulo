@@ -5,8 +5,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}EduModulo{% endblock %}</title>
-    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
-
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{% static 'images/favicon.ico' %}"
+    />
 
     <!-- Google Fonts -->
     <link
@@ -466,7 +469,7 @@
         {% endif %}
 
         <!-- Administration Section -->
-        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
+        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'%}
         <div class="sidebar-section">
           <div class="sidebar-section-title">Administración</div>
           <ul class="sidebar-menu">
@@ -479,6 +482,16 @@
               >
                 <i class="fas fa-school sidebar-menu-icon"></i>
                 <span class="sidebar-menu-text">Colegios</span>
+              </a>
+            </li>
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'system_backup:backup_list' %}"
+                data-tooltip="Respaldos"
+              >
+                <i class="fas fa-database sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Respaldos</span>
               </a>
             </li>
             {% endif %}
@@ -721,7 +734,7 @@
     {% endif %}
 
     <!-- Main Content -->
-    <main class="main-content{% if not user.is_authenticated or request.resolver_match.url_name == 'home' or request.resolver_match.namespace == 'public' %} no-sidebar{% endif %}" id="mainContent">
+    <main class="main-content{% if not user.is_authenticated or request.resolver_match.url_name == 'home' or request.resolver_match.namespace == 'public' %} no-sidebar{% endif %}" id="mainContent" >
       {% if messages %}
       <div class="container-fluid mt-3">
         {% for message in messages %}
@@ -757,7 +770,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    {% comment %} Solo cargar scripts del sidebar si está presente {% endcomment%} 
+    {% comment %} Solo cargar scripts del sidebar si está presente {%endcomment%} 
     {% if user.is_authenticated and request.resolver_match.url_name != 'home' and request.resolver_match.namespace != 'public' %}
     <script>
       document.addEventListener("DOMContentLoaded", function () {

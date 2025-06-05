@@ -1,0 +1,96 @@
+{% extends 'base.html' %} {% block title %}Respaldos del Sistema{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Respaldos del Sistema</h1>
+    <a href="{% url 'system_backup:create_backup' %}" class="btn btn-primary">
+      <i class="fas fa-plus"></i> Crear Respaldo
+    </a>
+  </div>
+{% comment %} 
+  {% if messages %}
+  <div class="messages mb-4">
+    {% for message in messages %}
+    <div
+      class="alert alert-{{ message.tags }} alert-dismissible fade show"
+      role="alert"
+    >
+      {{ message }}
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %} {% endcomment %}
+
+  <div class="card">
+    <div class="card-body">
+      {% if backups %}
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Fecha</th>
+              <th>Tamaño</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for backup in backups %}
+            <tr>
+              <td>{{ backup.name }}</td>
+              <td>{{ backup.created_at|date:"d/m/Y H:i" }}</td>
+              <td>{{ backup.size }}</td>
+              <td>
+                <span class="badge bg-{{ backup.status }}">
+                  {{ backup.get_status_display }}
+                </span>
+              </td>
+              <td>
+                <div class="btn-group">
+                  <a
+                    href="{% url 'system_backup:download_backup' backup.id %}"
+                    class="btn btn-sm btn-info"
+                    title="Descargar"
+                  >
+                    <i class="fas fa-download"></i>
+                  </a>
+                  <a
+                    href="{% url 'system_backup:restore_backup' backup.id %}"
+                    class="btn btn-sm btn-warning"
+                    title="Restaurar"
+                    onclick="return confirm('¿Estás seguro de restaurar este respaldo? Esto reemplazará todos los datos actuales.')"
+                  >
+                    <i class="fas fa-undo"></i>
+                  </a>
+                  <a
+                    href="{% url 'system_backup:delete_backup' backup.id %}"
+                    class="btn btn-sm btn-danger"
+                    title="Eliminar"
+                    onclick="return confirm('¿Estás seguro de eliminar este respaldo?')"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center py-5">
+        <i class="fas fa-database fa-3x text-muted mb-3"></i>
+        <p class="text-muted">No hay respaldos disponibles</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,145 @@
+[
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$720000$lxIDW5B97630M18DanSBO8$OpTzlUebm6VNevG+s9gRqZEMhJvjjsdnkKGGyimo65U=",
+    "last_login": "2025-06-05T04:23:46.582Z",
+    "is_superuser": true,
+    "username": "Fabian",
+    "first_name": "",
+    "last_name": "",
+    "email": "fepoblete2001@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-06-05T04:21:32.780Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$720000$LEXaxhB8CJh1N40giGWZIj$8RnaJN0ZfoAgfyFLpSFDIHrTIJiIaMR/oTwh7PSfzao=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "brayan@brayan.cl",
+    "first_name": "Brayan",
+    "last_name": "Medina",
+    "email": "brayan@brayan.cl",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-06-05T04:50:59.728Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "0oho2owb6apchec32yttkmpwk6ye50af",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSG8OoBL934DYQaQqoGktCvjv2uTLnR7zzn3xULc1hq2kZcwJ3Zmkp1-N4z0yG0H6R7brXPqbV1m5LvCDzr4taf8vBzu30GNo35r7a3wDicQEJVzEyQDoJSyBMJ5a0mKWNAkLMUAKpMpE2pvtPFkJXr2_gCv4zco:1uN28o:TVBjZiNrc0juHWucVeGR0rgE9jL_9Asm6jAbV4uRIs4",
+    "expire_date": "2025-06-19T04:23:46.620Z"
+  }
+},
+{
+  "model": "colegios.colegio",
+  "pk": 1,
+  "fields": {
+    "nombre": "Instituto Linares",
+    "codigo": "3298",
+    "slug": "instituto-linares",
+    "direccion": "Linares",
+    "ciudad": "Linares",
+    "telefono": "2 2369 9230",
+    "email": "Insti@insti.com",
+    "sitio_web": "",
+    "logo": "colegios/logos/logo.png",
+    "activo": true,
+    "fecha_creacion": "2025-06-05T04:33:14.585Z",
+    "fecha_actualizacion": "2025-06-05T04:33:14.585Z"
+  }
+},
+{
+  "model": "usuarios.perfil",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "tipo_usuario": "",
+    "nivel_acceso": "basico",
+    "colegio": null,
+    "activo": true,
+    "fecha_creacion": "2025-06-05T04:21:33.198Z",
+    "fecha_actualizacion": "2025-06-05T04:23:46.590Z"
+  }
+},
+{
+  "model": "usuarios.perfil",
+  "pk": 2,
+  "fields": {
+    "user": 2,
+    "tipo_usuario": "admin_colegio",
+    "nivel_acceso": "basico",
+    "colegio": 1,
+    "activo": true,
+    "fecha_creacion": "2025-06-05T04:51:00.208Z",
+    "fecha_actualizacion": "2025-06-05T04:51:00.220Z"
+  }
+},
+{
+  "model": "system_backup.backup",
+  "pk": 2,
+  "fields": {
+    "name": "backup_20250605_003228",
+    "created_at": "2025-06-05T04:32:30.530Z",
+    "size": "42.2 KB",
+    "status": "success",
+    "description": "Respaldo automático del sistema"
+  }
+},
+{
+  "model": "system_backup.backup",
+  "pk": 3,
+  "fields": {
+    "name": "backup_20250605_003322",
+    "created_at": "2025-06-05T04:33:23.890Z",
+    "size": "147.8 KB",
+    "status": "success",
+    "description": "Respaldo automático del sistema"
+  }
+},
+{
+  "model": "system_backup.backup",
+  "pk": 4,
+  "fields": {
+    "name": "backup_20250605_004956",
+    "created_at": "2025-06-05T04:49:58.150Z",
+    "size": "148.0 KB",
+    "status": "success",
+    "description": "Respaldo automático del sistema"
+  }
+},
+{
+  "model": "system_backup.backup",
+  "pk": 5,
+  "fields": {
+    "name": "backup_20250605_005015",
+    "created_at": "2025-06-05T04:50:17.366Z",
+    "size": "148.3 KB",
+    "status": "success",
+    "description": "Respaldo automático del sistema"
+  }
+},
+{
+  "model": "system_backup.backup",
+  "pk": 6,
+  "fields": {
+    "name": "backup_20250605_005106",
+    "created_at": "2025-06-05T04:51:08.348Z",
+    "size": "149.3 KB",
+    "status": "success",
+    "description": "Respaldo automático del sistema"
+  }
+}
+]

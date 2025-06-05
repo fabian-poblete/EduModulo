@@ -6,19 +6,15 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('public.urls')),
-    path('dashboard/', include('dashboard.urls')),
-    path('colegios/', include('colegios.urls')),
+    path('', include('dashboard.urls')),
     path('usuarios/', include('usuarios.urls')),
+    path('colegios/', include('colegios.urls')),
     path('cursos/', include('cursos.urls')),
     path('estudiantes/', include('estudiantes.urls')),
-    # path('comunicaciones/', include('comunicaciones.urls', namespace='comunicaciones')),
-    path('salidas/', include('salidas.urls', namespace='salidas')),
-    # path('revision_pruebas/', include('revision_pruebas.urls',
-    #      namespace='revision_pruebas')),
-    path('atrasos/', include('atrasos.urls', namespace='atrasos')),
-    path('inventario/', include('inventario.urls', namespace='inventario')),
-
+    path('inventario/', include('inventario.urls')),
+    path('salidas/', include('salidas.urls')),
+    path('atrasos/', include('atrasos.urls')),
+    path('backup/', include('system_backup.urls')),  # URLs de respaldo
 
     # URLs de autenticación
     path('accounts/login/',
