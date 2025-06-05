@@ -1,9 +1,26 @@
 services:
   - type: web
     name: edumodulo
-    env: docker
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn config.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: edumodulo_db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings
+      - key: DISABLE_COLLECTSTATIC
+        value: 0
+
+databases:
+  - name: edumodulo_db
+    databaseName: edumodulo
     plan: free
-    branch: main
-    region: oregon
-    dockerfilePath: ./Dockerfile
-    healthCheckPath: /
