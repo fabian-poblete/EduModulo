@@ -18,8 +18,11 @@ RUN pip install -r requirements.txt
 # Copia el resto del proyecto
 COPY . .
 
+# Crea el directorio para archivos estáticos
+RUN mkdir -p staticfiles
+
 # Recolecta archivos estáticos
-RUN python manage.py collectstatic --noinput
+RUN python manage.py collectstatic --noinput --clear
 
 # Expone el puerto en que correrá la app
 EXPOSE 8000
