@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: mi-app
+    name: edumodulo
     env: docker
     plan: free
     branch: main
@@ -18,4 +18,12 @@ services:
         value: 4
       - key: ALLOWED_HOSTS
         value: .onrender.com
+      - key: DEBUG
+        value: "False"
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: PORT
+        value: "8000"
     autoDeploy: true
+    buildCommand: docker build -t edumodulo .
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
