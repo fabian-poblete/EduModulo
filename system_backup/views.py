@@ -75,7 +75,9 @@ def create_backup(request):
         # Generate timestamp for backup
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         # Use provided name if available, otherwise use timestamp
-        backup_name = request.POST.get('backup_name', f'backup_{timestamp}')
+        backup_name = request.POST.get('backup_name', '').strip()
+        if not backup_name:
+            backup_name = f'backup_{timestamp}'
         backup_path = os.path.join(backup_dir, backup_name)
 
         # Create backup directory
