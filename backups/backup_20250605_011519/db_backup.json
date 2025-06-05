@@ -18,11 +18,37 @@
   }
 },
 {
+  "model": "auth.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$720000$0PIQJPyTgfVuZnZkRQNVii$dkTfcdn73lni58IzjAruvl7pm5XBUK20max6SMSL/ic=",
+    "last_login": "2025-06-05T05:10:48.046Z",
+    "is_superuser": false,
+    "username": "patricio@patricio.cl",
+    "first_name": "Patricio",
+    "last_name": "",
+    "email": "patricio@patricio.cl",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-06-05T05:08:11.402Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
   "model": "sessions.session",
   "pk": "0oho2owb6apchec32yttkmpwk6ye50af",
   "fields": {
     "session_data": ".eJxVjMsOwiAQRf-FtSG8OoBL934DYQaQqoGktCvjv2uTLnR7zzn3xULc1hq2kZcwJ3Zmkp1-N4z0yG0H6R7brXPqbV1m5LvCDzr4taf8vBzu30GNo35r7a3wDicQEJVzEyQDoJSyBMJ5a0mKWNAkLMUAKpMpE2pvtPFkJXr2_gCv4zco:1uN28o:TVBjZiNrc0juHWucVeGR0rgE9jL_9Asm6jAbV4uRIs4",
     "expire_date": "2025-06-19T04:23:46.620Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "uuacikf8cyevpv1e93thfy61v6jjzoca",
+  "fields": {
+    "session_data": ".eJxVjDsOwjAQBe_iGlnGfyjpOYO1Xu_iALKlOKkQd4dIKaB9M_NeIsG61LQOmtNUxFkYcfjdMuCD2gbKHdqtS-xtmacsN0XudMhrL_S87O7fQYVRv7W3xNYa44i1i5RjsSEAOEYuykG0ke0JdSQsRuXgUZtj9KQYDSIAi_cH9WQ4zg:1uN2sK:L72xTBbLKmWVEqTIeC2fFHQ1ZYm4QkD2EM4clAXOopE",
+    "expire_date": "2025-06-19T05:10:48.061Z"
   }
 },
 {
@@ -54,6 +80,32 @@
     "activo": true,
     "fecha_creacion": "2025-06-05T04:21:33.198Z",
     "fecha_actualizacion": "2025-06-05T04:23:46.590Z"
+  }
+},
+{
+  "model": "usuarios.perfil",
+  "pk": 2,
+  "fields": {
+    "user": 3,
+    "tipo_usuario": "admin_colegio",
+    "nivel_acceso": "basico",
+    "colegio": 1,
+    "activo": true,
+    "fecha_creacion": "2025-06-05T05:08:11.857Z",
+    "fecha_actualizacion": "2025-06-05T05:10:48.055Z"
+  }
+},
+{
+  "model": "system_backup.backup",
+  "pk": 1,
+  "fields": {
+    "name": "backup_20250605_010539",
+    "created_at": "2025-06-05T05:05:41.183Z",
+    "size": "147.5 KB",
+    "status": "success",
+    "description": "Respaldo automático del sistema",
+    "colegio": null,
+    "created_by": null
   }
 }
 ]

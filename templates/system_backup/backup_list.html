@@ -3,12 +3,18 @@
 <div class="container py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Respaldos del Sistema</h1>
-    <a href="{% url 'system_backup:create_backup' %}" class="btn btn-primary">
+    {# Button to trigger the modal #}
+    <button
+      type="button"
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#createBackupModal"
+    >
       <i class="fas fa-plus"></i> Crear Respaldo
-    </a>
+    </button>
   </div>
-{% comment %} 
-  {% if messages %}
+
+  {% comment %} {% if messages %}
   <div class="messages mb-4">
     {% for message in messages %}
     <div
@@ -25,7 +31,58 @@
     </div>
     {% endfor %}
   </div>
-  {% endif %} {% endcomment %}
+  {% endif %} {% endcomment %} {# Create Backup Modal #}
+  <div
+    class="modal fade"
+    id="createBackupModal"
+    tabindex="-1"
+    aria-labelledby="createBackupModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createBackupModalLabel">
+            Crear Nuevo Respaldo
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <form method="post" action="{% url 'system_backup:create_backup' %}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="backupNameInput" class="form-label"
+                >Nombre del Respaldo (Opcional)</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="backupNameInput"
+                name="backup_name"
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Crear Respaldo
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <div class="card">
     <div class="card-body">
@@ -38,6 +95,9 @@
               <th>Fecha</th>
               <th>Tamaño</th>
               <th>Estado</th>
+              {% if not is_admin_colegio %}
+              <th>Colegio</th>
+              {% endif %}
               <th>Acciones</th>
             </tr>
           </thead>
@@ -52,6 +112,13 @@
                   {{ backup.get_status_display }}
                 </span>
               </td>
+              {% if not is_admin_colegio %}
+              <td>
+                {% if backup.colegio %} {{ backup.colegio.nombre }} {% else %}
+                <span class="text-muted">Sistema</span>
+                {% endif %}
+              </td>
+              {% endif %}
               <td>
                 <div class="btn-group">
                   <a
