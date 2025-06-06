@@ -39,14 +39,14 @@
               <div class="mb-4">
                 <label for="{{ form.rut.id_for_label }}" class="form-label">
                   RUT <span class="text-danger">*</span>
-                  <i class="fas fa-info-circle text-muted ms-1" data-bs-toggle="tooltip" title="Formato: 12.345.678-9 o 12345678-9"></i>
+                  <i class="fas fa-info-circle text-muted ms-1" data-bs-toggle="tooltip" title="Formato:123456789"></i>
                 </label>
                 <input type="text" class="form-control form-control-lg" id="{{ form.rut.id_for_label }}"
                       name="{{ form.rut.name }}" value="{{ form.rut.value|default_if_none:'' }}" required>
                 {% if form.rut.errors %}
                 <div class="invalid-feedback d-block">{{ form.rut.errors|striptags }}</div>
                 {% endif %}
-                <div class="form-text">Formato: 12.345.678-9 o 12345678-9</div>
+                <div class="form-text">Formato: 123456789 (sin puntos ni guion)</div>
               </div>
 
               <!-- Curso -->

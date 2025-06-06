@@ -5,7 +5,7 @@ from cursos.models import Curso
 
 class Estudiante(models.Model):
     nombre = models.CharField(max_length=100)
-    rut = models.CharField(max_length=12, unique=True)
+    rut = models.CharField(max_length=9, unique=True)
     curso = models.ForeignKey(
         Curso, on_delete=models.CASCADE, related_name='estudiantes')
     email_estudiante = models.EmailField(null=True, blank=True)
@@ -20,7 +20,7 @@ class Estudiante(models.Model):
     fecha_actualizacion = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.nombre} ({self.rut})"
+        return f"{self.nombre} ({self.formatear_rut()})"
 
     class Meta:
         verbose_name = 'Estudiante'
@@ -29,3 +29,12 @@ class Estudiante(models.Model):
 
     def get_colegio(self):
         return self.curso.colegio
+
+    def formatear_rut(self):
+        """Formatea el RUT para mostrarlo con puntos y guión"""
+        if len(self.rut) < 2:
+            return self.rut
+        numero = self.rut[:-1]
+        dv = self.rut[-1].upper()
+        numero_formateado = f"{int(numero):,}".replace(',', '.')
+        return f"{numero_formateado}-{dv}"

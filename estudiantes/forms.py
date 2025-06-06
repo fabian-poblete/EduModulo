@@ -5,7 +5,7 @@ import re
 
 def validar_rut(rut):
     """
-    Valida el RUT chileno y retorna el RUT formateado si es válido.
+    Valida el RUT chileno y retorna el RUT sin formato si es válido.
     Retorna None si el RUT es inválido.
     """
     # Eliminar puntos y guión
@@ -38,9 +38,8 @@ def validar_rut(rut):
 
     # Verificar si el dígito verificador es correcto
     if dvr == dv:
-        # Formatear RUT con puntos y guión
-        rut_formateado = f"{int(numero):,}".replace(',', '.') + '-' + dv
-        return rut_formateado
+        # Retornar RUT sin formato
+        return rut
     return None
 
 
@@ -69,6 +68,8 @@ class EstudianteForm(forms.ModelForm):
         if self.instance.pk:
             self.fields['rut'].widget.attrs['readonly'] = True
             self.fields['rut'].widget.attrs['class'] = 'form-control bg-light'
+            # Mostrar el RUT formateado en el campo
+            self.initial['rut'] = self.instance.formatear_rut()
         else:
             # Si es un nuevo estudiante, establecer activo como True por defecto
             self.initial['activo'] = True

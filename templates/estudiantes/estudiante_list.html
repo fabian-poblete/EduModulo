@@ -100,7 +100,7 @@
   {% endif %}
 
   <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table table-hover">
       <thead>
         <tr>
           <th>Nombre</th>
@@ -108,6 +108,7 @@
           <th>Curso</th>
           <th>Email Estudiante</th>
           <th>Email Apoderado 1</th>
+          <th>Email Apoderado 2</th>
           <th>Estado</th>
           <th>Acciones</th>
         </tr>
@@ -116,10 +117,11 @@
         {% for estudiante in estudiantes %}
         <tr>
           <td>{{ estudiante.nombre }}</td>
-          <td>{{ estudiante.rut }}</td>
+          <td>{{ estudiante.formatear_rut }}</td>
           <td>{{ estudiante.curso.nombre }}</td>
           <td>{{ estudiante.email_estudiante|default:"-" }}</td>
           <td>{{ estudiante.email_apoderado1|default:"-" }}</td>
+          <td>{{ estudiante.email_apoderado2|default:"-" }}</td>
           <td>
             {% if estudiante.activo %}
             <span class="badge bg-success">Activo</span>
@@ -128,27 +130,20 @@
             {% endif %}
           </td>
           <td>
-            {% if can_edit %}
-            <a
-              href="{% url 'estudiantes:update' estudiante.pk %}"
-              class="btn btn-sm btn-warning"
-            >
-              <i class="fas fa-edit"></i>
-            </a>
-            <a
-              href="{% url 'estudiantes:delete' estudiante.pk %}"
-              class="btn btn-sm btn-danger"
-            >
-              <i class="fas fa-trash"></i>
-            </a>
-            {% endif %}
+            <div class="btn-group">
+              <a href="{% url 'estudiantes:update' estudiante.id %}" class="btn btn-sm btn-primary">
+                <i class="fas fa-edit"></i>
+              </a>
+              <a href="{% url 'estudiantes:delete' estudiante.id %}" class="btn btn-sm btn-danger"
+                onclick="return confirm('¿Está seguro de eliminar este estudiante?')">
+                <i class="fas fa-trash"></i>
+              </a>
+            </div>
           </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="7" class="text-center">
-            No hay estudiantes registrados.
-          </td>
+          <td colspan="8" class="text-center">No hay estudiantes registrados</td>
         </tr>
         {% endfor %}
       </tbody>

@@ -1,6 +1,7 @@
 from django import forms
 from .models import Salida
 from estudiantes.models import Estudiante
+from estudiantes.forms import validar_rut
 
 
 class SalidaForm(forms.ModelForm):
@@ -9,7 +10,7 @@ class SalidaForm(forms.ModelForm):
         max_length=12,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Ingrese RUT (ej: 12.345.678-9)'
+            'placeholder': 'Ingrese RUT (ej: 123456789)'
         })
     )
 
@@ -30,9 +31,14 @@ class SalidaForm(forms.ModelForm):
         if not rut:
             raise forms.ValidationError('El RUT es requerido')
 
+        # Validar y limpiar el RUT
+        rut_validado = validar_rut(rut)
+        if not rut_validado:
+            raise forms.ValidationError('RUT inválido')
+
         # Buscar el estudiante por RUT
         try:
-            estudiante = Estudiante.objects.get(rut=rut)
+            estudiante = Estudiante.objects.get(rut=rut_validado)
             if not estudiante.activo:
                 raise forms.ValidationError('El estudiante está inactivo')
             return estudiante

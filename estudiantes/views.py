@@ -173,7 +173,7 @@ def estudiante_delete(request, pk):
 
 def validar_rut(rut):
     """
-    Valida el RUT chileno y retorna el RUT formateado si es válido.
+    Valida el RUT chileno y retorna el RUT sin formato si es válido.
     Retorna None si el RUT es inválido.
     """
     # Eliminar puntos y guión
@@ -206,9 +206,8 @@ def validar_rut(rut):
 
     # Verificar si el dígito verificador es correcto
     if dvr == dv:
-        # Formatear RUT con puntos y guión
-        rut_formateado = f"{int(numero):,}".replace(',', '.') + '-' + dv
-        return rut_formateado
+        # Retornar RUT sin formato
+        return rut
     return None
 
 
@@ -441,7 +440,7 @@ def descargar_estudiantes(request):
         messages.error(request, 'No tienes permiso para realizar esta acción.')
         return redirect('estudiantes:list')
 
-    # Obtener estudiantes según permisos
+    # Obtener los estudiantes según el tipo de usuario
     if request.user.is_superuser:
         estudiantes = Estudiante.objects.all()
     else:
@@ -452,19 +451,19 @@ def descargar_estudiantes(request):
     data = []
     for estudiante in estudiantes:
         data.append({
-            'rut': estudiante.rut,
             'nombre': estudiante.nombre,
+            'rut': estudiante.formatear_rut(),
             'curso': estudiante.curso.nombre,
-            'email_estudiante': estudiante.email_estudiante,
-            'email_apoderado1': estudiante.email_apoderado1,
-            'email_apoderado2': estudiante.email_apoderado2,
-            'telefono_apoderado1': estudiante.telefono_apoderado1,
-            'telefono_apoderado2': estudiante.telefono_apoderado2
+            'email_estudiante': estudiante.email_estudiante or '',
+            'email_apoderado1': estudiante.email_apoderado1 or '',
+            'email_apoderado2': estudiante.email_apoderado2 or '',
+            'telefono_apoderado1': estudiante.telefono_apoderado1 or '',
+            'telefono_apoderado2': estudiante.telefono_apoderado2 or '',
         })
 
     df = pd.DataFrame(data)
 
-    # Crear el archivo Excel
+    # Crear respuesta HTTP con el archivo Excel
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=estudiantes.xlsx'
@@ -523,7 +522,7 @@ def descargar_formato(request):
     # Agregar una fila de ejemplo
     ejemplo = {
         'nombre': 'Juan Pérez',
-        'rut': '12345678-9',
+        'rut': '123456789',  # Ejemplo de RUT formateado
         'curso': cursos.first().nombre if cursos.exists() else '1°A',
         'email_estudiante': 'juan.perez@email.com',
         'email_apoderado1': 'apoderado1@email.com',
@@ -541,25 +540,22 @@ def descargar_formato(request):
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=formato_estudiantes.xlsx'
 
-    # Crear el archivo Excel con hojas informativas
+    # Crear el archivo Excel con dos hojas
     with pd.ExcelWriter(response, engine='openpyxl') as writer:
         df.to_excel(writer, sheet_name='Formato', index=False)
 
-        # Crear hoja de cursos disponibles
-        cursos_df = pd.DataFrame(
-            list(cursos.values('nombre', 'colegio__nombre')))
-        if not cursos_df.empty:
-            cursos_df.columns = ['Nombre del Curso', 'Colegio']
-            cursos_df.to_excel(
-                writer, sheet_name='Cursos Disponibles', index=False)
+       # Crear hoja de instrucciones
+        instrucciones = pd.DataFrame({
+            'Instrucciones': [
+                '1. El RUT debe ser válido según el algoritmo chileno',
+                '2. El RUT debe ingresarse sin puntos ni guion (ej: 123456789)',
+                '3. Los cursos se crearán automáticamente si no existen',
+                '4. Los emails son opcionales pero deben ser válidos',
+                '5. Los teléfonos son opcionales',
+                '6. No se pueden cargar estudiantes con RUT duplicado'
+            ]
+        })
 
-        # Si es superusuario, agregar hoja de colegios
-        if request.user.is_superuser:
-            colegios_df = pd.DataFrame(
-                list(colegios.values('nombre')))
-            if not colegios_df.empty:
-                colegios_df.columns = ['Nombre del Colegio']
-                colegios_df.to_excel(
-                    writer, sheet_name='Colegios Disponibles', index=False)
+        instrucciones.to_excel(writer, sheet_name='Instrucciones', index=False)
 
     return response
