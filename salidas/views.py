@@ -68,7 +68,7 @@ def registrar_salida(request):
                 salida.estudiante = form.cleaned_data['rut_estudiante']
                 # Fecha and Hora are auto_now_add=True in the model, so they'll be set automatically
                 salida.save()
-                messages.success(request, 'Salida registrada exitosamente.')
+                # messages.success(request, 'Salida registrada exitosamente.')
                 # Assuming 'list' is the URL name for the list view
                 # return redirect('salidas:list')
                 return redirect('salidas:imprimir', salida.id)

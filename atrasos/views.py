@@ -67,7 +67,7 @@ def atraso_create(request):
                 atraso = form.save(commit=False)
                 atraso.estudiante = form.cleaned_data['rut_estudiante']
                 atraso.save()
-                messages.success(request, 'Atraso registrado exitosamente.')
+                # messages.success(request, 'Atraso registrado exitosamente.')
                 # return redirect('atrasos:list')
                 return redirect('atrasos:imprimir', atraso.id)
 
