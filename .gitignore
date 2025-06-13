@@ -73,4 +73,8 @@ yarn-error.log*
 .env.production.local
 
 #Backups creados
-backups/
+
+
+
+#app Escritorio
+EduModulo_desktop/
