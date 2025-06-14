@@ -86,6 +86,13 @@
           </td>
           <td>{{ salida.observacion|default:"-" }}</td>
           <td>
+            <button
+              onclick="imprimirVoucherLista('{{ salida.estudiante.nombre }}', '{{ salida.estudiante.rut }}', '{{ salida.fecha }}', '{{ salida.hora }}', '{{ salida.justificado }}', '{{ salida.observacion|default:"-" }}')"
+              class="btn btn-sm btn-info me-1"
+              title="Imprimir"
+            >
+              <i class="fas fa-print"></i>
+            </button>
             <a
               href="{% url 'salidas:delete' salida.pk %}"
               class="btn btn-sm btn-danger"
@@ -104,4 +111,99 @@
     </table>
   </div>
 </div>
+
+<!-- Template para el voucher -->
+<div id="voucherTemplate" style="display: none;">
+  <div class="voucher-container" style="width: 80mm; padding: 5mm; margin: 0 auto; font-family: 'Courier New', monospace;">
+    <div style="text-align: center; margin-bottom: 10px;">
+      <h3 style="margin: 0; font-size: 14px;">COMPROBANTE DE SALIDA</h3>
+    </div>
+    <div style="margin-bottom: 10px; font-size: 12px;">
+      <p style="margin: 2px 0;"><strong>Estudiante:</strong><br><span id="voucherNombre"></span></p>
+      <p style="margin: 2px 0;"><strong>RUT:</strong><br><span id="voucherRut"></span></p>
+      <p style="margin: 2px 0;"><strong>Fecha:</strong><br><span id="voucherFecha"></span></p>
+      <p style="margin: 2px 0;"><strong>Hora:</strong><br><span id="voucherHora"></span></p>
+      <p style="margin: 2px 0;"><strong>Estado:</strong><br><span id="voucherEstado"></span></p>
+      <p style="margin: 2px 0;"><strong>Observación:</strong><br><span id="voucherObservacion"></span></p>
+      <p style="margin: 2px 0;"><strong>Fecha y hora de impresión:</strong><br><span id="voucherFechaHoraImpresion"></span></p>
+    </div>
+    <div style="text-align: center; margin-top: 20px; border-top: 1px dashed #000; padding-top: 10px;">
+      <p style="margin: 2px 0;">_______________________</p>
+      <p style="margin: 2px 0; font-size: 10px;">Firma Profesor</p>
+    </div>
+    <div style="text-align: center; margin-top: 20px; font-size: 10px;">
+      <p style="margin: 2px 0;">Este comprobante es un documento oficial</p>
+    </div>
+  </div>
+</div>
 {% endblock %}
+
+{% block extra_js %}
+<script>
+  function imprimirVoucherLista(nombre, rut, fecha, hora, justificado, observacion) {
+    const voucherTemplate = document.getElementById('voucherTemplate');
+    const voucherNombre = document.getElementById('voucherNombre');
+    const voucherRut = document.getElementById('voucherRut');
+    const voucherFecha = document.getElementById('voucherFecha');
+    const voucherHora = document.getElementById('voucherHora');
+    const voucherEstado = document.getElementById('voucherEstado');
+    const voucherObservacion = document.getElementById('voucherObservacion');
+    const voucherFechaHoraImpresion = document.getElementById('voucherFechaHoraImpresion');
+
+    // Obtener fecha y hora actual
+    const ahora = new Date();
+    const fechaHoraImpresion = ahora.toLocaleString('es-CL', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+
+    // Llenar el template
+    voucherNombre.textContent = nombre;
+    voucherRut.textContent = rut;
+    voucherFecha.textContent = fecha;
+    voucherHora.textContent = hora;
+    voucherEstado.textContent = justificado === 'True' ? 'Justificado' : 'No Justificado';
+    voucherObservacion.textContent = observacion;
+    voucherFechaHoraImpresion.textContent = fechaHoraImpresion;
+
+    // Crear una ventana de impresión
+    const ventanaImpresion = window.open('', '_blank');
+    ventanaImpresion.document.write(`
+      <html>
+        <head>
+          <title>Comprobante de Salida</title>
+          <style>
+            @media print {
+              body { 
+                margin: 0; 
+                padding: 0;
+                width: 80mm;
+              }
+              .voucher-container { 
+                width: 80mm !important;
+                padding: 5mm !important;
+                margin: 0 !important;
+                font-family: 'Courier New', monospace !important;
+              }
+              @page {
+                size: 80mm auto;
+                margin: 0;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          ${voucherTemplate.innerHTML}
+        </body>
+      </html>
+    `);
+    ventanaImpresion.document.close();
+    ventanaImpresion.print();
+  }
+</script>
+{% endblock %}
+
