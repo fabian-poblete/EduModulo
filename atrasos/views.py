@@ -65,10 +65,8 @@ def atraso_create(request):
         if form.is_valid():
             try:
                 atraso = form.save(commit=False)
-                atraso.estudiante = form.cleaned_data['rut_estudiante']
+                # El estudiante ya viene validado y asignado en el formulario
                 atraso.save()
-                # messages.success(request, 'Atraso registrado exitosamente.')
-                # return redirect('atrasos:list')
                 return redirect('atrasos:imprimir', atraso.id)
 
             except Exception as e:
