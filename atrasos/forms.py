@@ -45,3 +45,10 @@ class AtrasoForm(forms.ModelForm):
         except Estudiante.DoesNotExist:
             raise forms.ValidationError(
                 'No se encontró un estudiante con ese RUT')
+
+    def save(self, commit=True):
+        atraso = super().save(commit=False)
+        atraso.estudiante = self.cleaned_data['rut_estudiante']
+        if commit:
+            atraso.save()
+        return atraso
