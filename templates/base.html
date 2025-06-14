@@ -520,7 +520,24 @@
           </ul>
         </div>
         {% endif %}
-
+        
+        <!-- Download Section -->
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Descargas</div>
+          <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="YOUR_DESKTOP_APP_DOWNLOAD_URL_HERE" {# REEMPLAZA ESTO CON LA URL REAL DE DESCARGA #}
+                target="_blank"
+                data-tooltip="Descargar App de Escritorio"
+              >
+                <i class="fas fa-desktop sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">App de Escritorio</span>
+              </a>
+            </li>
+          </ul>
+          </div>
         <!-- Academic Section -->
         {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor' %}
         <div class="sidebar-section">
