@@ -14,7 +14,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'clave-secreta-provisoria-para-build')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG')
 
 
 ALLOWED_HOSTS = os.environ.get(
