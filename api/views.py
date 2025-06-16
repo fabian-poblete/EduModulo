@@ -64,19 +64,32 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             user = User.objects.get(username=request.data['username'])
             serializer = UserSerializer(user)
             response.data['user'] = serializer.data
+            # Agregar información del colegio al token
+            if hasattr(user, 'perfil') and user.perfil.colegio:
+                response.data['colegio_id'] = user.perfil.colegio.id
+                response.data['colegio_nombre'] = user.perfil.colegio.nombre
         return response
 
+
 class EstudianteViewSet(viewsets.ModelViewSet):
-    queryset = Estudiante.objects.all()
     serializer_class = EstudianteSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    
-    filterset_fields = ['curso', 'activo', 'rut']  # ✅ Ahora se puede filtrar por RUT
+    filter_backends = [DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter]
+
+    filterset_fields = ['curso', 'activo', 'rut']
     search_fields = ['nombre', 'rut', 'email_estudiante',
                      'email_apoderado1', 'email_apoderado2']
     ordering_fields = ['nombre', 'fecha_creacion']
     ordering = ['nombre']
+
+    def get_queryset(self):
+        queryset = Estudiante.objects.all()
+        # Si el usuario no es del equipo de soporte, filtrar por su colegio
+        if not self.request.user.perfil.es_equipo_soporte:
+            queryset = queryset.filter(
+                curso__colegio=self.request.user.perfil.colegio)
+        return queryset
 
     @action(detail=True, methods=['get'])
     def salidas(self, request, pk=None):
@@ -91,6 +104,7 @@ class EstudianteViewSet(viewsets.ModelViewSet):
         atrasos = Atraso.objects.filter(estudiante=estudiante)
         serializer = AtrasoSerializer(atrasos, many=True)
         return Response(serializer.data)
+
 
 class SalidaViewSet(viewsets.ModelViewSet):
     queryset = Salida.objects.all()
