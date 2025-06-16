@@ -234,6 +234,10 @@ def reportes_salida(request):
     # Obtener lista de cursos para el filtro
     cursos = Curso.objects.all()
 
+    estudiante_rut = request.GET.get('estudiante_rut')
+    if estudiante_rut:
+        salidas = salidas.filter(estudiante__rut=estudiante_rut)
+
     context = {
         'salidas': salidas,
         'estudiantes': estudiantes,
@@ -243,6 +247,7 @@ def reportes_salida(request):
         'estudiante_id': estudiante_id,
         'curso_id': curso_id,
         'tipo_salida': tipo_salida,
+        'estudiante_rut': estudiante_rut,
     }
 
     return render(request, 'salidas/reportes_salida.html', context)

@@ -36,12 +36,12 @@
                 </div>
                 <div class="col-md-3">
                     <label for="estudiante" class="form-label">Estudiante</label>
-                    <select class="form-select" id="estudiante" name="estudiante">
-                        <option value="">Todos los estudiantes</option>
+                    <select name="estudiante" id="estudiante" class="form-control">
+                        <option value="">Todos los Estudiantes</option>
                         {% for estudiante in estudiantes %}
-                        <option value="{{ estudiante.id }}" {% if estudiante.id|stringformat:"s" == estudiante_id %}selected{% endif %}>
-                            {{ estudiante.nombre }} - {{ estudiante.rut }}
-                        </option>
+                            <option value="{{ estudiante.rut }}" {% if estudiante.rut|stringformat:"s" == estudiante_rut %}selected{% endif %}>
+                                {{ estudiante.nombre }} ({{ estudiante.formatear_rut }})
+                            </option>
                         {% endfor %}
                     </select>
                 </div>

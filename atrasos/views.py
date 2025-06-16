@@ -204,6 +204,11 @@ def reportes_atraso(request):
     if curso_id:
         atrasos = atrasos.filter(estudiante__curso_id=curso_id)
 
+    # Filtrar por estudiante_rut si se proporciona
+    estudiante_rut = request.GET.get('estudiante_rut')
+    if estudiante_rut:
+        atrasos = atrasos.filter(estudiante__rut=estudiante_rut)
+
     # Filtrar por tipo de salida si se proporciona
     # tipo_salida = request.GET.get('tipo_salida')
     # if tipo_salida:
@@ -223,6 +228,7 @@ def reportes_atraso(request):
         'fecha_fin': fecha_fin,
         'estudiante_id': estudiante_id,
         'curso_id': curso_id,
+        'estudiante_rut': estudiante_rut,
     }
 
     return render(request, 'atrasos/reportes_atraso.html', context)

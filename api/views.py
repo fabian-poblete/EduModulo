@@ -66,14 +66,13 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             response.data['user'] = serializer.data
         return response
 
-
 class EstudianteViewSet(viewsets.ModelViewSet):
     queryset = Estudiante.objects.all()
     serializer_class = EstudianteSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [DjangoFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['curso', 'activo']
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    
+    filterset_fields = ['curso', 'activo', 'rut']  # ✅ Ahora se puede filtrar por RUT
     search_fields = ['nombre', 'rut', 'email_estudiante',
                      'email_apoderado1', 'email_apoderado2']
     ordering_fields = ['nombre', 'fecha_creacion']
@@ -92,7 +91,6 @@ class EstudianteViewSet(viewsets.ModelViewSet):
         atrasos = Atraso.objects.filter(estudiante=estudiante)
         serializer = AtrasoSerializer(atrasos, many=True)
         return Response(serializer.data)
-
 
 class SalidaViewSet(viewsets.ModelViewSet):
     queryset = Salida.objects.all()

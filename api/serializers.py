@@ -60,36 +60,28 @@ class EstudianteSerializer(serializers.ModelSerializer):
 
 
 class SalidaSerializer(serializers.ModelSerializer):
-    estudiante = EstudianteSerializer(read_only=True)
-    estudiante_id = serializers.PrimaryKeyRelatedField(
+    estudiante = serializers.SlugRelatedField(
         queryset=Estudiante.objects.all(),
-        write_only=True,
-        source='estudiante'
+        slug_field='rut',
+        write_only=True
     )
 
     class Meta:
         model = Salida
-        fields = (
-            'id', 'estudiante', 'estudiante_id', 'fecha', 'hora',
-            'justificado', 'observacion', 'fecha_creacion', 'fecha_actualizacion'
-        )
-        read_only_fields = (
-            'fecha', 'hora', 'fecha_creacion', 'fecha_actualizacion')
+        fields = ('id', 'estudiante', 'fecha', 'hora',
+                  'justificado', 'observacion')
+        read_only_fields = ('fecha', 'hora')
 
 
 class AtrasoSerializer(serializers.ModelSerializer):
-    estudiante = EstudianteSerializer(read_only=True)
-    estudiante_id = serializers.PrimaryKeyRelatedField(
+    estudiante = serializers.SlugRelatedField(
         queryset=Estudiante.objects.all(),
-        write_only=True,
-        source='estudiante'
+        slug_field='rut',
+        write_only=True
     )
 
     class Meta:
         model = Atraso
-        fields = (
-            'id', 'estudiante', 'estudiante_id', 'fecha', 'hora',
-            'justificado', 'observacion', 'fecha_creacion', 'fecha_actualizacion'
-        )
-        read_only_fields = (
-            'fecha', 'hora', 'fecha_creacion', 'fecha_actualizacion')
+        fields = ('id', 'estudiante', 'fecha', 'hora',
+                  'justificado', 'observacion')
+        read_only_fields = ('fecha', 'hora')
