@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="text-center">Descarga EduModulo</h2>
+        </div>
+        <div class="card-body">
+          <div class="text-center mb-4">
+            <h4>Descarga la aplicación de escritorio EduModulo</h4>
+            <p class="text-muted">Versión actual: 1.0</p>
+          </div>
+
+          <div class="alert alert-info">
+            <h5>Requisitos del sistema:</h5>
+            <ul>
+              <li>Windows 10 o superior</li>
+              <li>2GB de RAM mínimo</li>
+              <li>100MB de espacio en disco</li>
+              <li>Debe añadirse un logo del colegio en la carpeta <code>logo</code>, con el nombre exacto <code>logo.png</code></li>
+            </ul>
+          </div>
+
+          <div class="text-center mt-4">
+            <a
+              href="{% static 'downloads/EduModulo.zip' %}"
+              class="btn btn-primary btn-lg"
+              download
+            >
+              <i class="fas fa-download"></i> Descargar EduModulo
+            </a>
+          </div>
+
+          <div class="mt-4">
+            <h5>Instrucciones de instalación:</h5>
+            <ol>
+              <li>Descarga el archivo comprimido (ZIP)</li>
+              <li>Extrae el contenido del archivo ZIP</li>
+              <li>Navega a la carpeta extraída</li>
+              <li>Ejecuta el archivo <code>EduModulo.exe</code> desde la carpeta extraída</li>
+              <li>Añade el logo del colegio en la subcarpeta <code>logo</code> con el nombre <code>logo.png</code></li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

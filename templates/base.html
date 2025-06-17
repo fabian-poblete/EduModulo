@@ -525,17 +525,17 @@
         <div class="sidebar-section">
           <div class="sidebar-section-title">Descargas</div>
           <ul class="sidebar-menu">
-            {% comment %} <li class="sidebar-menu-item">
+            <li class="sidebar-menu-item">
               <a
                 class="sidebar-menu-link"
-                href="YOUR_DESKTOP_APP_DOWNLOAD_URL_HERE" {# REEMPLAZA ESTO CON LA URL REAL DE DESCARGA #}
+                href="{% url 'public:descarga' %}" {# REEMPLAZA ESTO CON LA URL REAL DE DESCARGA #}
                 target="_blank"
                 data-tooltip="Descargar App de Escritorio"
               >
                 <i class="fas fa-desktop sidebar-menu-icon"></i>
                 <span class="sidebar-menu-text">App de Escritorio</span>
               </a>
-            </li> {% endcomment %}
+            </li> 
           </ul>
           </div>
         <!-- Academic Section -->

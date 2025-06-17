@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.core.mail import send_mail
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -40,3 +41,8 @@ def contact_view(request):
             return JsonResponse({'success': False, 'message': 'Ocurrió un error al enviar el mensaje.'}, status=500)
 
     return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)
+
+
+@login_required
+def download_view(request):
+    return render(request, 'public/descarga.html')

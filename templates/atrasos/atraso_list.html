@@ -4,12 +4,21 @@
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="mb-0">Atrasos</h1>
     <div class="d-flex gap-2">
-      <a href="{% url 'atrasos:reportes_atraso' %}" class="btn btn-success">
-        <i class="fas fa-chart-line"></i> Reportes
+            <!-- Botón para descargar o acceder a la app de escritorio -->
+      <a href="{% url 'public:descarga' %}" class="btn btn-success">
+        <i class="fas fa-desktop"></i> Aplicación de escritorio
       </a>
+
+      <!-- Botón para ver reportes (color info) -->
+      <a href="{% url 'atrasos:reportes_atraso' %}" class="btn btn-info text-white">
+        <i class="fas fa-chart-line"></i> Ver Reportes
+      </a>
+
+      <!-- Botón para registrar atraso (color primario) -->
       <a href="{% url 'atrasos:create' %}" class="btn btn-primary">
         <i class="fas fa-plus"></i> Registrar Atraso
       </a>
+
     </div>
   </div>
   {% comment %} {% if messages %}
