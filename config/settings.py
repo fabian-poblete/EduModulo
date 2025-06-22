@@ -14,8 +14,8 @@ SECRET_KEY = os.environ.get(
     'SECRET_KEY', 'clave-secreta-provisoria-para-build')
 
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+print(DEBUG)
 
 
 ALLOWED_HOSTS = os.environ.get(
@@ -183,10 +183,11 @@ REST_FRAMEWORK = {
 
 # JWT settings
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': False,
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=12),      # 8 horas en lugar de 1 hora
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),      # 7 días en lugar de 1 día
+    'ROTATE_REFRESH_TOKENS': True,                    # Habilitar rotación de refresh tokens
     'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,                        # Actualizar último login
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
     'VERIFYING_KEY': None,
@@ -195,6 +196,10 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
     'TOKEN_TYPE_CLAIM': 'token_type',
+    'JTI_CLAIM': 'jti',                              # JWT ID claim
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'SLIDING_TOKEN_LIFETIME': timedelta(hours=8),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=7),
 }
 
 # CORS settings

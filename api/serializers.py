@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from estudiantes.models import Estudiante
 from salidas.models import Salida
 from atrasos.models import Atraso
-from cursos.models import Curso
+from cursos.models import Curso, Colegio
 
 User = get_user_model()
 
@@ -30,7 +30,15 @@ class UserDetailSerializer(UserSerializer):
         fields = UserSerializer.Meta.fields + ('groups',)
 
 
+class ColegioSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Colegio
+        fields = ('id', 'nombre')
+
+
 class CursoSerializer(serializers.ModelSerializer):
+    colegio = ColegioSimpleSerializer(read_only=True)
+
     class Meta:
         model = Curso
         fields = ('id', 'nombre', 'colegio')
