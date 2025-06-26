@@ -47,7 +47,7 @@ class EstudianteForm(forms.ModelForm):
     class Meta:
         model = Estudiante
         fields = ['nombre', 'rut', 'curso', 'email_estudiante', 'email_apoderado1',
-                  'email_apoderado2', 'telefono_apoderado1', 'telefono_apoderado2', 'activo']
+                  'email_apoderado2', 'telefono_apoderado1', 'telefono_apoderado2']
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'rut': forms.TextInput(attrs={'class': 'form-control'}),
@@ -57,7 +57,6 @@ class EstudianteForm(forms.ModelForm):
             'email_apoderado2': forms.EmailInput(attrs={'class': 'form-control'}),
             'telefono_apoderado1': forms.TextInput(attrs={'class': 'form-control'}),
             'telefono_apoderado2': forms.TextInput(attrs={'class': 'form-control'}),
-            'activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
     def __init__(self, *args, **kwargs):

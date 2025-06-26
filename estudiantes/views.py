@@ -119,7 +119,9 @@ def estudiante_update(request, pk):
             request.POST, instance=estudiante, user=request.user)
         if form.is_valid():
             try:
-                form.save()
+                estudiante_obj = form.save(commit=False)
+                estudiante_obj.activo = estudiante.activo
+                estudiante_obj.save()
                 messages.success(
                     request, 'Estudiante actualizado exitosamente.')
                 return redirect('estudiantes:list')
