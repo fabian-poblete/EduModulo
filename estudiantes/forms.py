@@ -69,7 +69,7 @@ class EstudianteForm(forms.ModelForm):
             self.fields['rut'].widget.attrs['readonly'] = True
             self.fields['rut'].widget.attrs['class'] = 'form-control bg-light'
             # Mostrar el RUT formateado en el campo
-            self.initial['rut'] = self.instance.formatear_rut()
+            self.initial['rut'] = self.instance.rut
         else:
             # Si es un nuevo estudiante, establecer activo como True por defecto
             self.initial['activo'] = True
@@ -105,14 +105,8 @@ class EstudianteForm(forms.ModelForm):
 
     def clean_email_apoderado1(self):
         email = self.cleaned_data.get('email_apoderado1')
-        if email:
-            if Estudiante.objects.exclude(pk=self.instance.pk if self.instance.pk else None).filter(email_apoderado1=email).exists():
-                raise forms.ValidationError('Este email ya está registrado')
         return email
 
     def clean_email_apoderado2(self):
         email = self.cleaned_data.get('email_apoderado2')
-        if email:
-            if Estudiante.objects.exclude(pk=self.instance.pk if self.instance.pk else None).filter(email_apoderado2=email).exists():
-                raise forms.ValidationError('Este email ya está registrado')
         return email

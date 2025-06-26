@@ -15,4 +15,6 @@ urlpatterns = [
     path('descargar-estudiantes/', views.descargar_estudiantes,
          name='descargar_estudiantes'),
     path('descargar-formato/', views.descargar_formato, name='descargar_formato'),
+    path('<int:pk>/toggle-active/',
+         views.estudiante_toggle_active, name='toggle_active'),
 ]

@@ -8,10 +8,7 @@
       <a href="{% url 'estudiantes:create' %}" class="btn btn-primary me-2">
         <i class="fas fa-plus"></i> Nuevo Estudiante
       </a>
-      <a
-        href="{% url 'estudiantes:carga_masiva' %}"
-        class="btn btn-success me-2"
-      >
+      <a href="{% url 'estudiantes:carga_masiva' %}" class="btn btn-success me-2">
         <i class="fas fa-upload"></i> Carga Masiva
       </a>
       <a href="{% url 'estudiantes:edicion_masiva' %}" class="btn btn-info">
@@ -45,8 +42,7 @@
         </div>
         <div class="col-md-4">
           <label for="busqueda" class="form-label">Buscar por nombre o RUT</label>
-          <input type="text" class="form-control" id="busqueda" name="busqueda" 
-                 placeholder="Ingrese nombre o RUT" value="{{ busqueda|default:'' }}">
+          <input type="text" class="form-control" id="busqueda" name="busqueda" placeholder="Ingrese nombre o RUT" value="{{ busqueda|default:'' }}">
         </div>
         <div class="col-12">
           <button type="submit" class="btn btn-primary">
@@ -76,18 +72,12 @@
           {% endfor %}
         </div>
         {% endif %}
-        
         {% if estado %}
         <div class="col-md-4">
           <strong>Estado:</strong>
-          {% if estado == '1' %}
-            Activo
-          {% else %}
-            Inactivo
-          {% endif %}
+          {% if estado == '1' %}Activo{% else %}Inactivo{% endif %}
         </div>
         {% endif %}
-        
         {% if busqueda %}
         <div class="col-md-4">
           <strong>Búsqueda:</strong>
@@ -110,7 +100,7 @@
           <th>Email Apoderado 1</th>
           <th>Email Apoderado 2</th>
           <th>Estado</th>
-          <th>Acciones</th>
+          {% if is_admin %}<th>Acciones</th>{% endif %}
         </tr>
       </thead>
       <tbody>
@@ -119,9 +109,15 @@
           <td>{{ estudiante.nombre }}</td>
           <td>{{ estudiante.formatear_rut }}</td>
           <td>{{ estudiante.curso.nombre }}</td>
-          <td>{{ estudiante.email_estudiante|default:"-" }}</td>
-          <td>{{ estudiante.email_apoderado1|default:"-" }}</td>
-          <td>{{ estudiante.email_apoderado2|default:"-" }}</td>
+          <td class="text-truncate email-copy" style="max-width: 150px; cursor: pointer;" title="{{ estudiante.email_estudiante }}">
+            {{ estudiante.email_estudiante|default:"-" }}
+          </td>
+          <td class="text-truncate email-copy" style="max-width: 150px; cursor: pointer;" title="{{ estudiante.email_apoderado1 }}">
+            {{ estudiante.email_apoderado1|default:"-" }}
+          </td>
+          <td class="text-truncate email-copy" style="max-width: 150px; cursor: pointer;" title="{{ estudiante.email_apoderado2 }}">
+            {{ estudiante.email_apoderado2|default:"-" }}
+          </td>
           <td>
             {% if estudiante.activo %}
             <span class="badge bg-success">Activo</span>
@@ -129,21 +125,37 @@
             <span class="badge bg-danger">Inactivo</span>
             {% endif %}
           </td>
+          {% if is_admin %}
           <td>
-            <div class="btn-group">
-              <a href="{% url 'estudiantes:update' estudiante.id %}" class="btn btn-sm btn-primary">
-                <i class="fas fa-edit"></i>
-              </a>
-              <a href="{% url 'estudiantes:delete' estudiante.id %}" class="btn btn-sm btn-danger"
-                onclick="return confirm('¿Está seguro de eliminar este estudiante?')">
-                <i class="fas fa-trash"></i>
-              </a>
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenu{{ estudiante.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-cog"></i>
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{ estudiante.id }}">
+                <li>
+                  <a class="dropdown-item" href="{% url 'estudiantes:update' estudiante.id %}">
+                    <i class="fas fa-edit me-1 text-primary"></i> Editar
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item text-danger" href="{% url 'estudiantes:delete' estudiante.id %}">
+                    <i class="fas fa-trash me-1"></i> Eliminar
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'estudiantes:toggle_active' estudiante.id %}" onclick="return confirm('¿Está seguro de {% if estudiante.activo %}desactivar{% else %}activar{% endif %} este estudiante?')">
+                    <i class="fas {% if estudiante.activo %}fa-user-slash text-secondary{% else %}fa-user-check text-success{% endif %} me-1"></i>
+                    {% if estudiante.activo %}Desactivar{% else %}Activar{% endif %}
+                  </a>
+                </li>
+              </ul>
             </div>
           </td>
+          {% endif %}
         </tr>
         {% empty %}
         <tr>
-          <td colspan="8" class="text-center">No hay estudiantes registrados</td>
+          <td colspan="{% if is_admin %}8{% else %}7{% endif %}" class="text-center">No hay estudiantes registrados</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -152,6 +164,11 @@
 </div>
 
 <style>
+  .email-copy {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
   @media print {
     .card, .btn {
       display: none !important;
@@ -172,4 +189,26 @@
     }
   }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const copyCells = document.querySelectorAll('.email-copy');
+    copyCells.forEach(cell => {
+      cell.addEventListener('click', function () {
+        const text = this.textContent.trim();
+        if (text !== '-' && text.includes('@')) {
+          navigator.clipboard.writeText(text)
+            .then(() => {
+              this.classList.add('bg-light');
+              this.setAttribute('title', '¡Copiado al portapapeles!');
+              setTimeout(() => {
+                this.classList.remove('bg-light');
+                this.setAttribute('title', text);
+              }, 1500);
+            });
+        }
+      });
+    });
+  });
+</script>
 {% endblock %}

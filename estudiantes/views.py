@@ -58,7 +58,7 @@ def estudiante_list(request):
         'estudiantes': estudiantes,
         'cursos': cursos,
         'can_edit': can_edit,
-        'is_admin': request.user.is_superuser or request.user.perfil.tipo_usuario == 'admin_colegio',
+        'is_admin': request.user.is_superuser or request.user.perfil.tipo_usuario in ['admin_colegio', 'soporte'],
         'curso_id': curso_id,
         'estado': estado,
         'busqueda': busqueda
@@ -559,3 +559,31 @@ def descargar_formato(request):
         instrucciones.to_excel(writer, sheet_name='Instrucciones', index=False)
 
     return response
+
+
+@login_required
+def estudiante_toggle_active(request, pk):
+    estudiante = get_object_or_404(Estudiante, pk=pk)
+
+    # Verificar permisos
+    if request.user.is_superuser:
+        can_edit = True
+    elif request.user.perfil.tipo_usuario == 'admin_colegio':
+        can_edit = estudiante.curso.colegio == request.user.perfil.colegio
+    else:
+        can_edit = False
+
+    if not can_edit:
+        messages.error(
+            request, 'No tienes permiso para cambiar el estado de este estudiante.')
+        return redirect('estudiantes:list')
+
+    estudiante.activo = not estudiante.activo
+    estudiante.save()
+    if estudiante.activo:
+        messages.success(
+            request, f'El estudiante {estudiante.nombre} ha sido activado.')
+    else:
+        messages.success(
+            request, f'El estudiante {estudiante.nombre} ha sido desactivado.')
+    return redirect('estudiantes:list')

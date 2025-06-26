@@ -425,6 +425,36 @@
                 <span class="sidebar-menu-text">Dashboard</span>
               </a>
             </li>
+            <!-- Academic Section -->
+        {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor' %}
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Académico</div>
+          <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'estudiantes:list' %}"
+                data-tooltip="Estudiantes"
+              >
+                <i class="fas fa-user-graduate sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Estudiantes</span>
+              </a>
+            </li>
+            {% comment %}
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'revision_pruebas:lista_revisiones' %}"
+                data-tooltip="Revisión de Pruebas"
+              >
+                <i class="fas fa-file-alt sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Revisión de Pruebas</span>
+              </a>
+            </li>
+            {% endcomment %}
+          </ul>
+        </div>
+        {% endif %}
             {% comment %}
             <li class="sidebar-menu-item">
               <a
@@ -538,36 +568,7 @@
             </li> 
           </ul>
           </div>
-        <!-- Academic Section -->
-        {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor' %}
-        <div class="sidebar-section">
-          <div class="sidebar-section-title">Académico</div>
-          <ul class="sidebar-menu">
-            <li class="sidebar-menu-item">
-              <a
-                class="sidebar-menu-link"
-                href="{% url 'estudiantes:list' %}"
-                data-tooltip="Estudiantes"
-              >
-                <i class="fas fa-user-graduate sidebar-menu-icon"></i>
-                <span class="sidebar-menu-text">Estudiantes</span>
-              </a>
-            </li>
-            {% comment %}
-            <li class="sidebar-menu-item">
-              <a
-                class="sidebar-menu-link"
-                href="{% url 'revision_pruebas:lista_revisiones' %}"
-                data-tooltip="Revisión de Pruebas"
-              >
-                <i class="fas fa-file-alt sidebar-menu-icon"></i>
-                <span class="sidebar-menu-text">Revisión de Pruebas</span>
-              </a>
-            </li>
-            {% endcomment %}
-          </ul>
-        </div>
-        {% endif %}
+        
 
         <!-- Inventario Section -->
         {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio' %}
