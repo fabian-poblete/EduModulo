@@ -1,5 +1,5 @@
-{% extends 'base.html' %} {% block title %}Dashboard{% endblock %} 
-{% block extra_css %}
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %} {% block extra_css %}
 <style>
   .dashboard-container {
     padding: 1.5rem;
@@ -389,46 +389,104 @@
   <!-- Statistics Cards -->
   <div class="row g-3 section-spacing">
     <div class="col-lg-3 col-md-6">
-      <div class="stats-card primary">
-        <div class="stats-icon">
-          <i class="fas fa-chalkboard"></i>
+      <a
+        href="{% url 'cursos:list' %}"
+        class="text-decoration-none"
+        style="color: inherit"
+      >
+        <div class="stats-card primary h-100">
+          <div class="stats-icon">
+            <i class="fas fa-chalkboard"></i>
+          </div>
+          <div class="stats-number">{{ total_cursos }}</div>
+          <div class="stats-label">Total Cursos</div>
+          <div class="stats-subtitle">
+            <i class="fas fa-check-circle"></i>
+            {{ cursos_activos }} activos
+          </div>
         </div>
-        <div class="stats-number">{{ total_cursos }}</div>
-        <div class="stats-label">Total Cursos</div>
-        <div class="stats-subtitle">
-          <i class="fas fa-check-circle"></i>
-          {{ cursos_activos }} activos
-        </div>
-      </div>
+      </a>
     </div>
 
     <div class="col-lg-3 col-md-6">
-      <div class="stats-card success">
-        <div class="stats-icon">
-          <i class="fas fa-user-graduate"></i>
+      <a
+        href="{% url 'estudiantes:list' %}"
+        class="text-decoration-none"
+        style="color: inherit"
+      >
+        <div class="stats-card success h-100">
+          <div class="stats-icon">
+            <i class="fas fa-user-graduate"></i>
+          </div>
+          <div class="stats-number">{{ total_estudiantes }}</div>
+          <div class="stats-label">Total Estudiantes</div>
+          <div class="stats-subtitle">
+            <i class="fas fa-check-circle"></i>
+            {{ estudiantes_activos }} activos
+          </div>
         </div>
-        <div class="stats-number">{{ total_estudiantes }}</div>
-        <div class="stats-label">Total Estudiantes</div>
-        <div class="stats-subtitle">
-          <i class="fas fa-check-circle"></i>
-          {{ estudiantes_activos }} activos
+      </a>
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+      <a
+        href="{% url 'atrasos:list' %}"
+        class="text-decoration-none"
+        style="color: inherit"
+      >
+        <div class="stats-card warning h-100">
+          <div class="stats-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stats-number">{{ total_atrasos }}</div>
+          <div class="stats-label">Total Atrasos</div>
+          <div class="stats-subtitle">
+            <i class="fas fa-arrow-right"></i>
+            Ver listado
+          </div>
         </div>
-      </div>
+      </a>
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+      <a
+        href="{% url 'salidas:list' %}"
+        class="text-decoration-none"
+        style="color: inherit"
+      >
+        <div class="stats-card info h-100">
+          <div class="stats-icon">
+            <i class="fas fa-door-open"></i>
+          </div>
+          <div class="stats-number">{{ total_salidas }}</div>
+          <div class="stats-label">Total Salidas</div>
+          <div class="stats-subtitle">
+            <i class="fas fa-arrow-right"></i>
+            Ver listado
+          </div>
+        </div>
+      </a>
     </div>
 
     {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
     <div class="col-lg-3 col-md-6">
-      <div class="stats-card warning">
-        <div class="stats-icon">
-          <i class="fas fa-users"></i>
+      <a
+        href="{% url 'usuarios:list' %}"
+        class="text-decoration-none"
+        style="color: inherit"
+      >
+        <div class="stats-card warning h-100">
+          <div class="stats-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="stats-number">{{ total_usuarios }}</div>
+          <div class="stats-label">Total Usuarios</div>
+          <div class="stats-subtitle">
+            <i class="fas fa-check-circle"></i>
+            usuarios activos
+          </div>
         </div>
-        <div class="stats-number">{{ total_usuarios }}</div>
-        <div class="stats-label">Total Usuarios</div>
-        <div class="stats-subtitle">
-          <i class="fas fa-check-circle"></i>
-          usuarios activos
-        </div>
-      </div>
+      </a>
     </div>
     {% endif %}
 
@@ -446,10 +504,9 @@
       </div>
     </div>
   </div>
-
-  <!-- Quick Access Section -->
+    {% comment %} <!-- Quick Access Section -->
   <div class="row section-spacing">
-    {% comment %} {% if user.is_authenticated %}
+    {% if user.is_authenticated %}
     <div class="col-lg-3 col-md-6 mb-4">
       <div class="quick-access-card primary">
         <div class="quick-access-icon">
@@ -465,7 +522,7 @@
         </a>
       </div>
     </div>
-    {% endif %}  {% endcomment %}
+    {% endif %}
     {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor apoderado' %}
     <div class="col-lg-3 col-md-6 mb-4">
       <div class="quick-access-card success">
@@ -479,23 +536,22 @@
         </a>
       </div>
     </div>
-    {% endif %} {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor' %}
+    {% endif %}
+    {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor' %}
     <div class="col-lg-3 col-md-6 mb-4">
       <div class="quick-access-card warning">
         <div class="quick-access-icon">
           <i class="fas fa-clock"></i>
         </div>
         <h5 class="quick-access-title">Atrasos</h5>
-        <a
-          href="{% url 'atrasos:list' %}"
-          class="btn btn-modern primary"
-        >
+        <a href="{% url 'atrasos:list' %}" class="btn btn-modern primary">
           <i class="fas fa-arrow-right"></i>
           Ir a Atrasos
         </a>
       </div>
     </div>
-    {% endif %} {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
+    {% endif %}
+    {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
     <div class="col-lg-3 col-md-6 mb-4">
       <div class="quick-access-card info">
         <div class="quick-access-icon">
@@ -509,7 +565,8 @@
       </div>
     </div>
     {% endif %}
-  </div>
+  </div> {% endcomment %}
+
 
   <!-- Data Tables Section -->
   <div class="row g-3">
@@ -540,7 +597,14 @@
                 {% for curso in ultimos_cursos %}
                 <tr>
                   <td data-label="Nombre">
-                    <div class="fw-semibold">{{ curso.nombre }}</div>
+                    <div class="fw-semibold">
+                      <a
+                        href="{% url 'cursos:detail' curso.pk %}"
+                        style="text-decoration: none; color: inherit"
+                      >
+                        {{ curso.nombre }}
+                      </a>
+                    </div>
                   </td>
                   <td data-label="Colegio">{{ curso.colegio.nombre }}</td>
                   <td data-label="Estado">
@@ -572,7 +636,7 @@
       <div class="data-card">
         <div class="data-card-header">
           <h5 class="data-card-title">Últimos Estudiantes</h5>
-          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'  %}
+          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
           <a
             href="{% url 'estudiantes:create' %}"
             class="btn btn-modern primary"
@@ -597,7 +661,14 @@
                 {% for estudiante in ultimos_estudiantes %}
                 <tr>
                   <td data-label="Nombre">
-                    <div class="fw-semibold">{{ estudiante.nombre }}</div>
+                    <div class="fw-semibold">
+                      <a
+                        href="{% url 'estudiantes:detail' estudiante.id %}"
+                        style="text-decoration: none; color: inherit"
+                      >
+                        {{ estudiante.nombre }}
+                      </a>
+                    </div>
                   </td>
                   <td data-label="Curso">{{ estudiante.curso.nombre }}</td>
                   <td data-label="Estado">
@@ -737,7 +808,14 @@
                         {{ usuario.username|first|upper }}
                       </div>
                       <div>
-                        <div class="fw-semibold">{{ usuario.username }}</div>
+                        <div class="fw-semibold">
+                          <a
+                            href="{% url 'usuarios:detail' usuario.pk %}"
+                            style="text-decoration: none; color: inherit"
+                          >
+                            {{ usuario.username }}
+                          </a>
+                        </div>
                         <div class="text-muted small">
                           {{ usuario.get_full_name|default:"Sin nombre" }}
                         </div>

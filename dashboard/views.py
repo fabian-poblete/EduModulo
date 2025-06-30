@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from cursos.models import Curso
 from estudiantes.models import Estudiante
 from inventario.models import Articulo
+from atrasos.models import Atraso
+from salidas.models import Salida
 
 # Create your views here.
 
@@ -25,6 +27,8 @@ def index(request):
         cursos_activos = cursos.filter(activo=True).count()
         estudiantes_activos = estudiantes.filter(activo=True).count()
         articulos_bueno = articulos.filter(estado__nombre='Bueno').count()
+        total_atrasos = Atraso.objects.count()
+        total_salidas = Salida.objects.count()
         porcentaje_bueno = round(
             (articulos_bueno / total_articulos * 100) if total_articulos > 0 else 0)
     elif request.user.perfil.tipo_usuario == 'admin_colegio':
@@ -41,6 +45,10 @@ def index(request):
         cursos_activos = cursos.filter(activo=True).count()
         estudiantes_activos = estudiantes.filter(activo=True).count()
         articulos_bueno = articulos.filter(estado__nombre='Bueno').count()
+        total_atrasos = Atraso.objects.filter(
+            estudiante__curso__colegio=colegio).count()
+        total_salidas = Salida.objects.filter(
+            estudiante__curso__colegio=colegio).count()
         porcentaje_bueno = round(
             (articulos_bueno / total_articulos * 100) if total_articulos > 0 else 0)
     elif request.user.perfil.tipo_usuario == 'profesor':
@@ -56,6 +64,10 @@ def index(request):
         cursos_activos = cursos.filter(activo=True).count()
         estudiantes_activos = estudiantes.filter(activo=True).count()
         articulos_bueno = articulos.filter(estado__nombre='Bueno').count()
+        total_atrasos = Atraso.objects.filter(
+            estudiante__curso__colegio=colegio).count()
+        total_salidas = Salida.objects.filter(
+            estudiante__curso__colegio=colegio).count()
         porcentaje_bueno = round(
             (articulos_bueno / total_articulos * 100) if total_articulos > 0 else 0)
     else:
@@ -69,6 +81,8 @@ def index(request):
         total_articulos = 0
         cursos_activos = 0
         estudiantes_activos = 0
+        total_atrasos = 0
+        total_salidas = 0
         porcentaje_bueno = 0
 
     # Obtener los últimos 5 cursos, estudiantes, usuarios y artículos
@@ -90,6 +104,8 @@ def index(request):
         'ultimos_estudiantes': ultimos_estudiantes,
         'ultimos_usuarios': ultimos_usuarios,
         'ultimos_articulos': ultimos_articulos,
+        'total_atrasos': total_atrasos,
+        'total_salidas': total_salidas,
     }
 
     return render(request, 'dashboard/index.html', context)
