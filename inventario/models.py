@@ -83,11 +83,11 @@ class Articulo(models.Model):
     nombre = models.CharField(max_length=255)
     descripcion = models.TextField(blank=True, null=True)
     categoria = models.ForeignKey(
-        Categoria, on_delete=models.PROTECT, related_name='articulos')
+        Categoria, on_delete=models.CASCADE, related_name='articulos')
     ubicacion = models.ForeignKey(
-        Ubicacion, on_delete=models.PROTECT, related_name='articulos')
+        Ubicacion, on_delete=models.CASCADE, related_name='articulos')
     estado = models.ForeignKey(
-        Estado, on_delete=models.PROTECT, related_name='articulos')
+        Estado, on_delete=models.CASCADE, related_name='articulos')
     cantidad = models.PositiveIntegerField(default=0)
     stock_minimo = models.PositiveIntegerField(default=0)
     codigo_barras = models.CharField(

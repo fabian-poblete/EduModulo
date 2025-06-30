@@ -27,7 +27,7 @@ class Perfil(models.Model):
     nivel_acceso = models.CharField(
         max_length=20, choices=NIVEL_ACCESO_CHOICES, default='basico')
     colegio = models.ForeignKey(
-        Colegio, on_delete=models.SET_NULL, null=True, blank=True, related_name='usuarios')
+        Colegio, on_delete=models.CASCADE, null=True, blank=True, related_name='usuarios')
     activo = models.BooleanField(default=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
