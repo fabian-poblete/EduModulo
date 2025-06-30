@@ -1,164 +1,192 @@
-  {% extends 'base.html' %}
-  {% block title %}{{ title }}{% endblock %}
-  {% block content %}
-  <div class="container py-5">
-    <div class="row justify-content-center">
-      <div class="col-md-10 col-lg-8">
-        <div class="card border-0 shadow-lg">
-          <div class="card-header bg-primary text-white py-3">
-            <h2 class="mb-0">{{ title }}</h2>
-          </div>
-          <div class="card-body px-4 py-5">
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
 
-            {% if messages %}
-            <div class="mb-4">
-              {% for message in messages %}
-              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-              {% endfor %}
-            </div>
-            {% endif %}
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h4 class="mb-0">{{ title }}</h4>
+      <a href="{% url 'estudiantes:list' %}" class="btn btn-secondary btn-sm">Volver al listado</a>
+    </div>
+    <div class="card-body">
 
-            <form method="post" novalidate>
-              {% csrf_token %}
-
-              <!-- Nombre -->
-              <div class="mb-4">
-                <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre <span class="text-danger">*</span></label>
-                <input type="text" class="form-control form-control-lg" id="{{ form.nombre.id_for_label }}"
-                      name="{{ form.nombre.name }}" value="{{ form.nombre.value|default_if_none:'' }}"
-                      placeholder="{{ form.nombre.field.widget.attrs.placeholder|default:'Ingresa el nombre completo' }}" required>
-                {% if form.nombre.errors %}
-                <div class="invalid-feedback d-block">{{ form.nombre.errors|striptags }}</div>
-                {% endif %}
-              </div>
-
-              <!-- RUT -->
-              <div class="mb-4">
-                <label for="{{ form.rut.id_for_label }}" class="form-label">
-                  RUT <span class="text-danger">*</span>
-                  <i class="fas fa-info-circle text-muted ms-1" data-bs-toggle="tooltip" title="Formato:123456789"></i>
-                </label>
-                <input type="text" class="form-control form-control-lg" id="{{ form.rut.id_for_label }}"
-                      name="{{ form.rut.name }}" value="{{ form.rut.value|default_if_none:'' }}" required>
-                {% if form.rut.errors %}
-                <div class="invalid-feedback d-block">{{ form.rut.errors|striptags }}</div>
-                {% endif %}
-                <div class="form-text">Formato: 123456789 (sin puntos ni guion)</div>
-              </div>
-
-              <!-- Curso -->
-              <div class="mb-4">
-                <label for="{{ form.curso.id_for_label }}" class="form-label">Curso <span class="text-danger">*</span></label>
-                <select class="form-select form-select-lg" name="{{ form.curso.name }}" id="{{ form.curso.id_for_label }}" required>
-                  {% for value, label in form.curso.field.choices %}
-                  <option value="{{ value }}" {% if value == form.curso.value %}selected{% endif %}>{{ label }}</option>
-                  {% endfor %}
-                </select>
-                {% if form.curso.errors %}
-                <div class="invalid-feedback d-block">{{ form.curso.errors|striptags }}</div>
-                {% endif %}
-              </div>
-
-              <!-- Emails -->
-              <div class="row mb-4">
-                <div class="col-md-12 mb-3">
-                  <label for="{{ form.email_estudiante.id_for_label }}" class="form-label">Email Estudiante <span class="text-danger">*</span></label>
-                  <input type="email" class="form-control form-control-lg" id="{{ form.email_estudiante.id_for_label }}"
-                        name="{{ form.email_estudiante.name }}" value="{{ form.email_estudiante.value|default_if_none:'' }}" required>
-                  {% if form.email_estudiante.errors %}
-                  <div class="invalid-feedback d-block">{{ form.email_estudiante.errors|striptags }}</div>
-                  {% endif %}
-                </div>
-
-                <div class="col-md-6 mb-3">
-                  <label for="{{ form.email_apoderado1.id_for_label }}" class="form-label">Email Apoderado 1</label>
-                  <input type="email" class="form-control form-control-lg" id="{{ form.email_apoderado1.id_for_label }}"
-                        name="{{ form.email_apoderado1.name }}" value="{{ form.email_apoderado1.value|default_if_none:'' }}">
-                  {% if form.email_apoderado1.errors %}
-                  <div class="invalid-feedback d-block">{{ form.email_apoderado1.errors|striptags }}</div>
-                  {% endif %}
-                </div>
-
-                <div class="col-md-6 mb-3">
-                  <label for="{{ form.email_apoderado2.id_for_label }}" class="form-label">Email Apoderado 2</label>
-                  <input type="email" class="form-control form-control-lg" id="{{ form.email_apoderado2.id_for_label }}"
-                        name="{{ form.email_apoderado2.name }}" value="{{ form.email_apoderado2.value|default_if_none:'' }}">
-                  {% if form.email_apoderado2.errors %}
-                  <div class="invalid-feedback d-block">{{ form.email_apoderado2.errors|striptags }}</div>
-                  {% endif %}
-                </div>
-              </div>
-
-              <!-- Teléfonos -->
-              <div class="row mb-4">
-                <div class="col-md-6">
-                  <label for="{{ form.telefono_apoderado1.id_for_label }}" class="form-label">Teléfono Apoderado 1</label>
-                  <input type="tel" class="form-control form-control-lg" id="{{ form.telefono_apoderado1.id_for_label }}"
-                        name="{{ form.telefono_apoderado1.name }}" value="{{ form.telefono_apoderado1.value|default_if_none:'' }}">
-                  {% if form.telefono_apoderado1.errors %}
-                  <div class="invalid-feedback d-block">{{ form.telefono_apoderado1.errors|striptags }}</div>
-                  {% endif %}
-                </div>
-
-                <div class="col-md-6">
-                  <label for="{{ form.telefono_apoderado2.id_for_label }}" class="form-label">Teléfono Apoderado 2</label>
-                  <input type="tel" class="form-control form-control-lg" id="{{ form.telefono_apoderado2.id_for_label }}"
-                        name="{{ form.telefono_apoderado2.name }}" value="{{ form.telefono_apoderado2.value|default_if_none:'' }}">
-                  {% if form.telefono_apoderado2.errors %}
-                  <div class="invalid-feedback d-block">{{ form.telefono_apoderado2.errors|striptags }}</div>
-                  {% endif %}
-                </div>
-              </div>
-
-              <!-- Acciones -->
-              <div class="d-flex justify-content-between mt-5">
-                <a href="{% url 'estudiantes:list' %}" class="btn btn-outline-secondary btn-lg">
-                  <i class="fas fa-arrow-left me-2"></i> Volver
-                </a>
-                <button type="submit" class="btn btn-success btn-lg px-4">
-                  <i class="fas fa-save me-2"></i> Guardar
-                </button>
-              </div>
-            </form>
-
-          </div>
+      {% if messages %}
+      <div class="mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+        {% endfor %}
       </div>
+      {% endif %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <dl class="row">
+
+          <!-- Nombre -->
+          <dt class="col-sm-3">Nombre <span class="text-danger">*</span></dt>
+          <dd class="col-sm-9">
+            <input type="text" class="form-control" id="{{ form.nombre.id_for_label }}"
+                   name="{{ form.nombre.name }}" value="{{ form.nombre.value|default_if_none:'' }}"
+                   placeholder="{{ form.nombre.field.widget.attrs.placeholder|default:'Ingresa el nombre completo' }}" required>
+            {% if form.nombre.errors %}
+            <div class="invalid-feedback d-block">{{ form.nombre.errors|striptags }}</div>
+            {% endif %}
+          </dd>
+
+          <!-- RUT -->
+          <dt class="col-sm-3">RUT <span class="text-danger">*</span></dt>
+          <dd class="col-sm-9">
+            <input type="text" class="form-control" id="{{ form.rut.id_for_label }}"
+                   name="{{ form.rut.name }}" value="{{ form.rut.value|default_if_none:'' }}" required>
+            {% if form.rut.errors %}
+            <div class="invalid-feedback d-block">{{ form.rut.errors|striptags }}</div>
+            {% endif %}
+            <div class="form-text">Ejemplo: 123456785 o 12345678K (sin puntos ni guion, con dígito verificador numérico o K)</div>
+
+            {% comment %} <div class="form-text">Formato: 12345678K (sin puntos ni guion)</div> {% endcomment %}
+          </dd>
+
+          <!-- Curso -->
+          <dt class="col-sm-3">Curso <span class="text-danger">*</span></dt>
+          <dd class="col-sm-9">
+            <select class="form-select" name="{{ form.curso.name }}" id="{{ form.curso.id_for_label }}" required>
+              {% for value, label in form.curso.field.choices %}
+              <option value="{{ value }}" {% if value == form.curso.value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+            {% if form.curso.errors %}
+            <div class="invalid-feedback d-block">{{ form.curso.errors|striptags }}</div>
+            {% endif %}
+          </dd>
+
+          <!-- Email Estudiante -->
+          <dt class="col-sm-3">Email Estudiante </dt>
+          <dd class="col-sm-9">
+            <input type="email" class="form-control" id="{{ form.email_estudiante.id_for_label }}"
+                   name="{{ form.email_estudiante.name }}" value="{{ form.email_estudiante.value|default_if_none:'' }}">
+            {% if form.email_estudiante.errors %}
+            <div class="invalid-feedback d-block">{{ form.email_estudiante.errors|striptags }}</div>
+            {% endif %}
+          </dd>
+
+          <!-- Email Apoderado 1 -->
+          <dt class="col-sm-3">Email Apoderado 1</dt>
+          <dd class="col-sm-9">
+            <input type="email" class="form-control" id="{{ form.email_apoderado1.id_for_label }}"
+                   name="{{ form.email_apoderado1.name }}" value="{{ form.email_apoderado1.value|default_if_none:'' }}">
+            {% if form.email_apoderado1.errors %}
+            <div class="invalid-feedback d-block">{{ form.email_apoderado1.errors|striptags }}</div>
+            {% endif %}
+          </dd>
+
+          <!-- Email Apoderado 2 -->
+          <dt class="col-sm-3">Email Apoderado 2</dt>
+          <dd class="col-sm-9">
+            <input type="email" class="form-control" id="{{ form.email_apoderado2.id_for_label }}"
+                   name="{{ form.email_apoderado2.name }}" value="{{ form.email_apoderado2.value|default_if_none:'' }}">
+            {% if form.email_apoderado2.errors %}
+            <div class="invalid-feedback d-block">{{ form.email_apoderado2.errors|striptags }}</div>
+            {% endif %}
+          </dd>
+
+          <!-- Teléfono Apoderado 1 -->
+          <dt class="col-sm-3">Teléfono Apoderado 1</dt>
+          <dd class="col-sm-9">
+            <input type="tel" class="form-control" id="{{ form.telefono_apoderado1.id_for_label }}"
+                   name="{{ form.telefono_apoderado1.name }}" value="{{ form.telefono_apoderado1.value|default_if_none:'' }}">
+            {% if form.telefono_apoderado1.errors %}
+            <div class="invalid-feedback d-block">{{ form.telefono_apoderado1.errors|striptags }}</div>
+            {% endif %}
+          </dd>
+
+          <!-- Teléfono Apoderado 2 -->
+          <dt class="col-sm-3">Teléfono Apoderado 2</dt>
+          <dd class="col-sm-9">
+            <input type="tel" class="form-control" id="{{ form.telefono_apoderado2.id_for_label }}"
+                   name="{{ form.telefono_apoderado2.name }}" value="{{ form.telefono_apoderado2.value|default_if_none:'' }}">
+            {% if form.telefono_apoderado2.errors %}
+            <div class="invalid-feedback d-block">{{ form.telefono_apoderado2.errors|striptags }}</div>
+            {% endif %}
+          </dd>
+
+        </dl>
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-between mt-4">
+          <a href="{% url 'estudiantes:list' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Volver
+          </a>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save me-1"></i> Guardar
+          </button>
+        </div>
+
+      </form>
     </div>
   </div>
+</div>
 
-  {% block extra_js %}
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // Tooltips
-      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-      tooltipTriggerList.map(el => new bootstrap.Tooltip(el));
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(el => new bootstrap.Tooltip(el));
 
-      // Validación RUT
-      const rutInput = document.querySelector('#{{ form.rut.id_for_label }}');
-      if (rutInput) {
-        rutInput.addEventListener('input', function () {
-          const rutPattern = /^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$/;
-          const isValid = rutPattern.test(this.value.trim());
-          this.classList.toggle('is-valid', isValid);
-          this.classList.toggle('is-invalid', !isValid);
-        });
+    // Validador de RUT chileno sin puntos ni guion
+    function validarRutChileno(rutCompleto) {
+      rutCompleto = rutCompleto.toUpperCase().replace(/[^0-9K]/g, '');
+
+      if (!/^\d{7,8}[0-9K]$/.test(rutCompleto)) return false;
+
+      const cuerpo = rutCompleto.slice(0, -1);
+      const dv = rutCompleto.slice(-1);
+
+      let suma = 0;
+      let multiplo = 2;
+
+      for (let i = cuerpo.length - 1; i >= 0; i--) {
+        suma += parseInt(cuerpo.charAt(i)) * multiplo;
+        multiplo = multiplo === 7 ? 2 : multiplo + 1;
       }
 
-      // Validación Emails
-      const emailInputs = document.querySelectorAll('input[type="email"]');
-      emailInputs.forEach(input => {
-        input.addEventListener('input', function () {
-          const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          const isValid = emailPattern.test(this.value.trim());
-          this.classList.toggle('is-valid', isValid && this.value !== '');
-          this.classList.toggle('is-invalid', !isValid && this.value !== '');
-        });
+      const dvEsperado = 11 - (suma % 11);
+      let dvFinal = '';
+
+      if (dvEsperado === 11) {
+        dvFinal = '0';
+      } else if (dvEsperado === 10) {
+        dvFinal = 'K';
+      } else {
+        dvFinal = dvEsperado.toString();
+      }
+
+      return dv === dvFinal;
+    }
+
+    const rutInput = document.querySelector('#{{ form.rut.id_for_label }}');
+    if (rutInput) {
+      rutInput.addEventListener('input', function () {
+        const rut = this.value.trim().toUpperCase();
+        const isValid = validarRutChileno(rut);
+        this.classList.toggle('is-valid', isValid);
+        this.classList.toggle('is-invalid', !isValid);
+      });
+    }
+
+    const emailInputs = document.querySelectorAll('input[type="email"]');
+    emailInputs.forEach(input => {
+      input.addEventListener('input', function () {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isValid = emailPattern.test(this.value.trim());
+        this.classList.toggle('is-valid', isValid && this.value !== '');
+        this.classList.toggle('is-invalid', !isValid && this.value !== '');
       });
     });
-  </script>
-  {% endblock %}
-  {% endblock %}
+  });
+</script>
+{% endblock %}
+{% endblock %}

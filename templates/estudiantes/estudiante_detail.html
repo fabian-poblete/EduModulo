@@ -1,0 +1,53 @@
+{% extends 'base.html' %} {% block title %}Detalle de Estudiante{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h4 class="mb-0">Datos Contacto</h4>
+      <a href="{% url 'estudiantes:list' %}" class="btn btn-secondary btn-sm"
+        >Volver al listado</a
+      >
+    </div>
+    <div class="card-body">
+      <dl class="row">
+        <dt class="col-sm-3">Nombre</dt>
+        <dd class="col-sm-9">{{ estudiante.nombre }}</dd>
+
+        <dt class="col-sm-3">RUT</dt>
+        <dd class="col-sm-9">{{ estudiante.formatear_rut }}</dd>
+
+        <dt class="col-sm-3">Curso</dt>
+        <dd class="col-sm-9">{{ estudiante.curso.nombre }}</dd>
+
+        <dt class="col-sm-3">Email Estudiante</dt>
+        <dd class="col-sm-9">{{ estudiante.email_estudiante|default:"-" }}</dd>
+
+        <dt class="col-sm-3">Email Apoderado 1</dt>
+        <dd class="col-sm-9">{{ estudiante.email_apoderado1|default:"-" }}</dd>
+
+        <dt class="col-sm-3">Email Apoderado 2</dt>
+        <dd class="col-sm-9">{{ estudiante.email_apoderado2|default:"-" }}</dd>
+
+        <dt class="col-sm-3">Teléfono Apoderado 1</dt>
+        <dd class="col-sm-9">
+          {{ estudiante.telefono_apoderado1|default:"-" }}
+        </dd>
+
+        <dt class="col-sm-3">Teléfono Apoderado 2</dt>
+        <dd class="col-sm-9">
+          {{ estudiante.telefono_apoderado2|default:"-" }}
+        </dd>
+
+        {% comment %} <dt class="col-sm-3">Estado</dt>
+        <dd class="col-sm-9">
+          {% if estudiante.activo %}
+          <span class="badge bg-success">Activo</span>
+          {% else %}
+          <span class="badge bg-danger">Inactivo</span>
+          {% endif %}
+        </dd> {% endcomment %}
+      </dl>
+    </div>
+  </div>
+</div>
+{% endblock %}

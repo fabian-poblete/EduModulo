@@ -8,9 +8,7 @@ from datetime import datetime, date
 from django.http import JsonResponse
 from estudiantes.models import Estudiante
 from cursos.models import Curso
-
-
-# Create your views here.
+from notificaciones.utils import enviar_notificacion
 
 
 def puede_ver_atrasos(user):
@@ -67,6 +65,12 @@ def atraso_create(request):
                 atraso = form.save(commit=False)
                 # El estudiante ya viene validado y asignado en el formulario
                 atraso.save()
+                enviar_notificacion(
+                    evento=atraso,
+                    estudiante=atraso.estudiante,
+                    colegio=atraso.estudiante.curso.colegio,
+                    tipo_evento='atraso'
+                )
                 return redirect('atrasos:imprimir', atraso.id)
 
             except Exception as e:
@@ -208,11 +212,6 @@ def reportes_atraso(request):
     estudiante_rut = request.GET.get('estudiante_rut')
     if estudiante_rut:
         atrasos = atrasos.filter(estudiante__rut=estudiante_rut)
-
-    # Filtrar por tipo de salida si se proporciona
-    # tipo_salida = request.GET.get('tipo_salida')
-    # if tipo_salida:
-    #     salidas = salidas.filter(tipo_salida=tipo_salida)
 
     # Obtener lista de estudiantes para el filtro
     estudiantes = Estudiante.objects.filter(activo=True)

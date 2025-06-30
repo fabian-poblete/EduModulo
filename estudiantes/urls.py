@@ -17,4 +17,5 @@ urlpatterns = [
     path('descargar-formato/', views.descargar_formato, name='descargar_formato'),
     path('<int:pk>/toggle-active/',
          views.estudiante_toggle_active, name='toggle_active'),
+    path('<int:pk>/detail/', views.estudiante_detail, name='detail'),
 ]

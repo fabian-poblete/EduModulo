@@ -16,6 +16,20 @@ class Colegio(models.Model):
     activo = models.BooleanField(default=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
+    NOTIFICACION_CHOICES = [
+        ('ninguno', 'Ninguno'),
+        ('email', 'Email'),
+        ('sms', 'SMS'),
+        ('ambos', 'Ambos'),
+    ]
+    notificaciones_activas = models.BooleanField(
+        default=False, help_text='¿Activar notificaciones automáticas al apoderado?')
+    canal_notificacion = models.CharField(
+        max_length=10,
+        choices=NOTIFICACION_CHOICES,
+        default='ninguno',
+        help_text='Canal de notificación: email, sms, ambos o ninguno.'
+    )
 
     class Meta:
         verbose_name = 'Colegio'

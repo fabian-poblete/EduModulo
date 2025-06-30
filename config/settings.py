@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'inventario',
     'system_backup',
     'api',
+    'notificaciones',
 ]
 
 MIDDLEWARE = [
@@ -183,9 +184,12 @@ REST_FRAMEWORK = {
 
 # JWT settings
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=12),      # 8 horas en lugar de 1 hora
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),      # 7 días en lugar de 1 día
-    'ROTATE_REFRESH_TOKENS': True,                    # Habilitar rotación de refresh tokens
+    # 8 horas en lugar de 1 hora
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=12),
+    # 7 días en lugar de 1 día
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    # Habilitar rotación de refresh tokens
+    'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': True,                        # Actualizar último login
     'ALGORITHM': 'HS256',

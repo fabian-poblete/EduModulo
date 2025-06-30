@@ -96,9 +96,7 @@
           <th>Nombre</th>
           <th>RUT</th>
           <th>Curso</th>
-          <th>Email Estudiante</th>
-          <th>Email Apoderado 1</th>
-          <th>Email Apoderado 2</th>
+          <th>Contacto</th>
           <th>Estado</th>
           {% if is_admin %}<th>Acciones</th>{% endif %}
         </tr>
@@ -109,14 +107,10 @@
           <td>{{ estudiante.nombre }}</td>
           <td>{{ estudiante.formatear_rut }}</td>
           <td>{{ estudiante.curso.nombre }}</td>
-          <td class="text-truncate email-copy" style="max-width: 150px; cursor: pointer;" title="{{ estudiante.email_estudiante }}">
-            {{ estudiante.email_estudiante|default:"-" }}
-          </td>
-          <td class="text-truncate email-copy" style="max-width: 150px; cursor: pointer;" title="{{ estudiante.email_apoderado1 }}">
-            {{ estudiante.email_apoderado1|default:"-" }}
-          </td>
-          <td class="text-truncate email-copy" style="max-width: 150px; cursor: pointer;" title="{{ estudiante.email_apoderado2 }}">
-            {{ estudiante.email_apoderado2|default:"-" }}
+          <td class="text-center">
+            <a href="{% url 'estudiantes:detail' estudiante.id %}" class="btn btn-link p-0" title="Ver contacto">
+              <i class="fas fa-address-card fa-lg"></i>
+            </a>
           </td>
           <td>
             {% if estudiante.activo %}
@@ -155,7 +149,7 @@
         </tr>
         {% empty %}
         <tr>
-          <td colspan="{% if is_admin %}8{% else %}7{% endif %}" class="text-center">No hay estudiantes registrados</td>
+          <td colspan="{% if is_admin %}6{% else %}5{% endif %}" class="text-center">No hay estudiantes registrados</td>
         </tr>
         {% endfor %}
       </tbody>

@@ -13,6 +13,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from estudiantes.models import Estudiante
 from salidas.models import Salida
 from atrasos.models import Atraso
+from notificaciones.utils import enviar_notificacion
 
 User = get_user_model()
 
@@ -141,6 +142,13 @@ class AtrasoViewSet(viewsets.ModelViewSet):
     def registrar_atraso(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            atraso = serializer.save()
+            # Enviar notificación después de guardar el atraso
+            enviar_notificacion(
+                evento=atraso,
+                estudiante=atraso.estudiante,
+                colegio=atraso.estudiante.curso.colegio,
+                tipo_evento='atraso'
+            )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

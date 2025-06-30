@@ -589,3 +589,24 @@ def estudiante_toggle_active(request, pk):
         messages.success(
             request, f'El estudiante {estudiante.nombre} ha sido desactivado.')
     return redirect('estudiantes:list')
+
+
+@login_required
+def estudiante_detail(request, pk):
+    estudiante = get_object_or_404(Estudiante, pk=pk)
+
+    # Verificar permisos
+    if request.user.is_superuser:
+        can_view = True
+    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'profesor']:
+        can_view = estudiante.curso.colegio == request.user.perfil.colegio
+    else:
+        can_view = False
+
+    if not can_view:
+        messages.error(request, 'No tienes permiso para ver este estudiante.')
+        return redirect('estudiantes:list')
+
+    return render(request, 'estudiantes/estudiante_detail.html', {
+        'estudiante': estudiante
+    })
