@@ -32,6 +32,19 @@ class ColegioDetailView(LoginRequiredMixin, SuperuserRequiredMixin, DetailView):
     context_object_name = 'colegio'
     slug_url_kwarg = 'slug'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        colegio = self.object
+        # Usuarios asociados
+        context['usuarios'] = colegio.usuarios.select_related('user').all()
+        # Cursos asociados
+        context['cursos'] = colegio.cursos.all()
+        # Estudiantes asociados (a través de cursos)
+        from estudiantes.models import Estudiante
+        context['estudiantes'] = Estudiante.objects.filter(
+            curso__colegio=colegio)
+        return context
+
 
 class ColegioCreateView(LoginRequiredMixin, SuperuserRequiredMixin, CreateView):
     model = Colegio

@@ -127,3 +127,27 @@ def curso_delete(request, pk):
     return render(request, 'cursos/curso_confirm_delete.html', {
         'curso': curso
     })
+
+
+@login_required
+def curso_detail(request, pk):
+    from estudiantes.models import Estudiante
+    from atrasos.models import Atraso
+    from salidas.models import Salida
+    curso = get_object_or_404(Curso, pk=pk)
+    estudiantes = Estudiante.objects.filter(curso=curso)
+    atrasos = Atraso.objects.filter(estudiante__curso=curso)
+    salidas = Salida.objects.filter(estudiante__curso=curso)
+    estudiantes_count = estudiantes.count()
+    atrasos_count = atrasos.count()
+    salidas_count = salidas.count()
+    return render(request, 'cursos/curso_detail.html', {
+        'curso': curso,
+        'colegio': curso.colegio,
+        'estudiantes_count': estudiantes_count,
+        'atrasos_count': atrasos_count,
+        'salidas_count': salidas_count,
+        'estudiantes': estudiantes,
+        'atrasos': atrasos,
+        'salidas': salidas,
+    })

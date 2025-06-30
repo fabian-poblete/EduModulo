@@ -10,4 +10,5 @@ urlpatterns = [
          name='create_with_colegio'),
     path('<int:pk>/editar/', views.curso_update, name='update'),
     path('<int:pk>/eliminar/', views.curso_delete, name='delete'),
+    path('<int:pk>/detail/', views.curso_detail, name='detail'),
 ]
