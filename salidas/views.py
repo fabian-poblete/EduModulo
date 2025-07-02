@@ -185,6 +185,45 @@ def imprimir_salida(request, salida_id):
 
 
 @login_required
+@user_passes_test(puede_ver_salidas)
+def marcar_regreso(request, pk):
+    salida = get_object_or_404(Salida, pk=pk)
+
+    # Verificar permisos (superuser, admin_colegio, o profesor del colegio)
+    can_mark_return = False
+    if request.user.is_superuser:
+        can_mark_return = True
+    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'profesor']:
+        if hasattr(request.user.perfil, 'colegio'):
+            if salida.estudiante.curso.colegio == request.user.perfil.colegio:
+                can_mark_return = True
+
+    if not can_mark_return:
+        messages.error(
+            request, 'No tienes permiso para marcar el regreso de esta salida.')
+        return redirect('salidas:list')
+
+    if request.method == 'POST':
+        try:
+            salida.regresado = True
+            now = datetime.now()
+            salida.fecha_regreso = now.date()
+            salida.hora_regreso = now.time().replace(microsecond=0)
+            salida.save()
+            messages.success(
+                request, f'Se marcó como regresado a {salida.estudiante.nombre}.')
+            return redirect('salidas:list')
+        except Exception as e:
+            messages.error(request, f'Error al marcar el regreso: {str(e)}')
+            return redirect('salidas:list')
+
+    # Si es GET, mostrar confirmación
+    return render(request, 'salidas/confirmar_regreso.html', {
+        'salida': salida
+    })
+
+
+@login_required
 def reportes_salida(request):
     # Obtener los datos para el reporte
     salidas = Salida.objects.all()

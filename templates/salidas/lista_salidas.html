@@ -64,7 +64,9 @@
           <th>Curso</th>
           <th>Fecha</th>
           <th>Hora</th>
-          <th>Justificado</th>
+          <th>Regreso</th>
+          <th>Motivo</th>
+          <th>¿Regresó?</th>
           <th>Observación</th>
           <th>Acciones</th>
         </tr>
@@ -77,17 +79,49 @@
           <td>{{ salida.estudiante.curso.nombre }}</td>
           <td>{{ salida.fecha }}</td>
           <td>{{ salida.hora }}</td>
+          <td>{% if salida.hora_regreso %}{{ salida.hora_regreso }}{% else %}<span class="badge bg-warning">Pendiente</span>{% endif %}</td>
           <td>
-            {% if salida.justificado %}
-            <span class="badge bg-success">Sí</span>
+            {% if salida.tipo_justificativo %}
+              {% if salida.tipo_justificativo == "medico" %}
+                <span class="badge bg-primary">Médico</span>
+              {% elif salida.tipo_justificativo == "enfermo" %}
+                <span class="badge bg-warning">Enfermo/a</span>
+              {% elif salida.tipo_justificativo == "desregulacion" %}
+                <span class="badge bg-info">Desregulación</span>
+              {% elif salida.tipo_justificativo == "otros" %}
+                <span class="badge bg-secondary">{{ salida.otros_justificativo|default:"Otros" }}</span>
+              {% endif %}
             {% else %}
-            <span class="badge bg-danger">No</span>
+              <span class="badge bg-danger">No justificado</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if salida.regresado %}
+              <span class="badge bg-success">Sí</span>
+            {% else %}
+              <span class="badge bg-warning">No</span>
             {% endif %}
           </td>
           <td>{{ salida.observacion|default:"-" }}</td>
           <td>
+            {% if not salida.regresado %}
+              <button
+                class="btn btn-sm btn-success me-1"
+                title="Marcar como regresado"
+                data-bs-toggle="modal"
+                data-bs-target="#modalRegreso"
+                data-salida-id="{{ salida.pk }}"
+                data-nombre="{{ salida.estudiante.nombre }}"
+                data-fecha="{{ salida.fecha }}"
+                data-hora="{{ salida.hora }}"
+                data-rut="{{ salida.estudiante.rut }}"
+                data-curso="{{ salida.estudiante.curso.nombre }}"
+              >
+                <i class="fas fa-check"></i>
+              </button>
+            {% endif %}
             <button
-              onclick="imprimirVoucherLista('{{ salida.estudiante.nombre }}', '{{ salida.estudiante.rut }}', '{{ salida.fecha }}', '{{ salida.hora }}', '{{ salida.justificado }}', '{{ salida.observacion|default:"-" }}')"
+              onclick="imprimirVoucherLista('{{ salida.estudiante.nombre }}', '{{ salida.estudiante.rut }}', '{{ salida.fecha }}', '{{ salida.hora }}', '{{ salida.get_tipo_justificativo_display|default:"No justificado" }}', '{{ salida.observacion|default:"-" }}', {{ salida.regresado|yesno:"true,false" }}, '{{ salida.hora_regreso|default:"-" }}')"
               class="btn btn-sm btn-info me-1"
               title="Imprimir"
             >
@@ -104,7 +138,7 @@
         </tr>
         {% empty %}
         <tr>
-          <td colspan="7" class="text-center">No hay salidas registradas.</td>
+          <td colspan="9" class="text-center">No hay salidas registradas.</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -116,31 +150,66 @@
 <div id="voucherTemplate" style="display: none;">
   <div class="voucher-container" style="width: 80mm; padding: 5mm; margin: 0 auto; font-family: 'Courier New', monospace;">
     <div style="text-align: center; margin-bottom: 10px;">
-      <h3 style="margin: 0; font-size: 14px;">COMPROBANTE DE SALIDA</h3>
+      <h3 style="margin: 0; font-size: 14px;" id="voucherTitulo">COMPROBANTE DE SALIDA</h3>
     </div>
     <div style="margin-bottom: 10px; font-size: 12px;">
+      <p style="margin: 2px 0;" id="voucherHoraRegresoBlock">
+        <strong>Hora de regreso:</strong><br><span id="voucherHoraRegreso"></span>
+      </p>
       <p style="margin: 2px 0;"><strong>Estudiante:</strong><br><span id="voucherNombre"></span></p>
       <p style="margin: 2px 0;"><strong>RUT:</strong><br><span id="voucherRut"></span></p>
       <p style="margin: 2px 0;"><strong>Fecha:</strong><br><span id="voucherFecha"></span></p>
-      <p style="margin: 2px 0;"><strong>Hora:</strong><br><span id="voucherHora"></span></p>
-      <p style="margin: 2px 0;"><strong>Estado:</strong><br><span id="voucherEstado"></span></p>
+      <p style="margin: 2px 0;"><strong>Hora salida:</strong><br><span id="voucherHora"></span></p>
+      <p style="margin: 2px 0;"><strong>Motivo:</strong><br><span id="voucherEstado"></span></p>
       <p style="margin: 2px 0;"><strong>Observación:</strong><br><span id="voucherObservacion"></span></p>
-      <p style="margin: 2px 0;"><strong>Fecha y hora de impresión:</strong><br><span id="voucherFechaHoraImpresion"></span></p>
+      
     </div>
-    {% comment %} <div style="text-align: center; margin-top: 20px; border-top: 1px dashed #000; padding-top: 10px;">
-      <p style="margin: 2px 0;">_______________________</p>
-      <p style="margin: 2px 0; font-size: 10px;">Firma Profesor</p>
+  </div>
+</div>
+
+<!-- Modal de confirmación de regreso -->
+<div class="modal fade" id="modalRegreso" tabindex="-1" aria-labelledby="modalRegresoLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="modalRegresoLabel">
+          <i class="fas fa-user-check me-2"></i> Confirmar Regreso
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <p class="fs-5">
+          Estás a punto de confirmar que <strong id="modalNombre"></strong> ha regresado al establecimiento.
+        </p>
+        <p><strong>Fecha de salida:</strong> <span id="modalFecha"></span></p>
+        <p><strong>Hora de salida:</strong> <span id="modalHora"></span></p>
+        <p><strong>RUT:</strong> <span id="modalRut"></span></p>
+        <p><strong>Curso:</strong> <span id="modalCurso"></span></p>
+        <div class="alert alert-info mt-4" id="horaActualInfo">
+          <i class="fas fa-clock me-1"></i>
+          El regreso será registrado a la hora actual:
+          <strong id="horaActual">...</strong>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <form id="formRegreso" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times"></i> Cancelar
+          </button>
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-check"></i> Confirmar Regreso
+          </button>
+        </form>
+      </div>
     </div>
-    <div style="text-align: center; margin-top: 20px; font-size: 10px;">
-      <p style="margin: 2px 0;">Este comprobante es un documento oficial</p>
-    </div> {% endcomment %}
   </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-  function imprimirVoucherLista(nombre, rut, fecha, hora, justificado, observacion) {
+  function imprimirVoucherLista(nombre, rut, fecha, hora, justificado, observacion, regresado, hora_regreso) {
     const voucherTemplate = document.getElementById('voucherTemplate');
     const voucherNombre = document.getElementById('voucherNombre');
     const voucherRut = document.getElementById('voucherRut');
@@ -148,28 +217,34 @@
     const voucherHora = document.getElementById('voucherHora');
     const voucherEstado = document.getElementById('voucherEstado');
     const voucherObservacion = document.getElementById('voucherObservacion');
-    const voucherFechaHoraImpresion = document.getElementById('voucherFechaHoraImpresion');
+    const voucherTitulo = document.getElementById('voucherTitulo');
+    const voucherHoraRegreso = document.getElementById('voucherHoraRegreso');
 
     // Obtener fecha y hora actual
     const ahora = new Date();
-    const fechaHoraImpresion = ahora.toLocaleString('es-CL', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-    });
+    
 
     // Llenar el template
     voucherNombre.textContent = nombre;
     voucherRut.textContent = rut;
     voucherFecha.textContent = fecha;
     voucherHora.textContent = hora;
-    voucherEstado.textContent = justificado === 'True' ? 'Justificado' : 'No Justificado';
+    voucherEstado.textContent = justificado;
     voucherObservacion.textContent = observacion;
-    voucherFechaHoraImpresion.textContent = fechaHoraImpresion;
-
+    if (voucherHoraRegreso) {
+      if (regresado && hora_regreso && hora_regreso !== 'Pendiente' && hora_regreso !== '-') {
+        voucherHoraRegreso.textContent = hora_regreso;
+        voucherHoraRegreso.parentElement.style.display = '';
+      } else {
+        voucherHoraRegreso.parentElement.style.display = 'none';
+      }
+    }
+    // Cambiar el título según si ha regresado o no
+    if (regresado) {
+      voucherTitulo.textContent = 'COMPROBANTE DE REGRESO';
+    } else {
+      voucherTitulo.textContent = 'COMPROBANTE DE SALIDA';
+    }
     // Crear una ventana de impresión
     const ventanaImpresion = window.open('', '_blank');
     ventanaImpresion.document.write(`
@@ -204,6 +279,47 @@
     ventanaImpresion.document.close();
     ventanaImpresion.print();
   }
+
+  // Modal de regreso
+  var modalRegreso = document.getElementById('modalRegreso');
+  var formRegreso = document.getElementById('formRegreso');
+  var horaActualSpan = document.getElementById('horaActual');
+  var timerHoraActual;
+
+  modalRegreso.addEventListener('show.bs.modal', function (event) {
+    var button = event.relatedTarget;
+    var salidaId = button.getAttribute('data-salida-id');
+    var nombre = button.getAttribute('data-nombre');
+    var fecha = button.getAttribute('data-fecha');
+    var hora = button.getAttribute('data-hora');
+    var rut = button.getAttribute('data-rut');
+    var curso = button.getAttribute('data-curso');
+
+    document.getElementById('modalNombre').textContent = nombre;
+    document.getElementById('modalFecha').textContent = fecha;
+    document.getElementById('modalHora').textContent = hora;
+    document.getElementById('modalRut').textContent = rut;
+    document.getElementById('modalCurso').textContent = curso;
+
+    // Actualizar la acción del formulario
+    formRegreso.action = '/salidas/' + salidaId + '/marcar-regreso/';
+
+    // Mostrar la hora actual y actualizar cada segundo
+    function actualizarHoraActual() {
+      const ahora = new Date();
+      const horaFormateada = ahora.toLocaleTimeString('es-CL', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      horaActualSpan.textContent = horaFormateada;
+    }
+    actualizarHoraActual();
+    timerHoraActual = setInterval(actualizarHoraActual, 1000);
+  });
+  modalRegreso.addEventListener('hide.bs.modal', function () {
+    clearInterval(timerHoraActual);
+  });
 </script>
 {% endblock %}
 

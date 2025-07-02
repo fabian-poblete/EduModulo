@@ -7,7 +7,22 @@
   <li class="list-group-item">
     <strong>Fecha de Salida:</strong> {{ salida.fecha_salida }}
   </li>
-  <li class="list-group-item"><strong>Motivo:</strong> {{ salida.motivo }}</li>
+  <li class="list-group-item"> 
+    <strong>Motivo:</strong>
+    {% if salida.tipo_justificativo %}
+      {% if salida.tipo_justificativo == "medico" %}
+        <span class="badge bg-primary">Médico</span>
+      {% elif salida.tipo_justificativo == "enfermo" %}
+        <span class="badge bg-warning">Enfermo/a</span>
+      {% elif salida.tipo_justificativo == "desregulacion" %}
+        <span class="badge bg-info">Desregulación</span>
+      {% elif salida.tipo_justificativo == "otros" %}
+        <span class="badge bg-secondary">{{ salida.otros_justificativo|default:"Otros" }}</span>
+      {% endif %}
+    {% else %}
+      <span class="badge bg-danger">No justificado</span>
+    {% endif %}
+  </li>
   <li class="list-group-item">
     <strong>Autorizado por:</strong> {{ salida.autorizado_por }}
   </li>

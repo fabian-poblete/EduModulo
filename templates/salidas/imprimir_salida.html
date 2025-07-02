@@ -1,20 +1,32 @@
-{% extends 'base.html' %}
-{% block title %}Comprobante de Salida{% endblock %}
+{% extends 'base.html' %} 
+{% block title %}{% if salida.regresado %}Comprobante de Regreso{% else %}Comprobante de Salida{% endif %}{% endblock %} 
 {% block content %}
 <div class="container mt-5">
   <div class="border p-4">
-    <h2>Comprobante de Salida</h2>
+    <h2>
+      {% if salida.regresado %}Comprobante de Regreso{% else %}Comprobante de Salida{% endif %}
+    </h2>
+    {% if salida.regresado %}
+    <p><strong>Fecha de regreso:</strong> {{ salida.fecha_regreso }}</p>
+    <p><strong>Hora de regreso:</strong> {{ salida.hora_regreso }}</p>
+    {% endif %}
     <p><strong>Nombre:</strong> {{ salida.estudiante.nombre }}</p>
     <p><strong>RUT:</strong> {{ salida.estudiante.rut }}</p>
     <p><strong>Curso:</strong> {{ salida.estudiante.curso }}</p>
     <p><strong>Fecha:</strong> {{ salida.fecha }}</p>
-    <p><strong>Hora:</strong> {{ salida.hora }}</p>
-    <p><strong>Justificado:</strong> {{ salida.justificado|yesno:"Sí,No" }}</p>
+    <p><strong>Hora de salida:</strong> {{ salida.hora }}</p>
+    
+    <p>
+      <strong>Motivo:</strong>
+      {% if salida.tipo_justificativo %} 
+      {{salida.get_tipo_justificativo_display }} 
+      {% if salida.tipo_justificativo == "otros" and salida.otros_justificativo %} - {{salida.otros_justificativo }}{% endif %} 
+      {% else %} No justificado {% endif %}
+    </p>
     <p><strong>Observación:</strong> {{ salida.observacion }}</p>
   </div>
 </div>
-{% endblock %}
-{% block extra_js %}
+{% endblock %} {% block extra_js %}
 <script>
   window.onload = function () {
     window.print();

@@ -140,7 +140,9 @@
                         <span class="badge bg-warning">Temporal</span>
                         {% endif %}
                     </td> {% endcomment %}
-                    <td>{{ salida.motivo }}</td>
+                    <td>{% if salida.tipo_justificativo %} {{ salida.get_tipo_justificativo_display }}
+                        {% if salida.tipo_justificativo == "otros" and salida.otros_justificativo %} -
+                        {{ salida.otros_justificativo }}{% endif %} {% else %} No justificado {% endif %}</td>
                     {% comment %} <td>{{ salida.autorizado_por.get_full_name }}</td> {% endcomment %}
                 </tr>
                 {% empty %}

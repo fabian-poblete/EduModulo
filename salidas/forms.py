@@ -13,12 +13,32 @@ class SalidaForm(forms.ModelForm):
             'placeholder': 'Ingrese RUT (ej: 123456789)'
         })
     )
+    tipo_justificativo = forms.ChoiceField(
+        label='Tipo de Justificativo',
+        choices=[
+            ("", "No justificado"),
+            ("medico", "Médico"),
+            ("enfermo", "Enfermo/a"),
+            ("desregulacion", "Desregulación"),
+            ("otros", "Otros"),
+        ],
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select form-select-lg'})
+    )
+    otros_justificativo = forms.CharField(
+        label='Especifique otro justificativo',
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-lg',
+            'id': 'id_otros_justificativo'
+        })
+    )
 
     class Meta:
         model = Salida
-        fields = ['justificado', 'observacion']
+        fields = ['tipo_justificativo', 'otros_justificativo', 'observacion']
         widgets = {
-            'justificado': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'observacion': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,

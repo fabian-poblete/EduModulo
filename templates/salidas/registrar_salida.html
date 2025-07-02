@@ -1,6 +1,5 @@
-{% extends 'base.html' %}
-{% block title %}Registrar Salida{% endblock %}
-{% block content %}
+{% extends 'base.html' %} {% block title %}Registrar Salida{% endblock %}
+{%block content %}
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-lg-10">
@@ -21,7 +20,9 @@
             {% csrf_token %}
 
             <div class="mb-4">
-              <label for="buscar_estudiante" class="form-label fs-5">Buscar Estudiante</label>
+              <label for="buscar_estudiante" class="form-label fs-5"
+                >Buscar Estudiante</label
+              >
               <input
                 type="text"
                 class="form-control form-control-lg"
@@ -36,11 +37,13 @@
             </div>
 
             <div class="mb-4" style="display: none">
-              <label for="{{ form.rut_estudiante.id_for_label }}" class="form-label fs-5">
+              <label
+                for="{{ form.rut_estudiante.id_for_label }}"
+                class="form-label fs-5"
+              >
                 {{ form.rut_estudiante.label }}
               </label>
-              {{ form.rut_estudiante }}
-              {% if form.rut_estudiante.errors %}
+              {{ form.rut_estudiante }} {% if form.rut_estudiante.errors %}
               <div class="invalid-feedback d-block">
                 {{ form.rut_estudiante.errors }}
               </div>
@@ -51,23 +54,116 @@
             </div>
 
             <div class="mb-4">
-              <div class="form-check form-switch fs-5">
-                {{ form.justificado }}
-                <label class="form-check-label" for="{{ form.justificado.id_for_label }}">
-                  Salida Justificada
-                </label>
+              <label class="form-label fs-5">Tipo de Justificativo</label>
+              <div class="d-flex flex-wrap gap-2">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="tipo_justificativo"
+                    id="no_justificado"
+                    value=""
+                    checked
+                  />
+                  <label
+                    class="form-check-label btn btn-outline-secondary"
+                    for="no_justificado"
+                  >
+                    No justificado
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="tipo_justificativo"
+                    id="medico"
+                    value="medico"
+                  />
+                  <label
+                    class="form-check-label btn btn-outline-primary"
+                    for="medico"
+                  >
+                    Médico
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="tipo_justificativo"
+                    id="enfermo"
+                    value="enfermo"
+                  />
+                  <label
+                    class="form-check-label btn btn-outline-warning"
+                    for="enfermo"
+                  >
+                    Enfermo/a
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="tipo_justificativo"
+                    id="desregulacion"
+                    value="desregulacion"
+                  />
+                  <label
+                    class="form-check-label btn btn-outline-info"
+                    for="desregulacion"
+                  >
+                    Desregulación
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="tipo_justificativo"
+                    id="otros"
+                    value="otros"
+                  />
+                  <label
+                    class="form-check-label btn btn-outline-dark"
+                    for="otros"
+                  >
+                    Otros
+                  </label>
+                </div>
               </div>
-              {% if form.justificado.errors %}
+              {% if form.tipo_justificativo.errors %}
               <div class="invalid-feedback d-block">
-                {{ form.justificado.errors }}
+                {{ form.tipo_justificativo.errors }}
               </div>
               {% endif %}
             </div>
 
+            <div
+              class="mb-4"
+              id="otros_justificativo_div"
+              style="display: none"
+            >
+              <label for="id_otros_justificativo" class="form-label fs-5"
+                >Especifique otro justificativo</label
+              >
+              <input
+                type="text"
+                name="otros_justificativo"
+                id="id_otros_justificativo"
+                class="form-control form-control-lg"
+                maxlength="100"
+              />
+            </div>
+
             <div class="mb-4">
-              <label for="{{ form.observacion.id_for_label }}" class="form-label fs-5">Observación</label>
-              {{ form.observacion }}
-              {% if form.observacion.errors %}
+              <label
+                for="{{ form.observacion.id_for_label }}"
+                class="form-label fs-5"
+                >Observación</label
+              >
+              {{ form.observacion }} {% if form.observacion.errors %}
               <div class="invalid-feedback d-block">
                 {{ form.observacion.errors }}
               </div>
@@ -75,7 +171,10 @@
             </div>
 
             <div class="d-flex justify-content-between mt-4">
-              <a href="{% url 'salidas:list' %}" class="btn btn-secondary btn-lg">
+              <a
+                href="{% url 'salidas:list' %}"
+                class="btn btn-secondary btn-lg"
+              >
                 <i class="fas fa-arrow-left"></i> Volver
               </a>
               <button type="submit" class="btn btn-primary btn-lg">
@@ -88,15 +187,28 @@
     </div>
   </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
+{% endblock %} {% block extra_js %}
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const buscarInput = document.getElementById("buscar_estudiante");
     const resultadosDiv = document.getElementById("resultados_busqueda");
     const rutInput = document.getElementById("id_rut_estudiante");
     let timeoutId;
+
+    // Mostrar campo de otros justificativos si corresponde
+    const otrosDiv = document.getElementById("otros_justificativo_div");
+    const radioButtons = document.querySelectorAll(
+      'input[name="tipo_justificativo"]'
+    );
+    radioButtons.forEach(function (radio) {
+      radio.addEventListener("change", function () {
+        if (this.value === "otros") {
+          otrosDiv.style.display = "block";
+        } else {
+          otrosDiv.style.display = "none";
+        }
+      });
+    });
 
     buscarInput.addEventListener("input", function () {
       clearTimeout(timeoutId);
@@ -109,7 +221,9 @@
 
       timeoutId = setTimeout(() => {
         fetch(
-          `{% url 'salidas:buscar_estudiantes' %}?q=${encodeURIComponent(query)}`
+          `{% url 'salidas:buscar_estudiantes' %}?q=${encodeURIComponent(
+            query
+          )}`
         )
           .then((response) => response.json())
           .then((data) => {
@@ -141,10 +255,34 @@
     });
 
     document.addEventListener("click", function (e) {
-      if (!buscarInput.contains(e.target) && !resultadosDiv.contains(e.target)) {
+      if (
+        !buscarInput.contains(e.target) &&
+        !resultadosDiv.contains(e.target)
+      ) {
         resultadosDiv.style.display = "none";
       }
     });
   });
 </script>
+<style>
+  .form-check-input {
+    display: none;
+  }
+  .form-check-label {
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .form-check-label:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  .form-check-label.active {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  .form-check-input:checked + .form-check-label {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+</style>
 {% endblock %}
