@@ -190,6 +190,42 @@
         color: #667eea;
     }
     
+    .btn-group .dropdown-toggle {
+        border-radius: 10px;
+        padding: 12px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-group .dropdown-toggle:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .dropdown-menu {
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        border: none;
+        padding: 8px 0;
+    }
+    
+    .dropdown-item {
+        padding: 10px 20px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .dropdown-item:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        transform: translateX(5px);
+    }
+    
+    .dropdown-item i {
+        width: 20px;
+        margin-right: 8px;
+    }
+    
     @media (max-width: 768px) {
         .metric-value {
             font-size: 2rem;
@@ -197,6 +233,14 @@
         
         .chart-container {
             min-height: 300px;
+        }
+        
+        .btn-group {
+            margin-bottom: 10px;
+        }
+        
+        .col-md-4.text-end {
+            text-align: center !important;
         }
     }
 </style>
@@ -218,7 +262,23 @@
                     </p>
                 </div>
                 <div class="col-md-4 text-end">
-                    <a href="{% url 'dashboard:index' %}" class="btn btn-outline-secondary">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-download"></i> Descargar Reporte
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'reportes:exportar_pdf' %}?{{ request.GET.urlencode }}">
+                                <i class="fas fa-file-pdf text-danger"></i> PDF
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'reportes:exportar_excel' %}?{{ request.GET.urlencode }}">
+                                <i class="fas fa-file-excel text-success"></i> Excel
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'reportes:exportar_csv' %}?{{ request.GET.urlencode }}">
+                                <i class="fas fa-file-csv text-info"></i> CSV
+                            </a></li>
+                        </ul>
+                    </div>
+                    <a href="{% url 'dashboard:index' %}" class="btn btn-outline-secondary ms-2">
                         <i class="fas fa-arrow-left"></i> Volver al Dashboard
                     </a>
                 </div>
