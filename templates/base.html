@@ -394,8 +394,7 @@
   <body>
     {% comment %} Determinar si mostrar sidebar: - Usuario debe estar
     autenticado - No debe ser una ruta pública (home o public) {% endcomment %}
-    {% url 'public:home' as public_home_url %} 
-    {% url 'home' as home_url %} {%if user.is_authenticated and request.resolver_match.url_name != 'home' and request.resolver_match.namespace != 'public' %}
+    {% url 'public:home' as public_home_url %} {% url 'home' as home_url %} {%if user.is_authenticated and request.resolver_match.url_name != 'home' and request.resolver_match.namespace != 'public' %}
     <!-- Sidebar Overlay for Mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -470,7 +469,7 @@
           </ul>
         </div>
         <!-- Activities Section -->
-        {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor apoderado' %}
+        {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio  profesor apoderado' %}
         <div class="sidebar-section">
           <div class="sidebar-section-title">Actividades</div>
           <ul class="sidebar-menu">
@@ -492,6 +491,16 @@
               >
                 <i class="fas fa-clock sidebar-menu-icon"></i>
                 <span class="sidebar-menu-text">Atrasos</span>
+              </a>
+            </li>
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'salidas_almuerzo:autorizados_list' %}"
+                data-tooltip="Salidas Almuerzo"
+              >
+                <i class="fas fa-clock sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Salidas Almuerzo</span>
               </a>
             </li>
           </ul>
@@ -811,7 +820,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     {% comment %} Solo cargar scripts del sidebar si está presente
-    {%endcomment%} 
+    {%endcomment%}
     {% if user.is_authenticated and request.resolver_match.url_name != 'home' and request.resolver_match.namespace != 'public' %}
     <script>
       document.addEventListener("DOMContentLoaded", function () {

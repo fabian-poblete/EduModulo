@@ -10,6 +10,7 @@ from datetime import datetime
 import os
 import re
 from django.db import models
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
 
@@ -54,14 +55,29 @@ def estudiante_list(request):
             models.Q(rut__icontains=busqueda)
         )
 
+    # Optimización de consultas
+    estudiantes = estudiantes.select_related('curso')
+
+    # Paginación
+    paginator = Paginator(estudiantes, 30)  # 30 estudiantes por página
+    page = request.GET.get('page')
+    try:
+        estudiantes_page = paginator.page(page)
+    except PageNotAnInteger:
+        estudiantes_page = paginator.page(1)
+    except EmptyPage:
+        estudiantes_page = paginator.page(paginator.num_pages)
+
     return render(request, 'estudiantes/estudiante_list.html', {
-        'estudiantes': estudiantes,
+        'estudiantes': estudiantes_page,
         'cursos': cursos,
         'can_edit': can_edit,
         'is_admin': request.user.is_superuser or request.user.perfil.tipo_usuario in ['admin_colegio', 'soporte'],
         'curso_id': curso_id,
         'estado': estado,
-        'busqueda': busqueda
+        'busqueda': busqueda,
+        'paginator': paginator,
+        'page_obj': estudiantes_page,
     })
 
 

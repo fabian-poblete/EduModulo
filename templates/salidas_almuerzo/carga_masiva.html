@@ -1,0 +1,51 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">Carga Masiva de Autorizados a Almuerzo</h4>
+    </div>
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="id_archivo" class="form-label"
+            >Archivo Excel (.xlsx)</label
+          >
+          {{ form.archivo }}
+        </div>
+        <button type="submit" class="btn btn-success">Procesar archivo</button>
+        <a
+          href="{% url 'salidas_almuerzo:descargar_ejemplo' %}"
+          class="btn btn-link"
+          >Descargar ejemplo</a
+        >
+        <a
+          href="{% url 'salidas_almuerzo:autorizados_list' %}"
+          class="btn btn-secondary"
+          >Volver</a
+        >
+      </form>
+      {% if resultados %}
+      <hr />
+      <h5>Resultados:</h5>
+      <table class="table table-bordered mt-2">
+        <thead>
+          <tr>
+            <th>RUT</th>
+            <th>Resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in resultados %}
+          <tr>
+            <td>{{ r.rut }}</td>
+            <td>{{ r.resultado }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

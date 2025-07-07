@@ -1,6 +1,6 @@
 {% extends 'base.html' %} {% block title %}Estudiantes{% endblock %} 
 {% block content %}
-<div class="container-fluid mt-4">
+<div class="container-fluid mt-4 mb-5">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Estudiantes</h2>
     <div>
@@ -42,7 +42,7 @@
         </div>
         <div class="col-md-4">
           <label for="busqueda" class="form-label">Buscar por nombre o RUT</label>
-          <input type="text" class="form-control" id="busqueda" name="busqueda" placeholder="Ingrese nombre o RUT" value="{{ busqueda|default:'' }}">
+          <input type="text" class="form-control" id="busqueda" name="busqueda" placeholder="Ingrese nombre o RUT" value="{{ busqueda|default:'' }}" autocomplete="off">
         </div>
         <div class="col-12">
           <button type="submit" class="btn btn-primary">
@@ -55,7 +55,7 @@
       </form>
     </div>
   </div>
-
+{% comment %} 
   <!-- Resumen de filtros aplicados -->
   {% if curso_id or estado or busqueda %}
   <div class="card mb-4">
@@ -87,10 +87,10 @@
       </div>
     </div>
   </div>
-  {% endif %}
+  {% endif %} {% endcomment %}
 
   <div class="table-responsive">
-    <table class="table table-hover">
+    <table class="table table-hover table-lg align-middle" style="font-size:1.1rem;">
       <thead>
         <tr>
           <th>Nombre</th>
@@ -155,6 +155,33 @@
       </tbody>
     </table>
   </div>
+  {% if paginator.num_pages > 1 %}
+  <nav aria-label="Paginación de estudiantes">
+    <ul class="pagination justify-content-center mt-4">
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if curso_id %}&curso={{ curso_id }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">&laquo;</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+      {% endif %}
+      {% for num in paginator.page_range %}
+        {% if page_obj.number == num %}
+          <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <li class="page-item"><a class="page-link" href="?page={{ num }}{% if curso_id %}&curso={{ curso_id }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if curso_id %}&curso={{ curso_id }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">&raquo;</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
 </div>
 
 <style>
@@ -162,6 +189,11 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+  .table-lg th, .table-lg td {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    vertical-align: middle !important;
   }
   @media print {
     .card, .btn {
@@ -186,6 +218,21 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    // Filtrado en tiempo real de la tabla de estudiantes
+    const inputBusqueda = document.getElementById('busqueda');
+    const formBusqueda = inputBusqueda ? inputBusqueda.closest('form') : null;
+    if (inputBusqueda && formBusqueda) {
+      inputBusqueda.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          formBusqueda.submit();
+        }
+      });
+      inputBusqueda.addEventListener('blur', function () {
+        if (this.value.trim() !== '') {
+          formBusqueda.submit();
+        }
+      });
+    }
     const copyCells = document.querySelectorAll('.email-copy');
     copyCells.forEach(cell => {
       cell.addEventListener('click', function () {

@@ -1,0 +1,27 @@
+{% extends 'base.html' %} {% block content %}
+<h2>Verificar Permiso de Salida a Almuerzo</h2>
+<form method="post" class="mb-3">
+  {% csrf_token %}
+  <label for="rut">RUT del estudiante:</label>
+  <input type="text" name="rut" id="rut" class="form-control" required />
+  <button type="submit" class="btn btn-primary mt-2">Verificar</button>
+</form>
+{% if estudiante %}
+<h4>Estudiante: {{ estudiante }}</h4>
+{% if autorizacion %}
+<p><span class="badge bg-success">Autorizado</span></p>
+<form method="post" action="{% url 'salidas_almuerzo:registrar_salida' %}">
+  {% csrf_token %}
+  <input type="hidden" name="estudiante_id" value="{{ estudiante.id }}" />
+  <button type="submit" class="btn btn-success">Registrar Salida</button>
+</form>
+<form method="post" action="{% url 'salidas_almuerzo:registrar_regreso' %}">
+  {% csrf_token %}
+  <input type="hidden" name="estudiante_id" value="{{ estudiante.id }}" />
+  <button type="submit" class="btn btn-info mt-2">Registrar Regreso</button>
+</form>
+{% else %}
+<p><span class="badge bg-danger">No autorizado</span></p>
+{% endif %} {% elif estudiante is not none %}
+<p class="text-danger">Estudiante no encontrado.</p>
+{% endif %} {% endblock %}

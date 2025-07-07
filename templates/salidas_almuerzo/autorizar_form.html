@@ -1,0 +1,225 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-header bg-success text-white">
+      <h4 class="mb-0">
+        {% if form.instance.pk %} Editar autorización {% else %} Autorizar
+        salida a almuerzo {% endif %}
+      </h4>
+    </div>
+    <div class="card-body">
+      <form method="post" autocomplete="off">
+        {% csrf_token %} {% if form.errors %}
+        <div class="alert alert-danger">
+          <ul class="mb-0">
+            {% for field, errors in form.errors.items %} {% for error in errors%}
+            <li>{{ error }}</li>
+            {% endfor %} {% endfor %}
+          </ul>
+        </div>
+        {% endif %} {% if form.instance.pk %}
+        <div class="mb-3">
+          <label class="form-label">Estudiante</label>
+          <input
+            type="text"
+            class="form-control"
+            value="{{ form.instance.estudiante }}"
+            readonly
+          />
+          <input
+            type="hidden"
+            name="estudiante"
+            value="{{ form.instance.estudiante.id }}"
+          />
+        </div>
+        {% else %}
+        <div class="mb-3 position-relative">
+          <label for="buscar_estudiante" class="form-label">Estudiante</label>
+          <input
+            type="text"
+            id="buscar_estudiante"
+            class="form-control"
+            placeholder="Nombre o RUT"
+            autocomplete="off"
+          />
+          <input
+            type="hidden"
+            name="estudiante"
+            id="id_estudiante"
+            value="{{ form.estudiante.value|default_if_none:'' }}"
+          />
+          <div
+            id="resultados_estudiante"
+            class="list-group position-absolute w-100"
+            style="z-index: 10; display: none"
+          ></div>
+        </div>
+        {% endif %}
+
+        <div class="mb-3">
+          <label for="rango_fechas" class="form-label">Rango de fechas</label>
+          <input
+            type="text"
+            id="rango_fechas"
+            class="form-control"
+            placeholder="Selecciona el rango de fechas"
+            autocomplete="off"
+          />
+          <input
+            type="hidden"
+            name="fecha_inicio"
+            id="id_fecha_inicio"
+            value="{{ form.fecha_inicio.value|default:form.instance.fecha_inicio|date:'Y-m-d' }}"
+          />
+          <input
+            type="hidden"
+            name="fecha_fin"
+            id="id_fecha_fin"
+            value="{{ form.fecha_fin.value|default:form.instance.fecha_fin|date:'Y-m-d' }}"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="id_observaciones" class="form-label">Observaciones</label>
+          {{ form.observaciones }}
+        </div>
+
+        <div class="alert alert-info">
+          Al guardar, el estudiante quedará <strong>autorizado</strong> para
+          salir a almorzar.
+        </div>
+
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <a
+          href="{% url 'salidas_almuerzo:autorizados_list' %}"
+          class="btn btn-secondary"
+          >Volver</a
+        >
+      </form>
+    </div>
+  </div>
+</div>
+
+{% if not form.instance.pk %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const buscarInput = document.getElementById("buscar_estudiante");
+    const resultadosDiv = document.getElementById("resultados_estudiante");
+    const idEstudianteInput = document.getElementById("id_estudiante");
+    let timeoutId;
+
+    buscarInput.addEventListener("input", function () {
+      const query = buscarInput.value.trim();
+      if (query.length < 2) {
+        resultadosDiv.style.display = "none";
+        return;
+      }
+
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        fetch(
+          '{% url "salidas_almuerzo:buscar_estudiantes" %}?q=' +
+            encodeURIComponent(query)
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            resultadosDiv.innerHTML = "";
+            if (data.length > 0) {
+              data.forEach((estudiante) => {
+                const item = document.createElement("a");
+                item.href = "#";
+                item.className = "list-group-item list-group-item-action";
+                item.innerHTML = `${estudiante.nombre} - ${estudiante.rut} (${estudiante.curso})`;
+                item.addEventListener("click", function (e) {
+                  e.preventDefault();
+                  buscarInput.value = `${estudiante.nombre} - ${estudiante.rut}`;
+                  idEstudianteInput.value = estudiante.id;
+                  resultadosDiv.style.display = "none";
+                });
+                resultadosDiv.appendChild(item);
+              });
+              resultadosDiv.style.display = "block";
+            } else {
+              resultadosDiv.style.display = "none";
+            }
+          });
+      }, 300);
+    });
+
+    document.addEventListener("click", function (e) {
+      if (
+        !buscarInput.contains(e.target) &&
+        !resultadosDiv.contains(e.target)
+      ) {
+        resultadosDiv.style.display = "none";
+      }
+    });
+  });
+</script>
+{% endif %} {% endblock %} {% block extra_js %}
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"
+/>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script>
+  $(function () {
+    var fechaInicio = $("#id_fecha_inicio").val();
+    var fechaFin = $("#id_fecha_fin").val();
+    if (fechaInicio && fechaFin) {
+      $("#rango_fechas").val(
+        moment(fechaInicio).format("DD/MM/YYYY") +
+          " - " +
+          moment(fechaFin).format("DD/MM/YYYY")
+      );
+    }
+    $("#rango_fechas").daterangepicker({
+      locale: {
+        format: "DD/MM/YYYY",
+        separator: " - ",
+        applyLabel: "Aplicar",
+        cancelLabel: "Cancelar",
+        fromLabel: "Desde",
+        toLabel: "Hasta",
+        customRangeLabel: "Personalizado",
+        weekLabel: "S",
+        daysOfWeek: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
+        monthNames: [
+          "Enero",
+          "Febrero",
+          "Marzo",
+          "Abril",
+          "Mayo",
+          "Junio",
+          "Julio",
+          "Agosto",
+          "Septiembre",
+          "Octubre",
+          "Noviembre",
+          "Diciembre",
+        ],
+        firstDay: 1,
+      },
+      autoUpdateInput: false,
+      startDate: fechaInicio ? moment(fechaInicio) : moment(),
+      endDate: fechaFin ? moment(fechaFin) : moment(),
+    });
+    $("#rango_fechas").on("apply.daterangepicker", function (ev, picker) {
+      $(this).val(
+        picker.startDate.format("DD/MM/YYYY") +
+          " - " +
+          picker.endDate.format("DD/MM/YYYY")
+      );
+      $("#id_fecha_inicio").val(picker.startDate.format("YYYY-MM-DD"));
+      $("#id_fecha_fin").val(picker.endDate.format("YYYY-MM-DD"));
+    });
+    $("#rango_fechas").on("cancel.daterangepicker", function (ev, picker) {
+      $(this).val("");
+      $("#id_fecha_inicio").val("");
+      $("#id_fecha_fin").val("");
+    });
+  });
+</script>
+{% endblock %}

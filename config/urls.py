@@ -18,6 +18,8 @@ urlpatterns = [
     path('atrasos/', include('atrasos.urls')),
     path('reportes/', include('reportes.urls')),
     path('backup/', include('system_backup.urls')),  # URLs de respaldo
+    path('salidas-almuerzo/', include('salidas_almuerzo.urls',
+         namespace='salidas_almuerzo')),
 
     # URLs de autenticación
     path('accounts/login/',

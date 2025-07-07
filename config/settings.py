@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     # Local apps
     'colegios',
     'usuarios',
+    'salidas_almuerzo',
     'public',
     'dashboard',
     'cursos',
