@@ -77,9 +77,8 @@
                     <th>Curso</th>
                     <th>Fecha</th>
                     <th>Hora</th>
-                    {% comment %} <th>Tipo</th> {% endcomment %}
-                    <th>Motivo</th>
-                    {% comment %} <th>Autorizado por</th> {% endcomment %}
+                    <th>Justificado</th>
+                    <th>Observación</th>
                 </tr>
             </thead>
             <tbody>
@@ -90,19 +89,18 @@
                     <td>{{ atraso.estudiante.curso.nombre }}</td>
                     <td>{{ atraso.fecha }}</td>
                     <td>{{ atraso.hora }}</td>
-                    {% comment %} <td>
-                        {% if salida.tipo_salida == 'permanente' %}
-                        <span class="badge bg-danger">Permanente</span>
+                    <td>
+                        {% if atraso.justificado %}
+                        <span class="badge bg-success">Justificado</span>
                         {% else %}
-                        <span class="badge bg-warning">Temporal</span>
+                        <span class="badge bg-warning">No Justificado</span>
                         {% endif %}
-                    </td> {% endcomment %}
-                    <td>{{ atraso.motivo }}</td>
-                    {% comment %} <td>{{ salida.autorizado_por.get_full_name }}</td> {% endcomment %}
+                    </td>
+                    <td>{{ atraso.observacion|default:"-" }}</td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="text-center">No hay atrasos registradas en el período seleccionado.</td>
+                    <td colspan="7" class="text-center">No hay atrasos registrados en el período seleccionado.</td>
                 </tr>
                 {% endfor %}
             </tbody>
