@@ -1,6 +1,5 @@
-{% extends 'base.html' %}
-{% block title %}Registrar Atraso{% endblock %}
-{% block content %}
+{% extends 'base.html' %} 
+{% block title %}Registrar Atraso{% endblock %} {%block content %}
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-lg-10">
@@ -17,11 +16,13 @@
           </div>
           {% endif %}
 
-          <form method="post">
+          <form method="post" id="atraso-form">
             {% csrf_token %}
 
             <div class="mb-4">
-              <label for="buscar_estudiante" class="form-label fs-5">Buscar Estudiante</label>
+              <label for="buscar_estudiante" class="form-label fs-5"
+                >Buscar Estudiante</label
+              >
               <input
                 type="text"
                 class="form-control form-control-lg"
@@ -36,11 +37,13 @@
             </div>
 
             <div class="mb-4" style="display: none">
-              <label for="{{ form.rut_estudiante.id_for_label }}" class="form-label fs-5">
+              <label
+                for="{{ form.rut_estudiante.id_for_label }}"
+                class="form-label fs-5"
+              >
                 {{ form.rut_estudiante.label }}
               </label>
-              {{ form.rut_estudiante }}
-              {% if form.rut_estudiante.errors %}
+              {{ form.rut_estudiante }} {% if form.rut_estudiante.errors %}
               <div class="invalid-feedback d-block">
                 {{ form.rut_estudiante.errors }}
               </div>
@@ -50,24 +53,21 @@
               </div>
             </div>
 
-            <div class="mb-4">
-              <div class="form-check form-switch fs-5">
-                {{ form.justificado }}
-                <label class="form-check-label" for="{{ form.justificado.id_for_label }}">
-                  Atraso Justificado
-                </label>
-              </div>
-              {% if form.justificado.errors %}
-              <div class="invalid-feedback d-block">
-                {{ form.justificado.errors }}
-              </div>
-              {% endif %}
-            </div>
+            <!-- Campo oculto para justificado -->
+            <input
+              type="hidden"
+              name="{{ form.justificado.name }}"
+              id="id_justificado"
+              value="False"
+            />
 
             <div class="mb-4">
-              <label for="{{ form.observacion.id_for_label }}" class="form-label fs-5">Observación</label>
-              {{ form.observacion }}
-              {% if form.observacion.errors %}
+              <label
+                for="{{ form.observacion.id_for_label }}"
+                class="form-label fs-5"
+                >Observación</label
+              >
+              {{ form.observacion }} {% if form.observacion.errors %}
               <div class="invalid-feedback d-block">
                 {{ form.observacion.errors }}
               </div>
@@ -75,12 +75,29 @@
             </div>
 
             <div class="d-flex justify-content-between mt-4">
-              <a href="{% url 'atrasos:list' %}" class="btn btn-secondary btn-lg">
+              <a
+                href="{% url 'atrasos:list' %}"
+                class="btn btn-secondary btn-lg"
+              >
                 <i class="fas fa-arrow-left"></i> Volver
               </a>
-              <button type="submit" class="btn btn-primary btn-lg">
-                <i class="fas fa-save"></i> Registrar Atraso
-              </button>
+              <div class="d-flex gap-3">
+                <button
+                  type="button"
+                  class="btn btn-success btn-lg"
+                  id="btn-justificado"
+                >
+                  <i class="fas fa-check-circle"></i> Atraso Justificado
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-warning btn-lg"
+                  id="btn-no-justificado"
+                >
+                  <i class="fas fa-exclamation-triangle"></i> Atraso No
+                  Justificado
+                </button>
+              </div>
             </div>
           </form>
         </div>
@@ -88,15 +105,29 @@
     </div>
   </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
+{% endblock %} {% block extra_js %}
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const buscarInput = document.getElementById("buscar_estudiante");
     const resultadosDiv = document.getElementById("resultados_busqueda");
     const rutInput = document.getElementById("id_rut_estudiante");
+    const justificadoInput = document.getElementById("id_justificado");
+    const btnJustificado = document.getElementById("btn-justificado");
+    const btnNoJustificado = document.getElementById("btn-no-justificado");
+    const form = document.getElementById("atraso-form");
     let timeoutId;
+
+    // Manejar botón de atraso justificado
+    btnJustificado.addEventListener("click", function () {
+      justificadoInput.value = "True";
+      form.submit();
+    });
+
+    // Manejar botón de atraso no justificado
+    btnNoJustificado.addEventListener("click", function () {
+      justificadoInput.value = "False";
+      form.submit();
+    });
 
     buscarInput.addEventListener("input", function () {
       clearTimeout(timeoutId);
@@ -109,7 +140,9 @@
 
       timeoutId = setTimeout(() => {
         fetch(
-          `{% url 'atrasos:buscar_estudiantes' %}?q=${encodeURIComponent(query)}`
+          `{% url 'atrasos:buscar_estudiantes' %}?q=${encodeURIComponent(
+            query
+          )}`
         )
           .then((response) => response.json())
           .then((data) => {
@@ -141,7 +174,10 @@
     });
 
     document.addEventListener("click", function (e) {
-      if (!buscarInput.contains(e.target) && !resultadosDiv.contains(e.target)) {
+      if (
+        !buscarInput.contains(e.target) &&
+        !resultadosDiv.contains(e.target)
+      ) {
         resultadosDiv.style.display = "none";
       }
     });
