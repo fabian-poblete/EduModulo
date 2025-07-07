@@ -1,5 +1,5 @@
 {% extends 'base.html' %} {% load static %} 
-{% block title %}Perfil de{{usuario.get_full_name|default:usuario.username }}{% endblock %}
+{% block title %}Perfil de {{usuario.get_full_name|default:usuario.username }}{% endblock %}
 {% block content%}
 <div class="container py-5">
   <div class="row">
