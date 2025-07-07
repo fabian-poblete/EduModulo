@@ -71,7 +71,7 @@ def registrar_salida(request):
                 # messages.success(request, 'Salida registrada exitosamente.')
                 # Assuming 'list' is the URL name for the list view
                 # return redirect('salidas:list')
-                return redirect('salidas:imprimir', salida.id)
+                return redirect('salidas:list')
 
             except Exception as e:
                 messages.error(
