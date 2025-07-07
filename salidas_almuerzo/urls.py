@@ -24,4 +24,6 @@ urlpatterns = [
          name='carga_masiva'),
     path('descargar-ejemplo/', views.DescargarEjemploExcelView.as_view(),
          name='descargar_ejemplo'),
+    path('validar_salida_ajax/', views.ValidarSalidaAjaxView.as_view(),
+         name='validar_salida_ajax'),
 ]

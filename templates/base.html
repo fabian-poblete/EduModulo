@@ -31,6 +31,10 @@
 
     <!-- Custom CSS -->
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
 
     <style>
       :root {
@@ -426,7 +430,7 @@
               </a>
             </li>
             <!-- Academic Section -->
-            {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor' %}
+            {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio' %}
             <div class="sidebar-section">
               <div class="sidebar-section-title">Académico</div>
               <ul class="sidebar-menu">
@@ -469,7 +473,7 @@
           </ul>
         </div>
         <!-- Activities Section -->
-        {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio  profesor apoderado' %}
+        {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio' %}
         <div class="sidebar-section">
           <div class="sidebar-section-title">Actividades</div>
           <ul class="sidebar-menu">
@@ -508,7 +512,7 @@
         {% endif %}
 
         <!-- Analytics Section -->
-        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
+        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'%}
         <div class="sidebar-section">
           <div class="sidebar-section-title">Analytics</div>
           <ul class="sidebar-menu">
@@ -542,7 +546,8 @@
                 <span class="sidebar-menu-text">Colegios</span>
               </a>
             </li>
-            {% endif %} {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
+            {% endif %} 
+            {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
             <li class="sidebar-menu-item">
               <a
                 class="sidebar-menu-link"
@@ -664,7 +669,7 @@
               {{ user.get_full_name|default:user.username }}
             </div>
             <div class="user-role">
-              {% if user.is_superuser %} Super Administrador {% elif user.perfil.tipo_usuario == 'admin_colegio' %} Admin. Colegio {% elif user.perfil.tipo_usuario == 'profesor' %} Profesor {% elif user.perfil.tipo_usuario == 'apoderado' %} Apoderado {% else %} Usuario {% endif %}
+              {% if user.is_superuser %} Super Administrador {% elif user.perfil.tipo_usuario == 'admin_colegio' %} Admin. Colegio {% else %} Usuario {% endif %}
             </div>
           </div>
           <i class="fas fa-chevron-up user-chevron"></i>
@@ -820,7 +825,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     {% comment %} Solo cargar scripts del sidebar si está presente
-    {%endcomment%}
+    {%endcomment%} 
     {% if user.is_authenticated and request.resolver_match.url_name != 'home' and request.resolver_match.namespace != 'public' %}
     <script>
       document.addEventListener("DOMContentLoaded", function () {

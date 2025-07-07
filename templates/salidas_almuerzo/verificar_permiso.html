@@ -1,27 +1,49 @@
 {% extends 'base.html' %} {% block content %}
-<h2>Verificar Permiso de Salida a Almuerzo</h2>
-<form method="post" class="mb-3">
-  {% csrf_token %}
-  <label for="rut">RUT del estudiante:</label>
-  <input type="text" name="rut" id="rut" class="form-control" required />
-  <button type="submit" class="btn btn-primary mt-2">Verificar</button>
-</form>
-{% if estudiante %}
-<h4>Estudiante: {{ estudiante }}</h4>
-{% if autorizacion %}
-<p><span class="badge bg-success">Autorizado</span></p>
-<form method="post" action="{% url 'salidas_almuerzo:registrar_salida' %}">
-  {% csrf_token %}
-  <input type="hidden" name="estudiante_id" value="{{ estudiante.id }}" />
-  <button type="submit" class="btn btn-success">Registrar Salida</button>
-</form>
-<form method="post" action="{% url 'salidas_almuerzo:registrar_regreso' %}">
-  {% csrf_token %}
-  <input type="hidden" name="estudiante_id" value="{{ estudiante.id }}" />
-  <button type="submit" class="btn btn-info mt-2">Registrar Regreso</button>
-</form>
-{% else %}
-<p><span class="badge bg-danger">No autorizado</span></p>
-{% endif %} {% elif estudiante is not none %}
-<p class="text-danger">Estudiante no encontrado.</p>
-{% endif %} {% endblock %}
+<div
+  class="container d-flex flex-column align-items-center justify-content-center"
+  style="min-height: 70vh"
+>
+  <div class="card shadow-sm p-4" style="max-width: 400px; width: 100%">
+    <h2 class="mb-4 text-center">Verificar Permiso de Salida a Almuerzo</h2>
+    <form method="post" class="mb-3">
+      {% csrf_token %}
+      <label for="rut" class="form-label">RUT del estudiante:</label>
+      <input
+        type="text"
+        name="rut"
+        id="rut"
+        class="form-control mb-2"
+        required
+        placeholder="Ej: 12.345.678-9"
+        autofocus
+      />
+      <button type="submit" class="btn btn-primary w-100">Verificar</button>
+    </form>
+    {% if estudiante %}
+    <div class="text-center mt-3">
+      <h5>Estudiante: <span class="fw-bold">{{ estudiante }}</span></h5>
+      {% if autorizacion %}
+      <div
+        class="alert alert-success d-flex align-items-center justify-content-center mt-3"
+      >
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span>Autorizado para salir a almuerzo</span>
+      </div>
+      {% else %}
+      <div
+        class="alert alert-danger d-flex align-items-center justify-content-center mt-3"
+      >
+        <i class="bi bi-x-circle-fill me-2"></i>
+        <span>No autorizado para salir a almuerzo</span>
+      </div>
+      {% endif %}
+    </div>
+    {% elif estudiante is not none %}
+    <div class="alert alert-warning text-center mt-3">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i> Estudiante no
+      encontrado.
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -15,6 +15,9 @@ import pandas as pd
 import io
 from django.http import HttpResponse
 import numpy as np
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+import json
 
 
 class AutorizadosAlmuerzoListView(LoginRequiredMixin, ListView):
@@ -143,6 +146,25 @@ class BuscarEstudiantesAlmuerzoView(LoginRequiredMixin, View):
                 'curso': estudiante.curso.nombre
             })
         return JsonResponse(results, safe=False)
+
+
+class ValidarSalidaAjaxView(LoginRequiredMixin, View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            rut = data.get('rut')
+        except Exception:
+            return JsonResponse({'status': 'error', 'message': 'Datos inválidos.'})
+        estudiante = Estudiante.objects.filter(rut=rut).first()
+        if not estudiante:
+            return JsonResponse({'status': 'error', 'message': 'Estudiante no encontrado.'})
+        autorizacion = AutorizacionAlmuerzo.objects.filter(
+            estudiante=estudiante, autorizado=True, fecha_fin__gte=timezone.now().date()
+        ).first()
+        if autorizacion:
+            return JsonResponse({'status': 'ok', 'message': f'{estudiante} está AUTORIZADO para salir a almuerzo.'})
+        else:
+            return JsonResponse({'status': 'error', 'message': f'{estudiante} NO está autorizado para salir a almuerzo.'})
 
 
 class CargaMasivaAutorizadosForm(forms.Form):
