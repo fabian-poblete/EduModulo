@@ -16,6 +16,7 @@ urlpatterns = [
     path('inventario/', include('inventario.urls')),
     path('salidas/', include('salidas.urls')),
     path('atrasos/', include('atrasos.urls')),
+    path('reportes/', include('reportes.urls')),
     path('backup/', include('system_backup.urls')),  # URLs de respaldo
 
     # URLs de autenticación

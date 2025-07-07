@@ -50,10 +50,14 @@ def lista_salidas(request):
             Q(estudiante__rut__icontains=busqueda)
         )
 
+    # Contar el total de salidas
+    total_salidas = salidas.count()
+    
     return render(request, 'salidas/lista_salidas.html', {
         'salidas': salidas,
         'fecha_filtro': fecha_filtro,
-        'busqueda': busqueda
+        'busqueda': busqueda,
+        'total_salidas': total_salidas
     })
 
 

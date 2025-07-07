@@ -1,0 +1,663 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reporte Detallado - Analytics{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css" rel="stylesheet">
+<style>
+    .report-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px 0;
+    }
+    
+    .report-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    .analysis-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .analysis-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .insight-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .insight-icon {
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+    
+    .insight-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .insight-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    
+    .insight-description {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+    
+    .chart-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        min-height: 400px;
+    }
+    
+    .filters-panel {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-analysis {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 25px;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-analysis:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+    
+    .table-analysis {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .table-analysis thead th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 15px;
+        font-weight: 600;
+    }
+    
+    .table-analysis tbody td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .badge-analysis {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+    
+    .badge-high {
+        background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+        color: white;
+    }
+    
+    .badge-medium {
+        background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        color: white;
+    }
+    
+    .badge-low {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+    }
+    
+    .metric-highlight {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .metric-highlight-value {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .metric-highlight-label {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="report-container">
+    <div class="container-fluid">
+        <!-- Header del Reporte -->
+        <div class="report-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-5 fw-bold text-dark mb-2">
+                        <i class="fas fa-chart-bar text-primary me-3"></i>
+                        Reporte Detallado de Analytics
+                    </h1>
+                    <p class="lead text-muted mb-0">
+                        Análisis profundo y insights para la toma de decisiones estratégicas
+                    </p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="{% url 'reportes:dashboard' %}" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                    </a>
+                    <button class="btn btn-primary" onclick="window.print()">
+                        <i class="fas fa-print"></i> Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de Filtros -->
+        <div class="filters-panel">
+            <form method="get" id="filtrosForm">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Fecha Inicio</label>
+                            <input type="date" class="form-control" name="fecha_inicio" 
+                                   value="{{ fecha_inicio|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Fecha Fin</label>
+                            <input type="date" class="form-control" name="fecha_fin"
+                                   value="{{ fecha_fin|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Curso</label>
+                            <select class="form-select" name="curso">
+                                <option value="">Todos los cursos</option>
+                                {% for curso in cursos %}
+                                <option value="{{ curso.id }}" {% if curso.id|stringformat:"s" == curso_id %}selected{% endif %}>
+                                    {{ curso.nombre }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tipo de Análisis</label>
+                            <select class="form-select" name="tipo_analisis">
+                                <option value="general" {% if tipo_analisis == 'general' %}selected{% endif %}>Análisis General</option>
+                                <option value="tendencias" {% if tipo_analisis == 'tendencias' %}selected{% endif %}>Tendencias Temporales</option>
+                                <option value="comportamiento" {% if tipo_analisis == 'comportamiento' %}selected{% endif %}>Comportamiento Estudiantil</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            <label class="form-label">&nbsp;</label>
+                            <div>
+                                <button type="submit" class="btn btn-analysis w-100">
+                                    <i class="fas fa-search"></i> Analizar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Insights Principales -->
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="insight-card">
+                    <div class="insight-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="insight-title">Total Atrasos</div>
+                    <div class="insight-value">{{ datos_analisis.total_atrasos|default:0 }}</div>
+                    <div class="insight-description">En el período seleccionado</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="insight-card">
+                    <div class="insight-icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <div class="insight-title">Total Salidas</div>
+                    <div class="insight-value">{{ datos_analisis.total_salidas|default:0 }}</div>
+                    <div class="insight-description">En el período seleccionado</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="insight-card">
+                    <div class="insight-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="insight-title">Atrasos Justificados</div>
+                    <div class="insight-value">{{ datos_analisis.atrasos_justificados|default:0 }}</div>
+                    <div class="insight-description">Con documentación válida</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="insight-card">
+                    <div class="insight-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="insight-title">Atrasos No Justificados</div>
+                    <div class="insight-value">{{ datos_analisis.atrasos_no_justificados|default:0 }}</div>
+                    <div class="insight-description">Requieren atención</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Análisis Específico -->
+        {% if tipo_analisis == 'tendencias' %}
+        <div class="row">
+            <div class="col-12">
+                <div class="chart-container">
+                    <h5 class="mb-4">
+                        <i class="fas fa-chart-line text-primary me-2"></i>
+                        Análisis de Tendencias Mensuales
+                    </h5>
+                    <canvas id="chartTendenciasMensuales" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="analysis-card">
+                    <h5 class="mb-4">
+                        <i class="fas fa-chart-bar text-success me-2"></i>
+                        Tendencias de Atrasos por Mes
+                    </h5>
+                    <div class="table-responsive">
+                        <table class="table table-analysis">
+                            <thead>
+                                <tr>
+                                    <th>Mes</th>
+                                    <th>Total</th>
+                                    <th>Justificados</th>
+                                    <th>No Justificados</th>
+                                    <th>Tendencia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in datos_analisis.atrasos_tendencias %}
+                                <tr>
+                                    <td>{{ item.mes|date:"F Y" }}</td>
+                                    <td><span class="badge badge-analysis badge-high">{{ item.total }}</span></td>
+                                    <td><span class="badge badge-analysis badge-low">{{ item.justificados }}</span></td>
+                                    <td><span class="badge badge-analysis badge-medium">{{ item.no_justificados }}</span></td>
+                                    <td>
+                                        {% if item.total > 10 %}
+                                            <i class="fas fa-arrow-up text-danger"></i> Alta
+                                        {% elif item.total > 5 %}
+                                            <i class="fas fa-minus text-warning"></i> Media
+                                        {% else %}
+                                            <i class="fas fa-arrow-down text-success"></i> Baja
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="analysis-card">
+                    <h5 class="mb-4">
+                        <i class="fas fa-chart-bar text-info me-2"></i>
+                        Tendencias de Salidas por Mes
+                    </h5>
+                    <div class="table-responsive">
+                        <table class="table table-analysis">
+                            <thead>
+                                <tr>
+                                    <th>Mes</th>
+                                    <th>Total Salidas</th>
+                                    <th>Tendencia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in datos_analisis.salidas_tendencias %}
+                                <tr>
+                                    <td>{{ item.mes|date:"F Y" }}</td>
+                                    <td><span class="badge badge-analysis badge-info">{{ item.total }}</span></td>
+                                    <td>
+                                        {% if item.total > 15 %}
+                                            <i class="fas fa-arrow-up text-danger"></i> Alta
+                                        {% elif item.total > 8 %}
+                                            <i class="fas fa-minus text-warning"></i> Media
+                                        {% else %}
+                                            <i class="fas fa-arrow-down text-success"></i> Baja
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% elif tipo_analisis == 'comportamiento' %}
+        <div class="row">
+            <div class="col-12">
+                <div class="chart-container">
+                    <h5 class="mb-4">
+                        <i class="fas fa-users text-primary me-2"></i>
+                        Análisis de Comportamiento Estudiantil
+                    </h5>
+                    <canvas id="chartComportamiento" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12">
+                <div class="analysis-card">
+                    <h5 class="mb-4">
+                        <i class="fas fa-table text-info me-2"></i>
+                        Ranking de Comportamiento por Estudiante
+                    </h5>
+                    <div class="table-responsive">
+                        <table class="table table-analysis">
+                            <thead>
+                                <tr>
+                                    <th>Estudiante</th>
+                                    <th>RUT</th>
+                                    <th>Curso</th>
+                                    <th>Total Atrasos</th>
+                                    <th>Justificados</th>
+                                    <th>No Justificados</th>
+                                    <th>% Justificados</th>
+                                    <th>Nivel de Riesgo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for estudiante in datos_analisis.comportamiento_estudiantes %}
+                                <tr>
+                                    <td><strong>{{ estudiante.estudiante__nombre }}</strong></td>
+                                    <td>{{ estudiante.estudiante__rut }}</td>
+                                    <td>{{ estudiante.estudiante__curso__nombre }}</td>
+                                    <td><span class="badge badge-analysis badge-high">{{ estudiante.total_atrasos }}</span></td>
+                                    <td><span class="badge badge-analysis badge-low">{{ estudiante.atrasos_justificados }}</span></td>
+                                    <td><span class="badge badge-analysis badge-medium">{{ estudiante.atrasos_no_justificados }}</span></td>
+                                    <td>{{ estudiante.porcentaje_justificados|floatformat:1 }}%</td>
+                                    <td>
+                                        {% if estudiante.total_atrasos > 10 %}
+                                            <span class="badge badge-analysis badge-high">Alto</span>
+                                        {% elif estudiante.total_atrasos > 5 %}
+                                            <span class="badge badge-analysis badge-medium">Medio</span>
+                                        {% else %}
+                                            <span class="badge badge-analysis badge-low">Bajo</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- Análisis General -->
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="chart-container">
+                    <h5 class="mb-4">
+                        <i class="fas fa-chart-pie text-primary me-2"></i>
+                        Distribución General de Incidencias
+                    </h5>
+                    <canvas id="chartDistribucion" height="400"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="metric-highlight">
+                    <div class="metric-highlight-value">
+                        {% if datos_analisis.total_atrasos > 0 %}
+                            {{ datos_analisis.atrasos_justificados|default:0|add:datos_analisis.atrasos_no_justificados|default:0|div:datos_analisis.total_atrasos|mul:100|floatformat:1 }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </div>
+                    <div class="metric-highlight-label">Tasa de Justificación</div>
+                </div>
+                
+                <div class="metric-highlight">
+                    <div class="metric-highlight-value">
+                        {{ datos_analisis.total_atrasos|default:0|add:datos_analisis.total_salidas|default:0 }}
+                    </div>
+                    <div class="metric-highlight-label">Total Incidencias</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Recomendaciones -->
+        <div class="row">
+            <div class="col-12">
+                <div class="analysis-card">
+                    <h5 class="mb-4">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>
+                        Insights y Recomendaciones
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-chart-line me-2"></i>Análisis de Tendencias</h6>
+                                <p class="mb-0">
+                                    {% if datos_analisis.atrasos_no_justificados > datos_analisis.atrasos_justificados %}
+                                        <strong>Atención:</strong> Los atrasos no justificados superan a los justificados. 
+                                        Se recomienda implementar medidas preventivas.
+                                    {% else %}
+                                        <strong>Positivo:</strong> La mayoría de atrasos están justificados, 
+                                        indicando buena gestión de la documentación.
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="alert alert-warning">
+                                <h6><i class="fas fa-exclamation-triangle me-2"></i>Puntos de Atención</h6>
+                                <p class="mb-0">
+                                    {% if datos_analisis.total_atrasos > 50 %}
+                                        <strong>Alto volumen:</strong> Se registran más de 50 atrasos. 
+                                        Considerar revisar políticas de puntualidad.
+                                    {% else %}
+                                        <strong>Controlado:</strong> El número de atrasos está dentro de parámetros normales.
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuración común de Chart.js
+    Chart.defaults.font.family = "'Inter', 'Segoe UI', sans-serif";
+    Chart.defaults.color = '#6c757d';
+
+    {% if tipo_analisis == 'tendencias' %}
+    // Gráfico de Tendencias Mensuales
+    const ctxTendencias = document.getElementById('chartTendenciasMensuales').getContext('2d');
+    new Chart(ctxTendencias, {
+        type: 'line',
+        data: {
+            labels: {{ datos_analisis.atrasos_tendencias|safe }}.map(item => new Date(item.mes).toLocaleDateString('es-ES', {month: 'long', year: 'numeric'})),
+            datasets: [{
+                label: 'Atrasos',
+                data: {{ datos_analisis.atrasos_tendencias|safe }}.map(item => item.total),
+                borderColor: 'rgba(220, 53, 69, 1)',
+                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4
+            }, {
+                label: 'Salidas',
+                data: {{ datos_analisis.salidas_tendencias|safe }}.map(item => item.total),
+                borderColor: 'rgba(40, 167, 69, 1)',
+                backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    {% elif tipo_analisis == 'comportamiento' %}
+    // Gráfico de Comportamiento
+    const ctxComportamiento = document.getElementById('chartComportamiento').getContext('2d');
+    new Chart(ctxComportamiento, {
+        type: 'bar',
+        data: {
+            labels: {{ datos_analisis.comportamiento_estudiantes|safe }}.slice(0, 10).map(item => item.estudiante__nombre),
+            datasets: [{
+                label: 'Total Atrasos',
+                data: {{ datos_analisis.comportamiento_estudiantes|safe }}.slice(0, 10).map(item => item.total_atrasos),
+                backgroundColor: 'rgba(220, 53, 69, 0.8)',
+                borderColor: 'rgba(220, 53, 69, 1)',
+                borderWidth: 2
+            }, {
+                label: 'Atrasos Justificados',
+                data: {{ datos_analisis.comportamiento_estudiantes|safe }}.slice(0, 10).map(item => item.atrasos_justificados),
+                backgroundColor: 'rgba(40, 167, 69, 0.8)',
+                borderColor: 'rgba(40, 167, 69, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    {% else %}
+    // Gráfico de Distribución General
+    const ctxDistribucion = document.getElementById('chartDistribucion').getContext('2d');
+    new Chart(ctxDistribucion, {
+        type: 'doughnut',
+        data: {
+            labels: ['Atrasos Justificados', 'Atrasos No Justificados', 'Salidas'],
+            datasets: [{
+                data: [
+                    {{ datos_analisis.atrasos_justificados|default:0 }},
+                    {{ datos_analisis.atrasos_no_justificados|default:0 }},
+                    {{ datos_analisis.total_salidas|default:0 }}
+                ],
+                backgroundColor: [
+                    'rgba(40, 167, 69, 0.8)',
+                    'rgba(220, 53, 69, 0.8)',
+                    'rgba(102, 126, 234, 0.8)'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+    {% endif %}
+});
+</script>
+{% endblock %} 

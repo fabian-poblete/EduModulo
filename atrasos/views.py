@@ -49,10 +49,14 @@ def atraso_list(request):
             Q(estudiante__rut__icontains=busqueda)
         )
 
+    # Contar el total de atrasos
+    total_atrasos = atrasos.count()
+    
     return render(request, 'atrasos/atraso_list.html', {
         'atrasos': atrasos,
         'fecha_filtro': fecha_filtro,
-        'busqueda': busqueda
+        'busqueda': busqueda,
+        'total_atrasos': total_atrasos
     })
 
 

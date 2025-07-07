@@ -394,7 +394,8 @@
   <body>
     {% comment %} Determinar si mostrar sidebar: - Usuario debe estar
     autenticado - No debe ser una ruta pública (home o public) {% endcomment %}
-    {% url 'public:home' as public_home_url %} {% url 'home' as home_url %} {% if user.is_authenticated and request.resolver_match.url_name != 'home' and request.resolver_match.namespace != 'public' %}
+    {% url 'public:home' as public_home_url %} 
+    {% url 'home' as home_url %} {%if user.is_authenticated and request.resolver_match.url_name != 'home' and request.resolver_match.namespace != 'public' %}
     <!-- Sidebar Overlay for Mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -426,36 +427,35 @@
               </a>
             </li>
             <!-- Academic Section -->
-        {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor' %}
-        <div class="sidebar-section">
-          <div class="sidebar-section-title">Académico</div>
-          <ul class="sidebar-menu">
-            <li class="sidebar-menu-item">
-              <a
-                class="sidebar-menu-link"
-                href="{% url 'estudiantes:list' %}"
-                data-tooltip="Estudiantes"
-              >
-                <i class="fas fa-user-graduate sidebar-menu-icon"></i>
-                <span class="sidebar-menu-text">Estudiantes</span>
-              </a>
-            </li>
-            {% comment %}
-            <li class="sidebar-menu-item">
-              <a
-                class="sidebar-menu-link"
-                href="{% url 'revision_pruebas:lista_revisiones' %}"
-                data-tooltip="Revisión de Pruebas"
-              >
-                <i class="fas fa-file-alt sidebar-menu-icon"></i>
-                <span class="sidebar-menu-text">Revisión de Pruebas</span>
-              </a>
-            </li>
-            {% endcomment %}
-          </ul>
-        </div>
-        {% endif %}
-            {% comment %}
+            {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor' %}
+            <div class="sidebar-section">
+              <div class="sidebar-section-title">Académico</div>
+              <ul class="sidebar-menu">
+                <li class="sidebar-menu-item">
+                  <a
+                    class="sidebar-menu-link"
+                    href="{% url 'estudiantes:list' %}"
+                    data-tooltip="Estudiantes"
+                  >
+                    <i class="fas fa-user-graduate sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">Estudiantes</span>
+                  </a>
+                </li>
+                {% comment %}
+                <li class="sidebar-menu-item">
+                  <a
+                    class="sidebar-menu-link"
+                    href="{% url 'revision_pruebas:lista_revisiones' %}"
+                    data-tooltip="Revisión de Pruebas"
+                  >
+                    <i class="fas fa-file-alt sidebar-menu-icon"></i>
+                    <span class="sidebar-menu-text">Revisión de Pruebas</span>
+                  </a>
+                </li>
+                {% endcomment %}
+              </ul>
+            </div>
+            {% endif %} {% comment %}
             <li class="sidebar-menu-item">
               <a
                 class="sidebar-menu-link"
@@ -498,6 +498,25 @@
         </div>
         {% endif %}
 
+        <!-- Analytics Section -->
+        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Analytics</div>
+          <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'reportes:dashboard' %}"
+                data-tooltip="Reportes Analytics"
+              >
+                <i class="fas fa-chart-line sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Reportes Analytics</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        {% endif %}
+
         <!-- Administration Section -->
         {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'%}
         <div class="sidebar-section">
@@ -514,8 +533,7 @@
                 <span class="sidebar-menu-text">Colegios</span>
               </a>
             </li>
-            {% endif %}
-            {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
+            {% endif %} {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
             <li class="sidebar-menu-item">
               <a
                 class="sidebar-menu-link"
@@ -550,7 +568,7 @@
           </ul>
         </div>
         {% endif %}
-        
+
         <!-- Download Section -->
         <div class="sidebar-section">
           <div class="sidebar-section-title">Descargas</div>
@@ -558,17 +576,16 @@
             <li class="sidebar-menu-item">
               <a
                 class="sidebar-menu-link"
-                href="{% url 'public:descarga' %}" {# REEMPLAZA ESTO CON LA URL REAL DE DESCARGA #}
+                href="{% url 'public:descarga' %}"
                 target="_blank"
                 data-tooltip="Descargar App de Escritorio"
               >
                 <i class="fas fa-desktop sidebar-menu-icon"></i>
                 <span class="sidebar-menu-text">App de Atrasos</span>
               </a>
-            </li> 
+            </li>
           </ul>
-          </div>
-        
+        </div>
 
         <!-- Inventario Section -->
         {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio' %}
@@ -754,7 +771,10 @@
     {% endif %}
 
     <!-- Main Content -->
-    <main class="main-content{% if not user.is_authenticated or request.resolver_match.url_name == 'home' or request.resolver_match.namespace == 'public' %} no-sidebar{% endif %}" id="mainContent">
+    <main
+      class="main-content{% if not user.is_authenticated or request.resolver_match.url_name == 'home' or request.resolver_match.namespace == 'public' %} no-sidebar{% endif %}"
+      id="mainContent"
+    >
       {% if messages %}
       <div class="container-fluid mt-3">
         {% for message in messages %}
@@ -772,8 +792,7 @@
         </div>
         {% endfor %}
       </div>
-      {% endif %}
-      {% block content %}{% endblock %}
+      {% endif %} {% block content %}{% endblock %}
     </main>
 
     <!-- Footer -->
@@ -887,7 +906,6 @@
         });
       });
     </script>
-    {% endif %} 
-    {% block extra_js %}{% endblock %}
+    {% endif %} {% block extra_js %}{% endblock %}
   </body>
 </html>

@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'system_backup',
     'api',
     'notificaciones',
+    'reportes',
 ]
 
 MIDDLEWARE = [
