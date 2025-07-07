@@ -73,34 +73,12 @@ class PerfilForm(forms.ModelForm):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
-        # Definir las opciones de tipo de usuario según el rol
-        if self.user and self.user.is_superuser:
-            # Superuser puede crear cualquier tipo de usuario
-            tipo_usuario_choices = [
-                ('admin_colegio', 'Administrador de Colegio'),
-                ('profesor', 'Profesor'),
-                ('apoderado', 'Apoderado'),
-                ('estudiante', 'Estudiante'),
-                ('soporte', 'Equipo de Soporte')
-            ]
-            # Superuser puede ver todos los colegios
-            self.fields['colegio'].queryset = Colegio.objects.all()
-        else:
-            # Otros usuarios solo pueden crear tipos básicos
-            tipo_usuario_choices = [
-                ('admin_colegio', 'Administrador de Colegio'),
-                ('profesor', 'Profesor'),
-                ('apoderado', 'Apoderado'),
-                ('estudiante', 'Estudiante')
-            ]
-            # Si es admin_colegio, solo puede ver su propio colegio
-            if self.user and self.user.perfil.tipo_usuario == 'admin_colegio':
-                self.fields['colegio'].queryset = Colegio.objects.filter(
-                    id=self.user.perfil.colegio.id)
-                self.fields['colegio'].initial = self.user.perfil.colegio
-                self.fields['colegio'].widget.attrs.update(
-                    {'readonly': 'readonly'})
-
+        # Solo se permiten los tipos: admin_colegio, porteria, administrativo
+        tipo_usuario_choices = [
+            ('admin_colegio', 'Administrador de Colegio'),
+            ('porteria', 'Portería'),
+            ('administrativo', 'Administrativo'),
+        ]
         self.fields['tipo_usuario'].choices = tipo_usuario_choices
 
     def clean(self):
@@ -108,31 +86,30 @@ class PerfilForm(forms.ModelForm):
         tipo_usuario = cleaned_data.get('tipo_usuario')
         colegio = cleaned_data.get('colegio')
 
-        # Validar que todos los usuarios excepto soporte tengan un colegio asignado
-        if tipo_usuario != 'soporte' and not colegio:
+        # Validar que todos los usuarios tengan un colegio asignado
+        if not colegio:
             raise forms.ValidationError(
                 'Debe seleccionar un colegio para este usuario.')
 
         # Establecer nivel de acceso según tipo de usuario
-        if tipo_usuario == 'soporte':
-            cleaned_data['nivel_acceso'] = 'avanzado'
-        elif tipo_usuario in ['admin_colegio', 'profesor']:
+        if tipo_usuario == 'admin_colegio':
             cleaned_data['nivel_acceso'] = 'intermedio'
-        else:  # apoderado, estudiante
+        elif tipo_usuario == 'porteria':
             cleaned_data['nivel_acceso'] = 'basico'
-
+        elif tipo_usuario == 'administrativo':
+            cleaned_data['nivel_acceso'] = 'intermedio'
         return cleaned_data
 
     def save(self, commit=True):
         instance = super().save(commit=False)
         # Asegurar que el nivel de acceso se establezca al guardar
         if not instance.nivel_acceso:
-            if instance.tipo_usuario == 'soporte':
-                instance.nivel_acceso = 'avanzado'
-            elif instance.tipo_usuario in ['admin_colegio', 'profesor']:
+            if instance.tipo_usuario == 'admin_colegio':
                 instance.nivel_acceso = 'intermedio'
-            else:  # apoderado, estudiante
+            elif instance.tipo_usuario == 'porteria':
                 instance.nivel_acceso = 'basico'
+            elif instance.tipo_usuario == 'administrativo':
+                instance.nivel_acceso = 'intermedio'
 
         if commit:
             instance.save()

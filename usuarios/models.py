@@ -7,11 +7,9 @@ from colegios.models import Colegio
 
 class Perfil(models.Model):
     TIPO_USUARIO_CHOICES = [
-        ('estudiante', 'Estudiante'),
-        ('profesor', 'Profesor'),
-        ('apoderado', 'Apoderado'),
         ('admin_colegio', 'Administrador de Colegio'),
-        ('soporte', 'Equipo de Soporte'),
+        ('porteria', 'Portería'),
+        ('administrativo', 'Administrativo'),
     ]
 
     NIVEL_ACCESO_CHOICES = [
@@ -52,16 +50,12 @@ class Perfil(models.Model):
         return nombre_completo[0].upper()
 
     @property
-    def es_equipo_soporte(self):
-        return self.tipo_usuario == 'soporte'
-
-    @property
     def es_admin_colegio(self):
         return self.tipo_usuario == 'admin_colegio'
 
     @property
     def puede_administrar_colegio(self):
-        return self.es_equipo_soporte or self.es_admin_colegio
+        return self.es_admin_colegio
 
 
 @receiver(post_save, sender=User)
