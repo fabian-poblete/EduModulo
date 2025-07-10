@@ -16,6 +16,7 @@ SECRET_KEY = os.environ.get(
 
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 print(DEBUG)
+RENDER = os.environ.get('RENDER', None)
 
 
 ALLOWED_HOSTS = os.environ.get(
@@ -24,7 +25,7 @@ ALLOWED_HOSTS = os.environ.get(
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Security settings
-if not DEBUG:
+if not DEBUG and not RENDER:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
@@ -34,6 +35,9 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
     X_FRAME_OPTIONS = 'DENY'
+else:
+    SECURE_SSL_REDIRECT = False
+
 
 # Application definition
 INSTALLED_APPS = [
