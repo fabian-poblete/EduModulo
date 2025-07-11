@@ -19,6 +19,10 @@ services:
         value: config.settings
       - key: DISABLE_COLLECTSTATIC
         value: 0
+      - key: CSRF_TRUSTED_ORIGINS
+        value: https://edumodulo.cl,https://edumodulo.onrender.com
+      - key: ALLOWED_HOSTS
+        value: edumodulo.cl,edumodulo.onrender.com,localhost,127.0.0.1
 
 databases:
   - name: edumodulo_db

@@ -37,6 +37,8 @@ if not DEBUG and not RENDER:
     X_FRAME_OPTIONS = 'DENY'
 else:
     SECURE_SSL_REDIRECT = False
+    # For development, allow HTTP CSRF cookies
+    CSRF_COOKIE_SECURE = False
 
 
 # Application definition
@@ -218,6 +220,18 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+# CSRF settings
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    'CSRF_TRUSTED_ORIGINS',
+    'http://localhost:8000,http://127.0.0.1:8000,https://edumodulo.cl'
+).split(',')
+
+# Additional CSRF settings for production
+if not DEBUG:
+    CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_HTTPONLY = True
+    CSRF_COOKIE_SAMESITE = 'Lax'
 
 
 # Logging para producción
