@@ -202,12 +202,24 @@
     );
     radioButtons.forEach(function (radio) {
       radio.addEventListener("change", function () {
+        // Remueve la clase 'active' de todos los labels
+        radioButtons.forEach(function (r) {
+          r.nextElementSibling.classList.remove("active");
+        });
+        // Añade la clase 'active' al label seleccionado
+        this.nextElementSibling.classList.add("active");
+
+        // Mostrar campo de otros justificativos si corresponde
         if (this.value === "otros") {
           otrosDiv.style.display = "block";
         } else {
           otrosDiv.style.display = "none";
         }
       });
+      // Marca el botón activo al cargar si está seleccionado
+      if (radio.checked) {
+        radio.nextElementSibling.classList.add("active");
+      }
     });
 
     buscarInput.addEventListener("input", function () {
@@ -277,12 +289,10 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   .form-check-label.active {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  .form-check-input:checked + .form-check-label {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 100%);
+    color: #fff !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.13);
   }
 </style>
 {% endblock %}
