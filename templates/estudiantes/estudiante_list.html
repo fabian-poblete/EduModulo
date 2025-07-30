@@ -1,29 +1,40 @@
-{% extends 'base.html' %} {% block title %}Estudiantes{% endblock %} 
+{% extends 'base.html' %} 
+{% block title %}Estudiantes{% endblock %} 
+
 {% block content %}
-<div class="container-fluid mt-4 mb-5">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Estudiantes</h2>
+<div class="container-fluid">
+  <!-- Header responsive -->
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
     <div>
-      {% if is_admin %}
-      <a href="{% url 'estudiantes:create' %}" class="btn btn-primary me-2">
-        <i class="fas fa-plus"></i> Nuevo Estudiante
+      <h2 class="h3 h-md-2 mb-1">Estudiantes</h2>
+    </div>
+    {% if is_admin %}
+    <div class="d-flex flex-column flex-sm-row gap-2 w-100 w-md-auto">
+      <a href="{% url 'estudiantes:create' %}" class="btn btn-primary">
+        <i class="fas fa-plus"></i>
+        <span class="d-none d-sm-inline">Nuevo Estudiante</span>
+        <span class="d-inline d-sm-none">Nuevo</span>
       </a>
-      <a href="{% url 'estudiantes:carga_masiva' %}" class="btn btn-success me-2">
-        <i class="fas fa-upload"></i> Carga Masiva
+      <a href="{% url 'estudiantes:carga_masiva' %}" class="btn btn-success">
+        <i class="fas fa-upload"></i>
+        <span class="d-none d-sm-inline">Carga Masiva</span>
+        <span class="d-inline d-sm-none">Carga</span>
       </a>
       <a href="{% url 'estudiantes:edicion_masiva' %}" class="btn btn-info">
-        <i class="fas fa-edit"></i> Edición Masiva
+        <i class="fas fa-edit"></i>
+        <span class="d-none d-sm-inline">Edición Masiva</span>
+        <span class="d-inline d-sm-none">Edición</span>
       </a>
-      {% endif %}
     </div>
+    {% endif %}
   </div>
 
-  <!-- Filtros de búsqueda -->
+  <!-- Filtros responsive -->
   <div class="card mb-4">
-    <div class="card-body">
+    <div class="card-body p-3 p-md-4">
       <form method="get" class="row g-3">
-        <div class="col-md-4">
-          <label for="curso" class="form-label">Curso</label>
+        <div class="col-12 col-md-6 col-lg-4">
+          <label for="curso" class="form-label fw-bold">Curso</label>
           <select class="form-select" id="curso" name="curso">
             <option value="">Todos los cursos</option>
             {% for curso in cursos %}
@@ -33,151 +44,192 @@
             {% endfor %}
           </select>
         </div>
-        <div class="col-md-4">
-          <label for="estado" class="form-label">Estado</label>
+        <div class="col-12 col-md-6 col-lg-4">
+          <label for="estado" class="form-label fw-bold">Estado</label>
           <select class="form-select" id="estado" name="estado">
             <option value="1" {% if estado == '1' %}selected{% endif %}>Activo</option>
             <option value="0" {% if estado == '0' %}selected{% endif %}>Inactivo</option>
           </select>
         </div>
-        <div class="col-md-4">
-          <label for="busqueda" class="form-label">Buscar por nombre o RUT</label>
+        <div class="col-12 col-md-6 col-lg-4">
+          <label for="busqueda" class="form-label fw-bold">Buscar por nombre o RUT</label>
           <input type="text" class="form-control" id="busqueda" name="busqueda" placeholder="Ingrese nombre o RUT" value="{{ busqueda|default:'' }}" autocomplete="off">
         </div>
         <div class="col-12">
-          <button type="submit" class="btn btn-primary">
-            <i class="fas fa-search"></i> Filtrar
-          </button>
-          <a href="{% url 'estudiantes:list' %}" class="btn btn-info">
-            <i class="fas fa-eraser"></i> Limpiar Filtros
-          </a>
+          <div class="d-flex flex-column flex-sm-row gap-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-search"></i>
+              <span class="d-none d-sm-inline">Filtrar</span>
+            </button>
+            <a href="{% url 'estudiantes:list' %}" class="btn btn-info">
+              <i class="fas fa-eraser"></i>
+              <span class="d-none d-sm-inline">Limpiar Filtros</span>
+              <span class="d-inline d-sm-none">Limpiar</span>
+            </a>
+          </div>
         </div>
       </form>
     </div>
   </div>
-{% comment %} 
-  <!-- Resumen de filtros aplicados -->
-  {% if curso_id or estado or busqueda %}
-  <div class="card mb-4">
-    <div class="card-body">
-      <h5 class="card-title">Filtros Aplicados:</h5>
-      <div class="row">
-        {% if curso_id %}
-        <div class="col-md-4">
-          <strong>Curso:</strong>
-          {% for curso in cursos %}
-            {% if curso.id|stringformat:"s" == curso_id %}
-              {{ curso.nombre }}
-            {% endif %}
-          {% endfor %}
-        </div>
-        {% endif %}
-        {% if estado %}
-        <div class="col-md-4">
-          <strong>Estado:</strong>
-          {% if estado == '1' %}Activo{% else %}Inactivo{% endif %}
-        </div>
-        {% endif %}
-        {% if busqueda %}
-        <div class="col-md-4">
-          <strong>Búsqueda:</strong>
-          {{ busqueda }}
-        </div>
-        {% endif %}
+
+  <!-- Tabla responsive -->
+  <div class="card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th class="d-none d-md-table-cell">Nombre</th>
+              <th class="d-none d-lg-table-cell">RUT</th>
+              <th class="d-none d-md-table-cell">Curso</th>
+              <th class="d-none d-lg-table-cell">Contacto</th>
+              <th>Estado</th>
+              {% if is_admin %}<th class="text-center">Acciones</th>{% endif %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for estudiante in estudiantes %}
+            <tr>
+              <!-- Nombre - Responsive -->
+              <td class="d-none d-md-table-cell">{{ estudiante.nombre }}</td>
+              
+              <!-- RUT - Solo en desktop -->
+              <td class="d-none d-lg-table-cell">{{ estudiante.formatear_rut }}</td>
+              
+              <!-- Curso - Responsive -->
+              <td class="d-none d-md-table-cell">{{ estudiante.curso.nombre }}</td>
+              
+              <!-- Contacto - Solo en desktop -->
+              <td class="d-none d-lg-table-cell text-center">
+                <a href="{% url 'estudiantes:detail' estudiante.id %}" class="btn btn-link p-0" title="Ver contacto">
+                  <i class="fas fa-address-card fa-lg"></i>
+                </a>
+              </td>
+              
+              <!-- Estado - Siempre visible -->
+              <td>
+                <div class="d-flex flex-column">
+                  {% if estudiante.activo %}
+                  <span class="badge bg-success">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="d-none d-sm-inline">Activo</span>
+                  </span>
+                  {% else %}
+                  <span class="badge bg-danger">
+                    <i class="fas fa-times-circle"></i>
+                    <span class="d-none d-sm-inline">Inactivo</span>
+                  </span>
+                  {% endif %}
+                  
+                  <!-- Info adicional en mobile -->
+                  <div class="d-md-none small text-muted mt-1">
+                    <div class="fw-bold">{{ estudiante.nombre }}</div>
+                    <div>{{ estudiante.curso.nombre }}</div>
+                    <div>{{ estudiante.formatear_rut }}</div>
+                  </div>
+                </div>
+              </td>
+              
+              <!-- Acciones - Responsive -->
+              {% if is_admin %}
+              <td class="text-center">
+                <div class="d-flex gap-1 flex-wrap justify-content-center">
+                  <a href="{% url 'estudiantes:update' estudiante.id %}" class="btn btn-sm btn-warning" title="Editar">
+                    <i class="fas fa-edit"></i>
+                    <span class="d-inline d-sm-none">Editar</span>
+                  </a>
+                  <a href="{% url 'estudiantes:detail' estudiante.id %}" class="btn btn-sm btn-info d-lg-none" title="Ver detalles">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  <div class="dropdown d-none d-lg-block">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenu{{ estudiante.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="fas fa-cog"></i>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{ estudiante.id }}">
+                      <li>
+                        <a class="dropdown-item" href="{% url 'estudiantes:update' estudiante.id %}">
+                          <i class="fas fa-edit me-1 text-primary"></i> Editar
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item text-danger" href="{% url 'estudiantes:delete' estudiante.id %}">
+                          <i class="fas fa-trash me-1"></i> Eliminar
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="{% url 'estudiantes:toggle_active' estudiante.id %}" onclick="return confirm('¿Está seguro de {% if estudiante.activo %}desactivar{% else %}activar{% endif %} este estudiante?')">
+                          <i class="fas {% if estudiante.activo %}fa-user-slash text-secondary{% else %}fa-user-check text-success{% endif %} me-1"></i>
+                          {% if estudiante.activo %}Desactivar{% else %}Activar{% endif %}
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </td>
+              {% endif %}
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="{% if is_admin %}3{% else %}2{% endif %}" class="text-center py-4">
+                <div class="text-muted">
+                  <i class="fas fa-users fa-2x mb-2"></i>
+                  <p class="mb-0">No hay estudiantes registrados</p>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
-  {% endif %} {% endcomment %}
-
-  <div class="table-responsive">
-    <table class="table table-hover table-lg align-middle" style="font-size:1.1rem;">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>RUT</th>
-          <th>Curso</th>
-          <th>Contacto</th>
-          <th>Estado</th>
-          {% if is_admin %}<th>Acciones</th>{% endif %}
-        </tr>
-      </thead>
-      <tbody>
-        {% for estudiante in estudiantes %}
-        <tr>
-          <td>{{ estudiante.nombre }}</td>
-          <td>{{ estudiante.formatear_rut }}</td>
-          <td>{{ estudiante.curso.nombre }}</td>
-          <td class="text-center">
-            <a href="{% url 'estudiantes:detail' estudiante.id %}" class="btn btn-link p-0" title="Ver contacto">
-              <i class="fas fa-address-card fa-lg"></i>
-            </a>
-          </td>
-          <td>
-            {% if estudiante.activo %}
-            <span class="badge bg-success">Activo</span>
-            {% else %}
-            <span class="badge bg-danger">Inactivo</span>
-            {% endif %}
-          </td>
-          {% if is_admin %}
-          <td>
-            <div class="dropdown">
-              <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenu{{ estudiante.id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-cog"></i>
-              </button>
-              <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{ estudiante.id }}">
-                <li>
-                  <a class="dropdown-item" href="{% url 'estudiantes:update' estudiante.id %}">
-                    <i class="fas fa-edit me-1 text-primary"></i> Editar
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item text-danger" href="{% url 'estudiantes:delete' estudiante.id %}">
-                    <i class="fas fa-trash me-1"></i> Eliminar
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'estudiantes:toggle_active' estudiante.id %}" onclick="return confirm('¿Está seguro de {% if estudiante.activo %}desactivar{% else %}activar{% endif %} este estudiante?')">
-                    <i class="fas {% if estudiante.activo %}fa-user-slash text-secondary{% else %}fa-user-check text-success{% endif %} me-1"></i>
-                    {% if estudiante.activo %}Desactivar{% else %}Activar{% endif %}
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </td>
-          {% endif %}
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="{% if is_admin %}6{% else %}5{% endif %}" class="text-center">No hay estudiantes registrados</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+  
+  <!-- Paginación responsive -->
   {% if paginator.num_pages > 1 %}
-  <nav aria-label="Paginación de estudiantes">
-    <ul class="pagination justify-content-center mt-4">
+  <nav aria-label="Paginación de estudiantes" class="mt-4">
+    <ul class="pagination justify-content-center flex-wrap">
       {% if page_obj.has_previous %}
         <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if curso_id %}&curso={{ curso_id }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">&laquo;</a>
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if curso_id %}&curso={{ curso_id }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">
+            <i class="fas fa-chevron-left"></i>
+            <span class="d-none d-sm-inline">Anterior</span>
+          </a>
         </li>
       {% else %}
-        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+        <li class="page-item disabled">
+          <span class="page-link">
+            <i class="fas fa-chevron-left"></i>
+            <span class="d-none d-sm-inline">Anterior</span>
+          </span>
+        </li>
       {% endif %}
+      
       {% for num in paginator.page_range %}
         {% if page_obj.number == num %}
-          <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+          <li class="page-item active">
+            <span class="page-link">{{ num }}</span>
+          </li>
         {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-          <li class="page-item"><a class="page-link" href="?page={{ num }}{% if curso_id %}&curso={{ curso_id }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">{{ num }}</a></li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ num }}{% if curso_id %}&curso={{ curso_id }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">{{ num }}</a>
+          </li>
         {% endif %}
       {% endfor %}
+      
       {% if page_obj.has_next %}
         <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if curso_id %}&curso={{ curso_id }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">&raquo;</a>
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if curso_id %}&curso={{ curso_id }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if busqueda %}&busqueda={{ busqueda }}{% endif %}">
+            <span class="d-none d-sm-inline">Siguiente</span>
+            <i class="fas fa-chevron-right"></i>
+          </a>
         </li>
       {% else %}
-        <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+        <li class="page-item disabled">
+          <span class="page-link">
+            <span class="d-none d-sm-inline">Siguiente</span>
+            <i class="fas fa-chevron-right"></i>
+          </span>
+        </li>
       {% endif %}
     </ul>
   </nav>
@@ -185,33 +237,177 @@
 </div>
 
 <style>
-  .email-copy {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+  /* Responsive styles for estudiantes list */
+  @media (max-width: 576px) {
+    .card-body {
+      padding: 1rem;
+    }
+    
+    .table th,
+    .table td {
+      padding: 0.5rem 0.25rem;
+      font-size: 0.875rem;
+    }
+    
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+    }
+    
+    h2 {
+      font-size: 1.25rem;
+    }
+    
+    .btn {
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+    }
+    
+    .badge {
+      font-size: 0.75rem;
+    }
+    
+    .pagination .page-link {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+    }
   }
-  .table-lg th, .table-lg td {
-    padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
-    vertical-align: middle !important;
+  
+  @media (min-width: 577px) and (max-width: 768px) {
+    .table th,
+    .table td {
+      padding: 0.75rem 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .btn-sm {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+    }
+    
+    .btn {
+      padding: 0.875rem 1.25rem;
+    }
+    
+    .pagination .page-link {
+      padding: 0.75rem 1rem;
+    }
   }
+  
+  @media (min-width: 769px) {
+    .table th,
+    .table td {
+      padding: 1rem 0.75rem;
+      font-size: 1rem;
+    }
+  }
+  
+  /* Hover effects */
+  .table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.075);
+  }
+  
+  /* Badge improvements */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 0.375rem;
+  }
+  
+  /* Button improvements */
+  .btn-sm {
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-sm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Form improvements */
+  .form-control,
+  .form-select {
+    border-radius: 0.5rem;
+  }
+  
+  .form-control:focus,
+  .form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+  }
+  
+  /* Empty state */
+  .table td .text-muted {
+    color: #6c757d !important;
+  }
+  
+  /* Pagination improvements */
+  .pagination {
+    gap: 0.25rem;
+  }
+  
+  .page-link {
+    border-radius: 0.375rem;
+    border: 1px solid #dee2e6;
+  }
+  
+  .page-link:hover {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+  }
+  
+  /* Print styles */
   @media print {
-    .card, .btn {
+    .card, .btn, .pagination {
       display: none !important;
     }
+    
+    .container-fluid {
+      width: 100% !important;
+      max-width: 100% !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    
     .table {
       width: 100% !important;
       border-collapse: collapse !important;
+      font-size: 12px !important;
     }
+    
     .table th,
     .table td {
       border: 1px solid #ddd !important;
-      padding: 8px !important;
+      padding: 0.25rem !important;
     }
+    
     .table thead th {
       background-color: #f8f9fa !important;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
+    }
+    
+    .badge {
+      font-size: 10px !important;
+    }
+    
+    /* Mostrar todas las columnas en impresión */
+    .d-none {
+      display: table-cell !important;
+    }
+    
+    /* Ocultar elementos no necesarios */
+    .d-md-none,
+    .d-lg-none,
+    .d-xl-none {
+      display: none !important;
+    }
+    
+    /* Evitar saltos de página dentro de las filas */
+    tr {
+      page-break-inside: avoid;
     }
   }
 </style>
@@ -233,6 +429,8 @@
         }
       });
     }
+    
+    // Funcionalidad de copiar email (preservada)
     const copyCells = document.querySelectorAll('.email-copy');
     copyCells.forEach(cell => {
       cell.addEventListener('click', function () {
