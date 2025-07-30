@@ -250,6 +250,8 @@
         margin-left: var(--sidebar-width);
         transition: margin-left 0.3s ease;
         min-height: 100vh;
+        background: #f8fafc;
+        padding: 1rem;
       }
 
       .main-content.sidebar-collapsed {
@@ -260,6 +262,42 @@
         margin-left: 0;
       }
 
+      /* Content container optimizations */
+      .main-content .container-fluid {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      /* Card optimizations for responsive */
+      .card {
+        border: none;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border-radius: 0.75rem;
+        transition: box-shadow 0.2s ease;
+      }
+
+      .card:hover {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Table responsive optimizations */
+      .table-responsive {
+        border-radius: 0.75rem;
+        overflow: hidden;
+      }
+
+      /* Button optimizations for touch */
+      .btn {
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
       /* Navbar Styles */
       .navbar-authenticated {
         background: white !important;
@@ -267,6 +305,9 @@
         padding: 0.75rem 0;
         margin-left: var(--sidebar-width);
         transition: margin-left 0.3s ease;
+        position: sticky;
+        top: 0;
+        z-index: 1030;
       }
 
       .navbar-authenticated.sidebar-collapsed {
@@ -280,6 +321,27 @@
       .navbar-authenticated .navbar-brand {
         color: var(--sidebar-bg) !important;
         font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .navbar-authenticated .navbar-brand i {
+        color: #3b82f6;
+      }
+
+      #sidebarToggleMobile {
+        background: none;
+        border: none;
+        color: #3b82f6;
+        font-size: 1.25rem;
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        transition: background-color 0.2s;
+      }
+
+      #sidebarToggleMobile:hover {
+        background: rgba(59, 130, 246, 0.1);
       }
 
       /* User Dropdown Styles */
@@ -348,11 +410,19 @@
         opacity: 0;
       }
 
-      /* Mobile Styles */
-      @media (max-width: 768px) {
+      /* Responsive Design - Mobile, Tablet, Desktop */
+
+      /* Mobile Styles (up to 576px) */
+      @media (max-width: 576px) {
+        :root {
+          --sidebar-width: 100vw;
+          --sidebar-width-collapsed: 100vw;
+        }
+
         .sidebar {
           transform: translateX(-100%);
           transition: transform 0.3s ease;
+          width: 100vw;
         }
 
         .sidebar.mobile-open {
@@ -362,6 +432,7 @@
         .main-content,
         .navbar-authenticated {
           margin-left: 0 !important;
+          padding: 0.5rem;
         }
 
         .sidebar-overlay {
@@ -383,7 +454,137 @@
         }
 
         .sidebar.collapsed {
-          width: var(--sidebar-width);
+          width: 100vw;
+        }
+
+        .sidebar.collapsed .sidebar-menu-text,
+        .sidebar.collapsed .sidebar-brand,
+        .sidebar.collapsed .sidebar-section-title,
+        .sidebar.collapsed .user-details {
+          opacity: 1;
+          width: auto;
+        }
+
+        .sidebar.collapsed .sidebar-header {
+          justify-content: flex-start;
+          padding: 1rem;
+        }
+
+        .sidebar.collapsed .sidebar-menu-link {
+          justify-content: flex-start;
+          padding: 0.75rem 1rem;
+          font-size: 1rem;
+        }
+
+        .sidebar.collapsed .user-info {
+          justify-content: flex-start;
+        }
+
+        .sidebar.collapsed .sidebar-toggle {
+          margin-left: auto;
+        }
+
+        /* Mobile navbar adjustments */
+        .navbar-authenticated {
+          padding: 0.5rem 1rem;
+        }
+
+        .navbar-authenticated .navbar-brand {
+          font-size: 1.1rem;
+        }
+
+        /* Mobile content adjustments */
+        .container-fluid {
+          padding-left: 0.5rem;
+          padding-right: 0.5rem;
+        }
+
+        .alert {
+          margin-bottom: 0.5rem;
+          font-size: 0.9rem;
+        }
+
+        /* Mobile table optimizations */
+        .table {
+          font-size: 0.875rem;
+        }
+
+        .table th,
+        .table td {
+          padding: 0.5rem 0.25rem;
+        }
+
+        /* Mobile form optimizations */
+        .form-control,
+        .form-select {
+          font-size: 1rem;
+          padding: 0.75rem;
+        }
+
+        /* Mobile card optimizations */
+        .card {
+          margin-bottom: 1rem;
+        }
+
+        .card-body {
+          padding: 1rem;
+        }
+
+        /* Mobile button optimizations */
+        .btn {
+          padding: 0.75rem 1rem;
+          font-size: 1rem;
+        }
+
+        .btn-sm {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.875rem;
+        }
+      }
+
+      /* Tablet Styles (577px to 768px) */
+      @media (min-width: 577px) and (max-width: 768px) {
+        :root {
+          --sidebar-width: 320px;
+          --sidebar-width-collapsed: 320px;
+        }
+
+        .sidebar {
+          transform: translateX(-100%);
+          transition: transform 0.3s ease;
+          width: 320px;
+        }
+
+        .sidebar.mobile-open {
+          transform: translateX(0);
+        }
+
+        .main-content,
+        .navbar-authenticated {
+          margin-left: 0 !important;
+          padding: 1rem;
+        }
+
+        .sidebar-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          z-index: 1040;
+          opacity: 0;
+          visibility: hidden;
+          transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.show {
+          opacity: 1;
+          visibility: visible;
+        }
+
+        .sidebar.collapsed {
+          width: 320px;
         }
 
         .sidebar.collapsed .sidebar-menu-text,
@@ -401,7 +602,7 @@
 
         .sidebar.collapsed .sidebar-menu-link {
           justify-content: flex-start;
-          padding: 0.75rem 1rem;
+          padding: 0.85rem 1.1rem;
         }
 
         .sidebar.collapsed .user-info {
@@ -411,6 +612,146 @@
         .sidebar.collapsed .sidebar-toggle {
           margin-left: auto;
         }
+
+        /* Tablet navbar adjustments */
+        .navbar-authenticated {
+          padding: 0.75rem 1.5rem;
+        }
+
+        /* Tablet content optimizations */
+        .main-content {
+          padding: 1.5rem;
+        }
+
+        /* Tablet table optimizations */
+        .table {
+          font-size: 0.9rem;
+        }
+
+        .table th,
+        .table td {
+          padding: 0.75rem 0.5rem;
+        }
+
+        /* Tablet form optimizations */
+        .form-control,
+        .form-select {
+          font-size: 1rem;
+          padding: 0.75rem;
+        }
+
+        /* Tablet card optimizations */
+        .card-body {
+          padding: 1.25rem;
+        }
+      }
+
+      /* Small Desktop Styles (769px to 1024px) */
+      @media (min-width: 769px) and (max-width: 1024px) {
+        :root {
+          --sidebar-width: 260px;
+          --sidebar-width-collapsed: 70px;
+        }
+
+        .sidebar {
+          width: var(--sidebar-width);
+          transform: translateX(0);
+        }
+
+        .main-content,
+        .navbar-authenticated {
+          margin-left: var(--sidebar-width);
+        }
+
+        .sidebar.collapsed {
+          width: var(--sidebar-width-collapsed);
+        }
+
+        .main-content.sidebar-collapsed,
+        .navbar-authenticated.sidebar-collapsed {
+          margin-left: var(--sidebar-width-collapsed);
+        }
+
+        /* Optimize for smaller screens */
+        .sidebar-menu-link {
+          padding: 0.75rem 1rem;
+          font-size: 1rem;
+        }
+
+        .sidebar-brand {
+          font-size: 1.25rem;
+        }
+      }
+
+      /* Large Desktop Styles (1025px and above) */
+      @media (min-width: 1025px) {
+        :root {
+          --sidebar-width: 280px;
+          --sidebar-width-collapsed: 70px;
+        }
+
+        .sidebar {
+          width: var(--sidebar-width);
+          transform: translateX(0);
+        }
+
+        .main-content,
+        .navbar-authenticated {
+          margin-left: var(--sidebar-width);
+        }
+
+        .sidebar.collapsed {
+          width: var(--sidebar-width-collapsed);
+        }
+
+        .main-content.sidebar-collapsed,
+        .navbar-authenticated.sidebar-collapsed {
+          margin-left: var(--sidebar-width-collapsed);
+        }
+
+        /* Large desktop content optimizations */
+        .main-content {
+          padding: 2rem;
+        }
+
+        /* Large desktop table optimizations */
+        .table {
+          font-size: 1rem;
+        }
+
+        .table th,
+        .table td {
+          padding: 1rem 0.75rem;
+        }
+
+        /* Large desktop card optimizations */
+        .card-body {
+          padding: 1.5rem;
+        }
+
+        /* Large desktop form optimizations */
+        .form-control,
+        .form-select {
+          font-size: 1rem;
+          padding: 0.875rem;
+        }
+      }
+
+      /* Touch device optimizations */
+      @media (hover: none) and (pointer: coarse) {
+        .sidebar-menu-link {
+          padding: 1rem 1.1rem;
+          min-height: 48px;
+        }
+
+        .sidebar-toggle {
+          min-width: 44px;
+          min-height: 44px;
+        }
+
+        .user-info {
+          min-height: 48px;
+        }
       }
     </style>
 
@@ -418,7 +759,8 @@
   </head>
 
   <body>
-    {% url 'public:home' as public_home_url %} {% url 'home' as home_url %} 
+    {% url 'public:home' as public_home_url %} 
+    {% url 'home' as home_url %} 
     {%if user.is_authenticated and request.resolver_match.url_name != 'home' and request.resolver_match.namespace != 'public' %}
     <!-- Sidebar Overlay for Mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -479,8 +821,7 @@
                 {% endcomment %}
               </ul>
             </div>
-            {% endif %} 
-            {% comment %}
+            {% endif %} {% comment %}
             <li class="sidebar-menu-item">
               <a
                 class="sidebar-menu-link"
@@ -568,7 +909,8 @@
                 <span class="sidebar-menu-text">Colegios</span>
               </a>
             </li>
-            {% endif %} {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
+            {% endif %} 
+            {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
             <li class="sidebar-menu-item">
               <a
                 class="sidebar-menu-link"
@@ -605,7 +947,8 @@
         {% endif %}
 
         <!-- Download Section -->
-        {% comment %} <div class="sidebar-section">
+        {% comment %}
+        <div class="sidebar-section">
           <div class="sidebar-section-title">Descargas</div>
           <ul class="sidebar-menu">
             <li class="sidebar-menu-item">
@@ -620,7 +963,8 @@
               </a>
             </li>
           </ul>
-        </div> {% endcomment %}
+        </div>
+        {% endcomment %}
 
         <!-- Inventario Section -->
         {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio' %}
@@ -690,7 +1034,8 @@
               {{ user.get_full_name|default:user.username }}
             </div>
             <div class="user-role">
-              {% if user.is_superuser %} Super Administrador {% elif user.perfil.tipo_usuario == 'admin_colegio' %} Admin. Colegio {% else %} Usuario {% endif %}
+              {% if user.is_superuser %} Super Administrador 
+              {% elif user.perfil.tipo_usuario == 'admin_colegio' %} Admin. Colegio {%else %} Usuario {% endif %}
             </div>
           </div>
           <i class="fas fa-chevron-up user-chevron"></i>
@@ -901,10 +1246,20 @@
 
         let isCollapsed = localStorage.getItem("sidebarCollapsed") === "true";
         let isMobile = window.innerWidth <= 768;
+        let isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+
+        function getDeviceType() {
+          if (window.innerWidth <= 576) return "mobile";
+          if (window.innerWidth <= 768) return "tablet";
+          if (window.innerWidth <= 1024) return "small-desktop";
+          return "large-desktop";
+        }
 
         function updateSidebar() {
-          if (isMobile) {
-            // Mobile behavior - sidebar is always hidden by default
+          const deviceType = getDeviceType();
+
+          if (deviceType === "mobile" || deviceType === "tablet") {
+            // Mobile/Tablet behavior - sidebar is hidden by default
             sidebar.classList.remove("collapsed");
             mainContent.classList.remove("sidebar-collapsed");
             if (topNavbar) topNavbar.classList.remove("sidebar-collapsed");
@@ -926,8 +1281,10 @@
         }
 
         function toggleSidebar() {
-          if (isMobile) {
-            // Mobile: toggle sidebar visibility
+          const deviceType = getDeviceType();
+
+          if (deviceType === "mobile" || deviceType === "tablet") {
+            // Mobile/Tablet: toggle sidebar visibility
             sidebar.classList.toggle("mobile-open");
             if (sidebarOverlay) sidebarOverlay.classList.toggle("show");
           } else {
@@ -957,11 +1314,13 @@
         // Handle window resize
         window.addEventListener("resize", function () {
           const wasMobile = isMobile;
+          const wasTablet = isTablet;
           isMobile = window.innerWidth <= 768;
+          isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
 
-          if (wasMobile !== isMobile) {
+          if (wasMobile !== isMobile || wasTablet !== isTablet) {
             // Close mobile sidebar when switching to desktop
-            if (!isMobile) {
+            if (!isMobile && !isTablet) {
               sidebar.classList.remove("mobile-open");
               if (sidebarOverlay) sidebarOverlay.classList.remove("show");
             }

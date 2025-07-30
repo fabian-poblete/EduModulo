@@ -1,86 +1,146 @@
 {% extends 'base.html' %} {% load static %} {% block content %}
-<div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0">Estudiantes Autorizados para Salida a Almuerzo</h2>
+<div class="container-fluid">
+  <!-- Header responsive -->
+  <div
+    class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4"
+  >
     <div>
-      <a
-        href="{% url 'salidas_almuerzo:carga_masiva' %}"
-        class="btn btn-info me-2"
-        >Carga masiva</a
-      >
+      <h2 class="h3 h-md-2 mb-1">
+        Estudiantes Autorizados para Salida a Almuerzo
+      </h2>
+    </div>
+    <div class="d-flex flex-column flex-sm-row gap-2 w-100 w-md-auto">
+      <a href="{% url 'salidas_almuerzo:carga_masiva' %}" class="btn btn-info">
+        <i class="fas fa-upload"></i>
+        <span class="d-none d-sm-inline">Carga masiva</span>
+        <span class="d-inline d-sm-none">Carga</span>
+      </a>
       <a
         href="{% url 'salidas_almuerzo:autorizar_create' %}"
-        class="btn btn-success me-2"
-        >+ Autorizar estudiante</a
+        class="btn btn-success"
       >
+        <i class="fas fa-plus"></i>
+        <span class="d-none d-sm-inline">+ Autorizar estudiante</span>
+        <span class="d-inline d-sm-none">+ Autorizar</span>
+      </a>
       <a
         href="{% url 'salidas_almuerzo:verificar_permiso' %}"
         class="btn btn-primary"
         data-bs-toggle="modal"
         data-bs-target="#validarSalidaModal"
         onclick="event.preventDefault();"
-        >Validar salida</a
       >
+        <i class="fas fa-search"></i>
+        <span class="d-none d-sm-inline">Validar salida</span>
+        <span class="d-inline d-sm-none">Validar</span>
+      </a>
     </div>
   </div>
-  {% if messages %} {% for message in messages %}
-  <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-  {% endfor %} {% endif %}
+
+  {% if messages %}
+  <div class="mb-3">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Tabla responsive -->
   <div class="card">
     <div class="card-body p-0">
-      <table class="table table-hover mb-0 align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>Estudiante</th>
-            <th>Fecha inicio</th>
-            <th>Fecha fin</th>
-            <th>Observaciones</th>
-            <th class="text-center">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for autorizado in autorizados %}
-          <tr>
-            <td>{{ autorizado.estudiante }}</td>
-            <td>{{ autorizado.fecha_inicio|date:'d/m/Y' }}</td>
-            <td>{{ autorizado.fecha_fin|date:'d/m/Y' }}</td>
-            <td>
-              {% if autorizado.observaciones %} {{ autorizado.observaciones }}
-              {% else %}
-              <span class="text-muted">Sin observación</span>
-              {% endif %}
-            </td>
-            <td class="text-center">
-              <a
-                href="{% url 'salidas_almuerzo:autorizar_update' autorizado.id %}"
-                class="btn btn-sm btn-warning me-1"
-                >Editar</a
-              >
-              <form
-                method="post"
-                action="{% url 'salidas_almuerzo:desautorizar' autorizado.id %}"
-                style="display: inline"
-                onsubmit="return confirm('¿Seguro que deseas desautorizar a este estudiante?');"
-              >
-                {% csrf_token %}
-                <button type="submit" class="btn btn-sm btn-danger">
-                  Desautorizar
-                </button>
-              </form>
-            </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="5" class="text-center text-muted">
-              No hay estudiantes autorizados actualmente.
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th class="d-none d-md-table-cell">Estudiante</th>
+              <th>Fechas</th>
+              <th class="d-none d-lg-table-cell">Observaciones</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for autorizado in autorizados %}
+            <tr>
+              <!-- Estudiante - Responsive -->
+              <td class="d-none d-md-table-cell">
+                {{ autorizado.estudiante }}
+              </td>
+
+              <!-- Fechas - Siempre visible -->
+              <td>
+                <div class="d-flex flex-column">
+                  <div class="fw-bold">
+                    <i class="fas fa-calendar-alt text-primary"></i>
+                    {{ autorizado.fecha_inicio|date:'d/m/Y' }} - {{
+                    autorizado.fecha_fin|date:'d/m/Y' }}
+                  </div>
+                  <!-- Info adicional en mobile -->
+                  <div class="d-md-none small text-muted">
+                    {{ autorizado.estudiante }}
+                  </div>
+                </div>
+              </td>
+
+              <!-- Observaciones - Solo en desktop -->
+              <td class="d-none d-lg-table-cell">
+                {% if autorizado.observaciones %} {{
+                autorizado.observaciones|truncatechars:50 }} {% else %}
+                <span class="text-muted">Sin observación</span>
+                {% endif %}
+              </td>
+
+              <!-- Acciones - Responsive -->
+              <td class="text-center">
+                <div class="d-flex gap-1 flex-wrap justify-content-center">
+                  <a
+                    href="{% url 'salidas_almuerzo:autorizar_update' autorizado.id %}"
+                    class="btn btn-sm btn-warning"
+                    title="Editar"
+                  >
+                    <i class="fas fa-edit"></i>
+                    <span class="d-none d-sm-inline">Editar</span>
+                  </a>
+                  <form
+                    method="post"
+                    action="{% url 'salidas_almuerzo:desautorizar' autorizado.id %}"
+                    style="display: inline"
+                    onsubmit="return confirm('¿Seguro que deseas desautorizar a este estudiante?');"
+                  >
+                    {% csrf_token %}
+                    <button
+                      type="submit"
+                      class="btn btn-sm btn-danger"
+                      title="Desautorizar"
+                    >
+                      <i class="fas fa-times"></i>
+                      <span class="d-none d-sm-inline">Desautorizar</span>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="text-center py-4">
+                <div class="text-muted">
+                  <i class="fas fa-utensils fa-2x mb-2"></i>
+                  <p class="mb-0">
+                    No hay estudiantes autorizados actualmente.
+                  </p>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
+
 <!-- Modal Validar Salida -->
 <div
   class="modal fade"
@@ -89,27 +149,29 @@
   aria-labelledby="validarSalidaModalLabel"
   aria-hidden="true"
 >
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header bg-primary text-white">
         <h5 class="modal-title" id="validarSalidaModalLabel">
-          Validar salida por RUT
+          <i class="fas fa-search me-2"></i>Validar salida por RUT
         </h5>
         <button
           type="button"
-          class="btn-close"
+          class="btn-close btn-close-white"
           data-bs-dismiss="modal"
           aria-label="Cerrar"
         ></button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body p-4">
         <form id="validarSalidaForm">
           <div class="mb-3">
-            <label for="rutInput" class="form-label">RUT del estudiante</label>
+            <label for="rutInput" class="form-label fw-bold"
+              >RUT del estudiante</label
+            >
             <div class="input-group">
               <input
                 type="text"
-                class="form-control"
+                class="form-control form-control-lg"
                 id="rutInput"
                 name="rut"
                 required
@@ -123,11 +185,15 @@
                 style="display: none"
                 tabindex="-1"
               >
-                <i class="bi bi-x-lg"></i>
+                <i class="fas fa-times"></i>
               </button>
             </div>
           </div>
-          <button type="submit" class="btn btn-primary">Validar</button>
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg">
+              <i class="fas fa-search me-2"></i>Validar
+            </button>
+          </div>
         </form>
         <div id="validarSalidaResultado" class="mt-3"></div>
         <div
@@ -138,12 +204,113 @@
           <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Validando...</span>
           </div>
-          <div>Validando...</div>
+          <div class="mt-2">Validando...</div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<style>
+  /* Responsive styles for salidas almuerzo list */
+  @media (max-width: 576px) {
+    .card-body {
+      padding: 0;
+    }
+
+    .table th,
+    .table td {
+      padding: 0.5rem 0.25rem;
+      font-size: 0.875rem;
+    }
+
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+    }
+
+    .modal-dialog {
+      margin: 0.5rem;
+    }
+  }
+
+  @media (min-width: 577px) and (max-width: 768px) {
+    .table th,
+    .table td {
+      padding: 0.75rem 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .btn-sm {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+    }
+
+    .btn {
+      padding: 0.875rem 1.25rem;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .table th,
+    .table td {
+      padding: 1rem 0.75rem;
+      font-size: 1rem;
+    }
+  }
+
+  /* Hover effects */
+  .table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.075);
+  }
+
+  /* Button improvements */
+  .btn-sm {
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+  }
+
+  .btn-sm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Empty state */
+  .table td .text-muted {
+    color: #6c757d !important;
+  }
+
+  /* Modal improvements */
+  .modal-content {
+    border-radius: 0.75rem;
+    border: none;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+  }
+
+  .modal-header {
+    border-radius: 0.75rem 0.75rem 0 0;
+  }
+
+  /* Form improvements */
+  .form-control {
+    border-radius: 0.5rem;
+  }
+
+  .form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+  }
+</style>
+
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('validarSalidaForm');
@@ -171,9 +338,9 @@
         spinner.style.display = 'none';
         limpiarBtn.style.display = 'inline-block';
         if (data.status === 'ok') {
-          resultadoDiv.innerHTML = `<div class=\"alert alert-success d-flex align-items-center\"><i class=\"bi bi-check-circle-fill me-2\"></i> ${data.message}</div>`;
+          resultadoDiv.innerHTML = `<div class="alert alert-success d-flex align-items-center"><i class="fas fa-check-circle me-2"></i> ${data.message}</div>`;
         } else {
-          resultadoDiv.innerHTML = `<div class=\"alert alert-danger d-flex align-items-center\"><i class=\"bi bi-x-circle-fill me-2\"></i> ${data.message}</div>`;
+          resultadoDiv.innerHTML = `<div class="alert alert-danger d-flex align-items-center"><i class="fas fa-times-circle me-2"></i> ${data.message}</div>`;
         }
         rutInput.focus();
       })

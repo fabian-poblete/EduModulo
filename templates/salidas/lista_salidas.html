@@ -1,35 +1,34 @@
-{% extends 'base.html' %} {% block title %}Salidas{% endblock %} 
+{% extends 'base.html' %} 
+{% block title %}Salidas{% endblock %} 
 {% block content %}
-<div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container-fluid">
+  <!-- Header responsive -->
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
     <div>
-      <h1 class="mb-0">Salidas</h1>
-      <p class="text-muted mb-0">Total: {{ total_salidas }} registro{{ total_salidas|pluralize }}</p>
+      <h1 class="h2 h-md-1 mb-1">Salidas</h1>
+      <p class="text-muted mb-0">
+        Total: {{ total_salidas }} registro{{ total_salidas|pluralize }}
+      </p>
     </div>
-    <div class="d-flex gap-2">
+    <div class="d-flex flex-column flex-sm-row gap-2 w-100 w-md-auto">
       <a href="{% url 'salidas:reportes_salida' %}" class="btn btn-success">
-        <i class="fas fa-chart-line"></i> Reportes
+        <i class="fas fa-chart-line"></i>
+        <span class="d-none d-sm-inline">Reportes</span>
       </a>
       <a href="{% url 'salidas:registrar_salida' %}" class="btn btn-primary">
-        <i class="fas fa-plus"></i> Registrar Salida
+        <i class="fas fa-plus"></i>
+        <span class="d-none d-sm-inline">Registrar Salida</span>
+        <span class="d-inline d-sm-none">Nuevo</span>
       </a>
     </div>
   </div>
-  
 
-  {% comment %} {% if messages %}
-  <div class="messages">
-    {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-    {% endfor %}
-  </div>
-  {% endif %} {% endcomment %}
-
+  <!-- Filtros responsive -->
   <div class="card mb-4">
-    <div class="card-body">
+    <div class="card-body p-3 p-md-4">
       <form method="get" class="row g-3">
-        <div class="col-md-4">
-          <label for="fecha" class="form-label">Filtrar por fecha</label>
+        <div class="col-12 col-md-4">
+          <label for="fecha" class="form-label fw-bold">Filtrar por fecha</label>
           <input
             type="date"
             class="form-control"
@@ -38,8 +37,8 @@
             value="{{ fecha_filtro|default:'' }}"
           />
         </div>
-        <div class="col-md-6">
-          <label for="q" class="form-label">Buscar estudiante</label>
+        <div class="col-12 col-md-6">
+          <label for="q" class="form-label fw-bold">Buscar estudiante</label>
           <input
             type="text"
             class="form-control"
@@ -49,103 +48,177 @@
             value="{{ busqueda|default:'' }}"
           />
         </div>
-        <div class="col-md-2 d-flex align-items-end">
+        <div class="col-12 col-md-2 d-flex align-items-end">
           <button type="submit" class="btn btn-primary w-100">
-            <i class="fas fa-search"></i> Buscar
+            <i class="fas fa-search"></i>
+            <span class="d-none d-sm-inline">Buscar</span>
           </button>
         </div>
       </form>
     </div>
   </div>
 
-  <div class="table-responsive">
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Estudiante</th>
-          <th>RUT</th>
-          <th>Curso</th>
-          <th>Fecha</th>
-          <th>Hora</th>
-          <th>Regreso</th>
-          <th>Motivo</th>
-          <th>¿Regresó?</th>
-          <th>Observación</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for salida in salidas %}
-        <tr>
-          <td>{{ salida.estudiante.nombre }}</td>
-          <td>{{ salida.estudiante.rut }}</td>
-          <td>{{ salida.estudiante.curso.nombre }}</td>
-          <td>{{ salida.fecha }}</td>
-          <td>{{ salida.hora }}</td>
-          <td>{% if salida.hora_regreso %}{{ salida.hora_regreso }}{% else %}<span class="badge bg-warning">Pendiente</span>{% endif %}</td>
-          <td>
-            {% if salida.tipo_justificativo %}
-              {% if salida.tipo_justificativo == "medico" %}
-                <span class="badge bg-primary">Médico</span>
-              {% elif salida.tipo_justificativo == "enfermo" %}
-                <span class="badge bg-warning">Enfermo/a</span>
-              {% elif salida.tipo_justificativo == "desregulacion" %}
-                <span class="badge bg-info">Desregulación</span>
-              {% elif salida.tipo_justificativo == "otros" %}
-                <span class="badge bg-secondary">{{ salida.otros_justificativo|default:"Otros" }}</span>
-              {% endif %}
-            {% else %}
-              <span class="badge bg-danger">No justificado</span>
-            {% endif %}
-          </td>
-          <td>
-            {% if salida.regresado %}
-              <span class="badge bg-success">Sí</span>
-            {% else %}
-              <span class="badge bg-warning">No</span>
-            {% endif %}
-          </td>
-          <td>{{ salida.observacion|default:"-" }}</td>
-          <td>
-            {% if not salida.regresado %}
-              <button
-                class="btn btn-sm btn-success me-1"
-                title="Marcar como regresado"
-                data-bs-toggle="modal"
-                data-bs-target="#modalRegreso"
-                data-salida-id="{{ salida.pk }}"
-                data-nombre="{{ salida.estudiante.nombre }}"
-                data-fecha="{{ salida.fecha }}"
-                data-hora="{{ salida.hora }}"
-                data-rut="{{ salida.estudiante.rut }}"
-                data-curso="{{ salida.estudiante.curso.nombre }}"
-              >
-                <i class="fas fa-check"></i>
-              </button>
-            {% endif %}
-            <button
-              onclick="imprimirVoucherLista('{{ salida.estudiante.nombre }}', '{{ salida.estudiante.rut }}', '{{ salida.fecha }}', '{{ salida.hora }}', '{{ salida.get_tipo_justificativo_display|default:"No justificado" }}', '{{ salida.observacion|default:"-" }}', {{ salida.regresado|yesno:"true,false" }}, '{{ salida.hora_regreso|default:"-" }}')"
-              class="btn btn-sm btn-info me-1"
-              title="Imprimir"
-            >
-              <i class="fas fa-print"></i>
-            </button>
-            <a
-              href="{% url 'salidas:delete' salida.pk %}"
-              class="btn btn-sm btn-danger"
-              title="Eliminar"
-            >
-              <i class="fas fa-trash"></i>
-            </a>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="9" class="text-center">No hay salidas registradas.</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <!-- Tabla responsive -->
+  <div class="card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th class="d-none d-md-table-cell">Estudiante</th>
+              <th class="d-none d-lg-table-cell">RUT</th>
+              <th class="d-none d-md-table-cell">Curso</th>
+              <th>Fecha</th>
+              <th class="d-none d-lg-table-cell">Hora</th>
+              <th class="d-none d-xl-table-cell">Regreso</th>
+              <th>Motivo</th>
+              <th>¿Regresó?</th>
+              <th class="d-none d-xl-table-cell">Observación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for salida in salidas %}
+            <tr>
+              <!-- Estudiante - Responsive -->
+              <td class="d-none d-md-table-cell">{{ salida.estudiante.nombre }}</td>
+              
+              <!-- RUT - Solo en desktop -->
+              <td class="d-none d-lg-table-cell">{{ salida.estudiante.rut }}</td>
+              
+              <!-- Curso - Responsive -->
+              <td class="d-none d-md-table-cell">{{ salida.estudiante.curso.nombre }}</td>
+              
+              <!-- Fecha - Siempre visible -->
+              <td>
+                <div class="d-flex flex-column">
+                  <span class="fw-bold">{{ salida.fecha }}</span>
+                  <!-- Info adicional en mobile -->
+                  <div class="d-md-none small text-muted">
+                    {{ salida.estudiante.nombre }}<br />
+                    {{ salida.estudiante.curso.nombre }}
+                  </div>
+                </div>
+              </td>
+              
+              <!-- Hora - Solo en desktop -->
+              <td class="d-none d-lg-table-cell">{{ salida.hora }}</td>
+              
+              <!-- Regreso - Solo en desktop grande -->
+              <td class="d-none d-xl-table-cell">
+                {% if salida.hora_regreso %}
+                  {{ salida.hora_regreso }}
+                {% else %}
+                  <span class="badge bg-warning">Pendiente</span>
+                {% endif %}
+              </td>
+              
+              <!-- Motivo - Siempre visible -->
+              <td>
+                {% if salida.tipo_justificativo %}
+                  {% if salida.tipo_justificativo == "medico" %}
+                    <span class="badge bg-primary">
+                      <i class="fas fa-user-md"></i>
+                      <span class="d-none d-sm-inline">Médico</span>
+                    </span>
+                  {% elif salida.tipo_justificativo == "enfermo" %}
+                    <span class="badge bg-warning">
+                      <i class="fas fa-thermometer-half"></i>
+                      <span class="d-none d-sm-inline">Enfermo/a</span>
+                    </span>
+                  {% elif salida.tipo_justificativo == "desregulacion" %}
+                    <span class="badge bg-info">
+                      <i class="fas fa-exclamation-triangle"></i>
+                      <span class="d-none d-sm-inline">Desregulación</span>
+                    </span>
+                  {% elif salida.tipo_justificativo == "otros" %}
+                    <span class="badge bg-secondary">
+                      <i class="fas fa-ellipsis-h"></i>
+                      <span class="d-none d-sm-inline">{{ salida.otros_justificativo|default:"Otros" }}</span>
+                    </span>
+                  {% endif %}
+                {% else %}
+                  <span class="badge bg-danger">
+                    <i class="fas fa-times-circle"></i>
+                    <span class="d-none d-sm-inline">No justificado</span>
+                  </span>
+                {% endif %}
+              </td>
+              
+              <!-- ¿Regresó? - Siempre visible -->
+              <td>
+                {% if salida.regresado %}
+                  <span class="badge bg-success">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="d-none d-sm-inline">Sí</span>
+                  </span>
+                {% else %}
+                  <span class="badge bg-warning">
+                    <i class="fas fa-clock"></i>
+                    <span class="d-none d-sm-inline">No</span>
+                  </span>
+                {% endif %}
+              </td>
+              
+              <!-- Observación - Solo en desktop grande -->
+              <td class="d-none d-xl-table-cell">
+                {{ salida.observacion|default:"-"|truncatechars:30 }}
+              </td>
+              
+              <!-- Acciones - Responsive -->
+              <td>
+                <div class="d-flex gap-1 flex-wrap">
+                  {% if not salida.regresado %}
+                    <button
+                      class="btn btn-sm btn-success"
+                      title="Marcar como regresado"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalRegreso"
+                      data-salida-id="{{ salida.pk }}"
+                      data-nombre="{{ salida.estudiante.nombre }}"
+                      data-fecha="{{ salida.fecha }}"
+                      data-hora="{{ salida.hora }}"
+                      data-rut="{{ salida.estudiante.rut }}"
+                      data-curso="{{ salida.estudiante.curso.nombre }}"
+                    >
+                      <i class="fas fa-check"></i>
+                      <span class="d-none d-sm-inline">Regreso</span>
+                    </button>
+                  {% endif %}
+                  <button
+                    onclick="imprimirVoucherLista('{{ salida.estudiante.nombre }}', '{{ salida.estudiante.rut }}', '{{ salida.fecha }}', '{{ salida.hora }}', '{{ salida.get_tipo_justificativo_display|default:"No justificado" }}', '{{ salida.observacion|default:"-" }}', {{ salida.regresado|yesno:"true,false" }}, '{{ salida.hora_regreso|default:"-" }}')"
+                    class="btn btn-sm btn-info"
+                    title="Imprimir"
+                  >
+                    <i class="fas fa-print"></i>
+                    <span class="d-none d-sm-inline">Imprimir</span>
+                  </button>
+                  <a
+                    href="{% url 'salidas:delete' salida.pk %}"
+                    class="btn btn-sm btn-danger"
+                    title="Eliminar"
+                    onclick="return confirm('¿Está seguro de que desea eliminar esta salida?')"
+                  >
+                    <i class="fas fa-trash"></i>
+                    <span class="d-none d-sm-inline">Eliminar</span>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="10" class="text-center py-4">
+                <div class="text-muted">
+                  <i class="fas fa-door-open fa-2x mb-2"></i>
+                  <p class="mb-0">No hay salidas registradas.</p>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -165,14 +238,13 @@
       <p style="margin: 2px 0;"><strong>Hora salida:</strong><br><span id="voucherHora"></span></p>
       <p style="margin: 2px 0;"><strong>Motivo:</strong><br><span id="voucherEstado"></span></p>
       <p style="margin: 2px 0;"><strong>Observación:</strong><br><span id="voucherObservacion"></span></p>
-      
     </div>
   </div>
 </div>
 
 <!-- Modal de confirmación de regreso -->
 <div class="modal fade" id="modalRegreso" tabindex="-1" aria-labelledby="modalRegresoLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header bg-success text-white">
         <h5 class="modal-title" id="modalRegresoLabel">
@@ -184,10 +256,16 @@
         <p class="fs-5">
           Estás a punto de confirmar que <strong id="modalNombre"></strong> ha regresado al establecimiento.
         </p>
-        <p><strong>Fecha de salida:</strong> <span id="modalFecha"></span></p>
-        <p><strong>Hora de salida:</strong> <span id="modalHora"></span></p>
-        <p><strong>RUT:</strong> <span id="modalRut"></span></p>
-        <p><strong>Curso:</strong> <span id="modalCurso"></span></p>
+        <div class="row">
+          <div class="col-12 col-md-6">
+            <p><strong>Fecha de salida:</strong> <span id="modalFecha"></span></p>
+            <p><strong>Hora de salida:</strong> <span id="modalHora"></span></p>
+          </div>
+          <div class="col-12 col-md-6">
+            <p><strong>RUT:</strong> <span id="modalRut"></span></p>
+            <p><strong>Curso:</strong> <span id="modalCurso"></span></p>
+          </div>
+        </div>
         <div class="alert alert-info mt-4" id="horaActualInfo">
           <i class="fas fa-clock me-1"></i>
           El regreso será registrado a la hora actual:
@@ -208,6 +286,108 @@
     </div>
   </div>
 </div>
+
+<style>
+  /* Responsive styles for salida list */
+  @media (max-width: 576px) {
+    .card-body {
+      padding: 1rem;
+    }
+    
+    .table th,
+    .table td {
+      padding: 0.5rem 0.25rem;
+      font-size: 0.875rem;
+    }
+    
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+    }
+    
+    .badge {
+      font-size: 0.75rem;
+    }
+    
+    h1 {
+      font-size: 1.5rem;
+    }
+    
+    .modal-dialog {
+      margin: 0.5rem;
+    }
+  }
+  
+  @media (min-width: 577px) and (max-width: 768px) {
+    .table th,
+    .table td {
+      padding: 0.75rem 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .btn-sm {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+    }
+  }
+  
+  @media (min-width: 769px) {
+    .table th,
+    .table td {
+      padding: 1rem 0.75rem;
+      font-size: 1rem;
+    }
+  }
+  
+  /* Hover effects */
+  .table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.075);
+  }
+  
+  /* Badge improvements */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  
+  /* Button improvements */
+  .btn-sm {
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-sm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Empty state */
+  .table td .text-muted {
+    color: #6c757d !important;
+  }
+  
+  /* Form improvements */
+  .form-control {
+    border-radius: 0.5rem;
+  }
+  
+  .form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+  }
+  
+  /* Modal improvements */
+  .modal-content {
+    border-radius: 0.75rem;
+    border: none;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+  }
+  
+  .modal-header {
+    border-radius: 0.75rem 0.75rem 0 0;
+  }
+</style>
 {% endblock %}
 
 {% block extra_js %}
@@ -225,7 +405,6 @@
 
     // Obtener fecha y hora actual
     const ahora = new Date();
-    
 
     // Llenar el template
     voucherNombre.textContent = nombre;
@@ -320,6 +499,7 @@
     actualizarHoraActual();
     timerHoraActual = setInterval(actualizarHoraActual, 1000);
   });
+  
   modalRegreso.addEventListener('hide.bs.modal', function () {
     clearInterval(timerHoraActual);
   });

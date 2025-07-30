@@ -1,104 +1,232 @@
 {% extends 'base.html' %} {% block content %}
-<div class="container mt-4">
-  <div class="card">
-    <div class="card-header bg-success text-white">
-      <h4 class="mb-0">
-        {% if form.instance.pk %} Editar autorización {% else %} Autorizar
-        salida a almuerzo {% endif %}
-      </h4>
-    </div>
-    <div class="card-body">
-      <form method="post" autocomplete="off">
-        {% csrf_token %} {% if form.errors %}
-        <div class="alert alert-danger">
-          <ul class="mb-0">
-            {% for field, errors in form.errors.items %} {% for error in errors%}
-            <li>{{ error }}</li>
-            {% endfor %} {% endfor %}
-          </ul>
+<div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10 col-xl-8">
+      <div class="card shadow">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0 h5 h-md-4">
+            {% if form.instance.pk %}
+            <i class="fas fa-edit me-2"></i>Editar autorización {% else %}
+            <i class="fas fa-plus me-2"></i>Autorizar salida a almuerzo {% endif %}
+          </h4>
         </div>
-        {% endif %} {% if form.instance.pk %}
-        <div class="mb-3">
-          <label class="form-label">Estudiante</label>
-          <input
-            type="text"
-            class="form-control"
-            value="{{ form.instance.estudiante }}"
-            readonly
-          />
-          <input
-            type="hidden"
-            name="estudiante"
-            value="{{ form.instance.estudiante.id }}"
-          />
-        </div>
-        {% else %}
-        <div class="mb-3 position-relative">
-          <label for="buscar_estudiante" class="form-label">Estudiante</label>
-          <input
-            type="text"
-            id="buscar_estudiante"
-            class="form-control"
-            placeholder="Nombre o RUT"
-            autocomplete="off"
-          />
-          <input
-            type="hidden"
-            name="estudiante"
-            id="id_estudiante"
-            value="{{ form.estudiante.value|default_if_none:'' }}"
-          />
-          <div
-            id="resultados_estudiante"
-            class="list-group position-absolute w-100"
-            style="z-index: 10; display: none"
-          ></div>
-        </div>
-        {% endif %}
+        <div class="card-body p-3 p-md-4">
+          <form method="post" autocomplete="off">
+            {% csrf_token %} {% if form.errors %}
+            <div class="alert alert-danger alert-dismissible fade show mb-4">
+              <ul class="mb-0">
+                {% for field, errors in form.errors.items %} 
+                {% for error in errors %}
+                <li>{{ error }}</li>
+                {% endfor %} {% endfor %}
+              </ul>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+              ></button>
+            </div>
+            {% endif %} {% if form.instance.pk %}
+            <div class="mb-4">
+              <label class="form-label fw-bold">Estudiante</label>
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                value="{{ form.instance.estudiante }}"
+                readonly
+              />
+              <input
+                type="hidden"
+                name="estudiante"
+                value="{{ form.instance.estudiante.id }}"
+              />
+            </div>
+            {% else %}
+            <div class="mb-4 position-relative">
+              <label for="buscar_estudiante" class="form-label fw-bold"
+                >Estudiante</label
+              >
+              <input
+                type="text"
+                id="buscar_estudiante"
+                class="form-control form-control-lg"
+                placeholder="Nombre o RUT"
+                autocomplete="off"
+              />
+              <input
+                type="hidden"
+                name="estudiante"
+                id="id_estudiante"
+                value="{{ form.estudiante.value|default_if_none:'' }}"
+              />
+              <div
+                id="resultados_estudiante"
+                class="list-group position-absolute w-100"
+                style="
+                  z-index: 10;
+                  display: none;
+                  max-height: 200px;
+                  overflow-y: auto;
+                "
+              ></div>
+            </div>
+            {% endif %}
 
-        <div class="mb-3">
-          <label for="rango_fechas" class="form-label">Rango de fechas</label>
-          <input
-            type="text"
-            id="rango_fechas"
-            class="form-control"
-            placeholder="Selecciona el rango de fechas"
-            autocomplete="off"
-          />
-          <input
-            type="hidden"
-            name="fecha_inicio"
-            id="id_fecha_inicio"
-            value="{{ form.fecha_inicio.value|default:form.instance.fecha_inicio|date:'Y-m-d' }}"
-          />
-          <input
-            type="hidden"
-            name="fecha_fin"
-            id="id_fecha_fin"
-            value="{{ form.fecha_fin.value|default:form.instance.fecha_fin|date:'Y-m-d' }}"
-          />
-        </div>
+            <div class="mb-4">
+              <label for="rango_fechas" class="form-label fw-bold"
+                >Rango de fechas</label
+              >
+              <input
+                type="text"
+                id="rango_fechas"
+                class="form-control form-control-lg"
+                placeholder="Selecciona el rango de fechas"
+                autocomplete="off"
+              />
+              <input
+                type="hidden"
+                name="fecha_inicio"
+                id="id_fecha_inicio"
+                value="{{ form.fecha_inicio.value|default:form.instance.fecha_inicio|date:'Y-m-d' }}"
+              />
+              <input
+                type="hidden"
+                name="fecha_fin"
+                id="id_fecha_fin"
+                value="{{ form.fecha_fin.value|default:form.instance.fecha_fin|date:'Y-m-d' }}"
+              />
+            </div>
 
-        <div class="mb-3">
-          <label for="id_observaciones" class="form-label">Observaciones</label>
-          {{ form.observaciones }}
-        </div>
+            <div class="mb-4">
+              <label for="id_observaciones" class="form-label fw-bold"
+                >Observaciones</label
+              >
+              {{ form.observaciones }}
+            </div>
 
-        <div class="alert alert-info">
-          Al guardar, el estudiante quedará <strong>autorizado</strong> para
-          salir a almorzar.
-        </div>
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle me-2"></i>
+              Al guardar, el estudiante quedará <strong>autorizado</strong> para
+              salir a almorzar.
+            </div>
 
-        <button type="submit" class="btn btn-success">Guardar</button>
-        <a
-          href="{% url 'salidas_almuerzo:autorizados_list' %}"
-          class="btn btn-secondary"
-          >Volver</a
-        >
-      </form>
+            <!-- Botones responsive -->
+            <div class="d-flex flex-column flex-md-row gap-3 mt-4">
+              <button
+                type="submit"
+                class="btn btn-success btn-lg order-1 order-md-2"
+              >
+                <i class="fas fa-save"></i>
+                <span class="d-none d-sm-inline">Guardar</span>
+              </button>
+              <a
+                href="{% url 'salidas_almuerzo:autorizados_list' %}"
+                class="btn btn-secondary btn-lg order-2 order-md-1"
+              >
+                <i class="fas fa-arrow-left"></i>
+                <span class="d-none d-sm-inline">Volver</span>
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<style>
+  /* Responsive styles for autorizar form */
+  @media (max-width: 576px) {
+    .card-body {
+      padding: 1rem;
+    }
+
+    .form-control-lg {
+      font-size: 1rem;
+      padding: 0.75rem;
+    }
+
+    .btn-lg {
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+    }
+
+    .card-header h4 {
+      font-size: 1.1rem;
+    }
+  }
+
+  @media (min-width: 577px) and (max-width: 768px) {
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    .btn-lg {
+      padding: 0.875rem 1.25rem;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .card-body {
+      padding: 2rem;
+    }
+  }
+
+  /* Lista de resultados de búsqueda */
+  #resultados_estudiante {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+
+  #resultados_estudiante .list-group-item {
+    border: none;
+    border-bottom: 1px solid #dee2e6;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  #resultados_estudiante .list-group-item:last-child {
+    border-bottom: none;
+  }
+
+  #resultados_estudiante .list-group-item:hover {
+    background-color: #f8f9fa;
+  }
+
+  @media (max-width: 576px) {
+    #resultados_estudiante .list-group-item {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Form improvements */
+  .form-control,
+  .form-select {
+    border-radius: 0.5rem;
+  }
+
+  .form-control:focus,
+  .form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+  }
+
+  /* Alert improvements */
+  .alert {
+    border-radius: 0.5rem;
+    border: none;
+  }
+
+  /* Touch device optimizations */
+  @media (hover: none) and (pointer: coarse) {
+    .btn-lg {
+      min-height: 44px;
+    }
+  }
+</style>
 
 {% if not form.instance.pk %}
 <script>
@@ -129,7 +257,18 @@
                 const item = document.createElement("a");
                 item.href = "#";
                 item.className = "list-group-item list-group-item-action";
-                item.innerHTML = `${estudiante.nombre} - ${estudiante.rut} (${estudiante.curso})`;
+
+                // Texto responsive para los resultados
+                const isMobile = window.innerWidth <= 576;
+                if (isMobile) {
+                  item.innerHTML = `
+                    <div class="fw-bold">${estudiante.nombre}</div>
+                    <small class="text-muted">${estudiante.rut} - ${estudiante.curso}</small>
+                  `;
+                } else {
+                  item.innerHTML = `${estudiante.nombre} - ${estudiante.rut} (${estudiante.curso})`;
+                }
+
                 item.addEventListener("click", function (e) {
                   e.preventDefault();
                   buscarInput.value = `${estudiante.nombre} - ${estudiante.rut}`;
@@ -156,7 +295,8 @@
     });
   });
 </script>
-{% endif %} {% endblock %} {% block extra_js %}
+{% endif %} 
+{% endblock %} {% block extra_js %}
 <link
   rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"
