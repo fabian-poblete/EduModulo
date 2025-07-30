@@ -186,12 +186,12 @@
         window.print();
 
         // Redirigir después de un tiempo para dar tiempo a que se cierre el diálogo de impresión
-        setTimeout(redirigirSegunOrigen, 1500);
+        setTimeout(redirigirSegunOrigen, 2500);
       }
 
       // Ejecutar cuando el documento esté completamente cargado
       document.addEventListener("DOMContentLoaded", function () {
-        imprimirYRedirigir();
+        imprimirYRedirigir(1500);
       });
     </script>
   </body>
