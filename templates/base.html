@@ -605,7 +605,7 @@
         {% endif %}
 
         <!-- Download Section -->
-        <div class="sidebar-section">
+        {% comment %} <div class="sidebar-section">
           <div class="sidebar-section-title">Descargas</div>
           <ul class="sidebar-menu">
             <li class="sidebar-menu-item">
@@ -620,7 +620,7 @@
               </a>
             </li>
           </ul>
-        </div>
+        </div> {% endcomment %}
 
         <!-- Inventario Section -->
         {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio' %}
