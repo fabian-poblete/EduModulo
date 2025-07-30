@@ -191,14 +191,8 @@
 
       // Ejecutar cuando el documento esté completamente cargado
       document.addEventListener("DOMContentLoaded", function () {
-        // Pequeño delay para asegurar que todo esté listo
-        setTimeout(imprimirYRedirigir, 500);
-      });
-
-      // También ejecutar en window.onload como respaldo
-      window.onload = function () {
         imprimirYRedirigir();
-      };
+      });
     </script>
   </body>
 </html>
