@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
+from django.urls import reverse
 from .models import Atraso
 from .forms import AtrasoForm
 from django.db.models import Q
@@ -51,7 +52,7 @@ def atraso_list(request):
 
     # Contar el total de atrasos
     total_atrasos = atrasos.count()
-    
+
     return render(request, 'atrasos/atraso_list.html', {
         'atrasos': atrasos,
         'fecha_filtro': fecha_filtro,
@@ -75,7 +76,7 @@ def atraso_create(request):
                     colegio=atraso.estudiante.curso.colegio,
                     tipo_evento='atraso'
                 )
-                return redirect('atrasos:imprimir', atraso.id)
+                return redirect(f"{reverse('atrasos:imprimir', args=[atraso.id])}?origen=crear")
 
             except Exception as e:
                 messages.error(

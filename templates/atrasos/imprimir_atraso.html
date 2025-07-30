@@ -165,9 +165,19 @@
           second: "2-digit",
         });
 
-      // Función para redirigir al listado de atrasos
-      function redirigirAListado() {
-        window.location.href = "{% url 'atrasos:list' %}";
+      // Función para redirigir según el origen
+      function redirigirSegunOrigen() {
+        // Obtener el parámetro de origen de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const origen = urlParams.get("origen");
+
+        if (origen === "crear") {
+          // Si viene del formulario de crear, volver al formulario
+          window.location.href = "{% url 'atrasos:create' %}";
+        } else {
+          // Por defecto, volver al listado
+          window.location.href = "{% url 'atrasos:list' %}";
+        }
       }
 
       // Función para manejar la impresión y redirección
@@ -176,7 +186,7 @@
         window.print();
 
         // Redirigir después de un tiempo para dar tiempo a que se cierre el diálogo de impresión
-        setTimeout(redirigirAListado, 1500);
+        setTimeout(redirigirSegunOrigen, 1500);
       }
 
       // Ejecutar cuando el documento esté completamente cargado
