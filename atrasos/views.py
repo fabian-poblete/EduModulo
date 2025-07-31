@@ -89,7 +89,15 @@ def atraso_create(request):
                 request.session['atraso_creado_observacion'] = atraso.observacion or '-'
 
                 messages.success(request, 'Atraso registrado exitosamente.')
-                return redirect('atrasos:create')
+
+                # Detectar si viene del formulario rápido (móvil/tablet)
+                # El formulario rápido tiene el campo 'rut_estudiante' directamente
+                if 'rut_estudiante' in request.POST:
+                    # Viene del formulario rápido, redirigir a la lista
+                    return redirect('atrasos:list')
+                else:
+                    # Viene del formulario normal, redirigir al formulario
+                    return redirect('atrasos:create')
 
             except Exception as e:
                 messages.error(
