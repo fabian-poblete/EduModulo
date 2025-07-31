@@ -76,7 +76,20 @@ def atraso_create(request):
                     colegio=atraso.estudiante.curso.colegio,
                     tipo_evento='atraso'
                 )
-                return redirect(f"{reverse('atrasos:imprimir', args=[atraso.id])}?origen=crear")
+                # Guardar el ID del atraso creado en la sesión para imprimir
+                request.session['atraso_creado_id'] = atraso.id
+                request.session['atraso_creado_nombre'] = atraso.estudiante.nombre
+                request.session['atraso_creado_rut'] = atraso.estudiante.rut
+                request.session['atraso_creado_curso'] = atraso.estudiante.curso.nombre
+                request.session['atraso_creado_fecha'] = atraso.fecha.strftime(
+                    '%Y-%m-%d')
+                request.session['atraso_creado_hora'] = atraso.hora.strftime(
+                    '%H:%M')
+                request.session['atraso_creado_justificado'] = atraso.justificado
+                request.session['atraso_creado_observacion'] = atraso.observacion or '-'
+
+                messages.success(request, 'Atraso registrado exitosamente.')
+                return redirect('atrasos:create')
 
             except Exception as e:
                 messages.error(
@@ -172,6 +185,23 @@ def imprimir_atraso(request, atraso_id):
     return render(request, 'atrasos/imprimir_atraso.html', {
         'atraso': atraso
     })
+
+
+@login_required
+def limpiar_sesion_atraso(request):
+    """Vista para limpiar los datos de sesión después de imprimir"""
+    if request.method == 'POST':
+        # Limpiar los datos de sesión del atraso creado
+        session_keys = [
+            'atraso_creado_id', 'atraso_creado_nombre', 'atraso_creado_rut',
+            'atraso_creado_curso', 'atraso_creado_fecha', 'atraso_creado_hora',
+            'atraso_creado_justificado', 'atraso_creado_observacion'
+        ]
+        for key in session_keys:
+            if key in request.session:
+                del request.session[key]
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=400)
 
 
 @login_required

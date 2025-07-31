@@ -8,23 +8,6 @@
           <h2 class="mb-0 h3 h-md-2">Registrar Atraso</h2>
         </div>
         <div class="card-body p-3 p-md-4">
-          {% if messages %}
-          <div class="messages mb-3">
-            {% for message in messages %}
-            <div
-              class="alert alert-{{ message.tags }} alert-dismissible fade show"
-            >
-              {{ message }}
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-              ></button>
-            </div>
-            {% endfor %}
-          </div>
-          {% endif %}
-
           <form method="post" id="atraso-form">
             {% csrf_token %}
 
@@ -131,6 +114,50 @@
   </div>
 </div>
 
+<!-- Template para el voucher de atraso -->
+<div id="voucherTemplateAtraso" style="display: none">
+  <div
+    class="voucher-container"
+    style="
+      width: 80mm;
+      padding: 5mm;
+      margin: 0 auto;
+      font-family: 'Courier New', monospace;
+    "
+  >
+    <div style="text-align: center; margin-bottom: 10px">
+      <h3 style="margin: 0; font-size: 14px" id="voucherTituloAtraso">
+        COMPROBANTE DE ATRASO
+      </h3>
+    </div>
+    <div style="margin-bottom: 10px; font-size: 12px">
+      <p style="margin: 2px 0">
+        <strong>Estudiante:</strong><br /><span id="voucherNombreAtraso"></span>
+      </p>
+      <p style="margin: 2px 0">
+        <strong>RUT:</strong><br /><span id="voucherRutAtraso"></span>
+      </p>
+      <p style="margin: 2px 0">
+        <strong>Curso:</strong><br /><span id="voucherCursoAtraso"></span>
+      </p>
+      <p style="margin: 2px 0">
+        <strong>Fecha:</strong><br /><span id="voucherFechaAtraso"></span>
+      </p>
+      <p style="margin: 2px 0">
+        <strong>Hora:</strong><br /><span id="voucherHoraAtraso"></span>
+      </p>
+      <p style="margin: 2px 0">
+        <strong>Estado:</strong><br /><span id="voucherEstadoAtraso"></span>
+      </p>
+      <p style="margin: 2px 0">
+        <strong>Observación:</strong><br /><span
+          id="voucherObservacionAtraso"
+        ></span>
+      </p>
+    </div>
+  </div>
+</div>
+
 <style>
   /* Responsive styles for atraso form */
   @media (max-width: 576px) {
@@ -210,6 +237,109 @@
     const btnNoJustificado = document.getElementById("btn-no-justificado");
     const form = document.getElementById("atraso-form");
     let timeoutId;
+
+    // Función para ocultar mensajes de éxito automáticamente
+    function ocultarMensajesExito() {
+      const mensajesExito = document.querySelectorAll('.alert-success');
+      mensajesExito.forEach(function(mensaje) {
+        setTimeout(function() {
+          mensaje.style.transition = 'opacity 0.5s ease-out';
+          mensaje.style.opacity = '0';
+          setTimeout(function() {
+            mensaje.remove();
+          }, 500);
+        }, 1000); // 1 segundo antes de empezar a difuminar
+      });
+    }
+
+    // Ejecutar la función para ocultar mensajes
+    ocultarMensajesExito();
+
+    // Función para imprimir voucher de atraso
+    function imprimirVoucherAtraso(nombre, rut, curso, fecha, hora, justificado, observacion) {
+      const voucherTemplate = document.getElementById('voucherTemplateAtraso');
+      const voucherNombre = document.getElementById('voucherNombreAtraso');
+      const voucherRut = document.getElementById('voucherRutAtraso');
+      const voucherCurso = document.getElementById('voucherCursoAtraso');
+      const voucherFecha = document.getElementById('voucherFechaAtraso');
+      const voucherHora = document.getElementById('voucherHoraAtraso');
+      const voucherEstado = document.getElementById('voucherEstadoAtraso');
+      const voucherObservacion = document.getElementById('voucherObservacionAtraso');
+
+      // Llenar el template
+      voucherNombre.textContent = nombre;
+      voucherRut.textContent = rut;
+      voucherCurso.textContent = curso;
+      voucherFecha.textContent = fecha;
+      voucherHora.textContent = hora;
+      voucherEstado.textContent = justificado ? 'Justificado' : 'No Justificado';
+      voucherObservacion.textContent = observacion;
+
+      // Crear una ventana de impresión
+      const ventanaImpresion = window.open('', '_blank');
+      ventanaImpresion.document.write(`
+        <html>
+          <head>
+            <title>Comprobante de Atraso</title>
+            <style>
+              @media print {
+                body {
+                  margin: 0;
+                  padding: 0;
+                  width: 80mm;
+                }
+                .voucher-container {
+                  width: 80mm !important;
+                  padding: 5mm !important;
+                  margin: 0 !important;
+                  font-family: 'Courier New', monospace !important;
+                }
+                @page {
+                  size: 80mm auto;
+                  margin: 0;
+                }
+              }
+            </style>
+          </head>
+          <body>
+            ${voucherTemplate.innerHTML}
+          </body>
+        </html>
+      `);
+      ventanaImpresion.document.close();
+
+      // Imprimir automáticamente cuando se carga la página
+      ventanaImpresion.onload = function() {
+        ventanaImpresion.print();
+
+        // Esperar un poco antes de cerrar la ventana para dar tiempo a que se cierre el cuadro de impresión
+        setTimeout(function() {
+          ventanaImpresion.close();
+        }, 1000); // 1000 milisegundos = 1 segundo
+      };
+    }
+
+    // Verificar si hay un atraso recién creado para imprimir
+    {% if request.session.atraso_creado_id %}
+      // Imprimir automáticamente el voucher del atraso recién creado
+      imprimirVoucherAtraso(
+        '{{ request.session.atraso_creado_nombre|escapejs }}',
+        '{{ request.session.atraso_creado_rut|escapejs }}',
+        '{{ request.session.atraso_creado_curso|escapejs }}',
+        '{{ request.session.atraso_creado_fecha|escapejs }}',
+        '{{ request.session.atraso_creado_hora|escapejs }}',
+        {{ request.session.atraso_creado_justificado|yesno:"true,false" }},
+        '{{ request.session.atraso_creado_observacion|escapejs }}'
+      );
+
+      // Limpiar la sesión después de imprimir
+      fetch('{% url "atrasos:limpiar_sesion" %}', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        }
+      });
+    {% endif %}
 
     // Manejar botón de atraso justificado
     btnJustificado.addEventListener("click", function () {

@@ -137,19 +137,18 @@
               <!-- Acciones - Responsive -->
               <td>
                 <div class="d-flex gap-1 flex-wrap">
-                  <a
-                    href="{% url 'atrasos:imprimir' atraso.pk %}?origen=list"
+                  <button
+                    onclick="imprimirVoucherAtraso('{{ atraso.estudiante.nombre|escapejs }}', '{{ atraso.estudiante.rut|escapejs }}', '{{ atraso.estudiante.curso.nombre|escapejs }}', '{{ atraso.fecha|escapejs }}', '{{ atraso.hora|escapejs }}', {{ atraso.justificado|yesno:"true,false" }}, '{{ atraso.observacion|default:"-"|escapejs }}')"
                     class="btn btn-sm btn-info"
                     title="Imprimir"
                   >
                     <i class="fas fa-print"></i>
                     <span class="d-none d-sm-inline">Imprimir</span>
-                  </a>
+                  </button>
                   <a
                     href="{% url 'atrasos:delete' atraso.pk %}"
                     class="btn btn-sm btn-danger"
                     title="Eliminar"
-                    onclick="return confirm('¿Está seguro de que desea eliminar este atraso?')"
                   >
                     <i class="fas fa-trash"></i>
                     <span class="d-none d-sm-inline">Eliminar</span>
@@ -260,4 +259,89 @@
     box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
   }
 </style>
+
+<!-- Template para el voucher de atraso -->
+<div id="voucherTemplateAtraso" style="display: none;">
+  <div class="voucher-container" style="width: 80mm; padding: 5mm; margin: 0 auto; font-family: 'Courier New', monospace;">
+    <div style="text-align: center; margin-bottom: 10px;">
+      <h3 style="margin: 0; font-size: 14px;" id="voucherTituloAtraso">COMPROBANTE DE ATRASO</h3>
+    </div>
+         <div style="margin-bottom: 10px; font-size: 12px;">
+       <p style="margin: 2px 0;"><strong>Estudiante:</strong><br><span id="voucherNombreAtraso"></span></p>
+       <p style="margin: 2px 0;"><strong>RUT:</strong><br><span id="voucherRutAtraso"></span></p>
+       <p style="margin: 2px 0;"><strong>Curso:</strong><br><span id="voucherCursoAtraso"></span></p>
+       <p style="margin: 2px 0;"><strong>Fecha:</strong><br><span id="voucherFechaAtraso"></span></p>
+       <p style="margin: 2px 0;"><strong>Hora:</strong><br><span id="voucherHoraAtraso"></span></p>
+       <p style="margin: 2px 0;"><strong>Estado:</strong><br><span id="voucherEstadoAtraso"></span></p>
+       <p style="margin: 2px 0;"><strong>Observación:</strong><br><span id="voucherObservacionAtraso"></span></p>
+     </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+     function imprimirVoucherAtraso(nombre, rut, curso, fecha, hora, justificado, observacion) {
+     const voucherTemplate = document.getElementById('voucherTemplateAtraso');
+     const voucherNombre = document.getElementById('voucherNombreAtraso');
+     const voucherRut = document.getElementById('voucherRutAtraso');
+     const voucherCurso = document.getElementById('voucherCursoAtraso');
+     const voucherFecha = document.getElementById('voucherFechaAtraso');
+     const voucherHora = document.getElementById('voucherHoraAtraso');
+     const voucherEstado = document.getElementById('voucherEstadoAtraso');
+     const voucherObservacion = document.getElementById('voucherObservacionAtraso');
+
+     // Llenar el template
+     voucherNombre.textContent = nombre;
+     voucherRut.textContent = rut;
+     voucherCurso.textContent = curso;
+     voucherFecha.textContent = fecha;
+     voucherHora.textContent = hora;
+     voucherEstado.textContent = justificado ? 'Justificado' : 'No Justificado';
+     voucherObservacion.textContent = observacion;
+
+         // Crear una ventana de impresión
+     const ventanaImpresion = window.open('', '_blank');
+     ventanaImpresion.document.write(`
+       <html>
+         <head>
+           <title>Comprobante de Atraso</title>
+           <style>
+             @media print {
+               body { 
+                 margin: 0; 
+                 padding: 0;
+                 width: 80mm;
+               }
+               .voucher-container { 
+                 width: 80mm !important;
+                 padding: 5mm !important;
+                 margin: 0 !important;
+                 font-family: 'Courier New', monospace !important;
+               }
+               @page {
+                 size: 80mm auto;
+                 margin: 0;
+               }
+             }
+           </style>
+         </head>
+         <body>
+           ${voucherTemplate.innerHTML}
+         </body>
+       </html>
+     `);
+     ventanaImpresion.document.close();
+     
+     // Imprimir automáticamente cuando se carga la página
+     ventanaImpresion.onload = function() {
+       ventanaImpresion.print();
+       
+       // Esperar un poco antes de cerrar la ventana para dar tiempo a que se cierre el cuadro de impresión
+       setTimeout(function() {
+         ventanaImpresion.close();
+       }, 1000); // 1000 milisegundos = 1 segundo
+     };
+  }
+</script>
 {% endblock %}

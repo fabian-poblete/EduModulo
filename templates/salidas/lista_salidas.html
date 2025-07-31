@@ -459,7 +459,16 @@
       </html>
     `);
     ventanaImpresion.document.close();
-    ventanaImpresion.print();
+    
+    // Imprimir automáticamente cuando se carga la página
+    ventanaImpresion.onload = function() {
+      ventanaImpresion.print();
+      
+      // Esperar un poco antes de cerrar la ventana para dar tiempo a que se cierre el cuadro de impresión
+      setTimeout(function() {
+        ventanaImpresion.close();
+      }, 1000); // 1000 milisegundos = 1 segundo
+    };
   }
 
   // Modal de regreso
