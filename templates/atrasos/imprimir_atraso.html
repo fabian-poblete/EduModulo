@@ -1,198 +1,247 @@
-<!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Comprobante de Atraso</title>
-    <style>
-      @media print {
-        body {
-          margin: 0;
-          padding: 0;
-          font-family: "Courier New", monospace;
-          font-size: 18px;
-          line-height: 1.5;
-        }
-        .voucher {
-          width: 80mm;
-          padding: 0;
-          margin: 0;
-          border: 1px solid #000;
-        }
-        .header {
-          text-align: center;
-          border-bottom: 1px solid #000;
-          padding-bottom: 0;
-          margin-bottom: 0;
-        }
-        .title {
-          font-size: 20px;
-          font-weight: bold;
-          margin: 0;
-        }
-        .info-row {
-          margin: 0;
-        }
-        .label {
-          font-weight: bold;
-          display: inline-block;
-          width: 25mm;
-        }
-        .value {
-          display: inline-block;
-        }
-        .footer {
-          text-align: center;
-          margin-top: 0;
-          padding-top: 0;
-          border-top: 1px solid #000;
-          font-size: 16px;
-        }
-        @page {
-          size: 90mm auto;
-          margin: 0;
-        }
-      }
+{% extends 'base.html' %} {% block title %}Comprobante de Atraso{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <div class="border p-4 bg-white shadow-sm">
+    <h2 class="text-center mb-4 border-bottom pb-3">COMPROBANTE DE ATRASO</h2>
 
-      /* Estilos para pantalla */
-      body {
-        font-family: "Courier New", monospace;
-        font-size: 18px;
-        line-height: 1.5;
-        background-color: #f5f5f5;
-        margin: 20px;
-      }
-      .voucher {
-        width: 90mm;
-        padding: 0;
-        margin: 0 auto;
-        border: 1px solid #000;
-        background-color: white;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-      .header {
-        text-align: center;
-        border-bottom: 1px solid #000;
-        padding-bottom: 0;
-        margin-bottom: 0;
-      }
-      .title {
-        font-size: 20px;
-        font-weight: bold;
-        margin: 0;
-      }
-      .info-row {
-        margin: 0;
-      }
-      .label {
-        font-weight: bold;
-        display: inline-block;
-        width: 25mm;
-      }
-      .value {
-        display: inline-block;
-      }
-      .footer {
-        text-align: center;
-        margin-top: 0;
-        padding-top: 0;
-        border-top: 1px solid #000;
-        font-size: 16px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="voucher">
-      <div class="header">
-        <div class="title">COMPROBANTE DE ATRASO</div>
-      </div>
-
-      <div class="info-row">
-        <span class="label">Estudiante:</span>
-        <span class="value">{{ atraso.estudiante.nombre }}</span>
-      </div>
-
-      <div class="info-row">
-        <span class="label">RUT:</span>
-        <span class="value">{{ atraso.estudiante.rut }}</span>
-      </div>
-
-      <div class="info-row">
-        <span class="label">Curso:</span>
-        <span class="value">{{ atraso.estudiante.curso }}</span>
-      </div>
-
-      <div class="info-row">
-        <span class="label">Fecha:</span>
-        <span class="value">{{ atraso.fecha }}</span>
-      </div>
-
-      <div class="info-row">
-        <span class="label">Hora:</span>
-        <span class="value">{{ atraso.hora }}</span>
-      </div>
-
-      <div class="info-row">
-        <span class="label">Estado:</span>
-        <span class="value"
-          >{% if atraso.justificado %}Justificado{% else %}No
-          Justificado{%endif%}</span
-        >
-      </div>
-
-      {% if atraso.observacion %}
-      <div class="info-row">
-        <span class="label">Observación:</span>
-        <span class="value">{{ atraso.observacion }}</span>
-      </div>
-      {% endif %}
-
-      <div class="footer">
-        <div>Fecha y hora de impresión:</div>
-        <div id="fechaImpresion"></div>
+    <div class="row mb-2">
+      <div class="col-12">
+        <strong>Estudiante:</strong> {{ atraso.estudiante.nombre }}
       </div>
     </div>
 
-    <script>
-      // Agregar fecha y hora de impresión
-      document.getElementById("fechaImpresion").textContent =
-        new Date().toLocaleString("es-CL", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        });
+    <div class="row mb-2">
+      <div class="col-12">
+        <strong>RUT:</strong> {{ atraso.estudiante.rut }}
+      </div>
+    </div>
 
-      // Función para redirigir según el origen
-      function redirigirSegunOrigen() {
-        // Obtener el parámetro de origen de la URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const origen = urlParams.get("origen");
+    <div class="row mb-2">
+      <div class="col-12">
+        <strong>Curso:</strong> {{ atraso.estudiante.curso }}
+      </div>
+    </div>
 
-        if (origen === "crear") {
-          // Si viene del formulario de crear, volver al formulario
-          window.location.href = "{% url 'atrasos:create' %}";
-        } else {
-          // Por defecto, volver al listado
-          window.location.href = "{% url 'atrasos:list' %}";
-        }
-      }
+    <div class="row mb-2">
+      <div class="col-12"><strong>Fecha:</strong> {{ atraso.fecha }}</div>
+    </div>
 
-      // Función para manejar la impresión y redirección
-      function imprimirYRedirigir() {
-        // Imprimir el documento
-        window.print();
+    <div class="row mb-2">
+      <div class="col-12"><strong>Hora:</strong> {{ atraso.hora }}</div>
+    </div>
 
-        // Redirigir después de un tiempo para dar tiempo a que se cierre el diálogo de impresión
-        setTimeout(redirigirSegunOrigen, 2500);
-      }
+    <div class="row mb-2">
+      <div class="col-12">
+        <strong>Estado:</strong> {% if atraso.justificado %}Justificado
+        {%else%}No Justificado{% endif%}
+      </div>
+    </div>
 
-      // Ejecutar cuando el documento esté completamente cargado
-      document.addEventListener("DOMContentLoaded", function () {
-        imprimirYRedirigir(1500);
-      });
-    </script>
-  </body>
-</html>
+    {% if atraso.observacion %}
+    <div class="row mb-2">
+      <div class="col-12">
+        <strong>Observación:</strong> {{ atraso.observacion }}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  /* Estilos específicos para tablets */
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .container {
+      max-width: 600px;
+    }
+    h2 {
+      font-size: 2.2rem;
+    }
+    .row {
+      font-size: 1.1rem;
+    }
+  }
+
+  /* Estilos para impresión - mantener formato de ticket */
+  @media print {
+    /* Ocultar header completo */
+    header,
+    .header,
+    .navbar,
+    nav {
+      display: none !important;
+    }
+
+    /* Ocultar sidebar */
+    .sidebar,
+    .side-nav,
+    .offcanvas {
+      display: none !important;
+    }
+
+    /* Ocultar elementos de navegación */
+    .navbar-brand,
+    .navbar-toggler,
+    .hamburger {
+      display: none !important;
+    }
+
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+      font-family: "Courier New", monospace;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: none;
+      margin: 0 !important;
+      padding: 0 !important;
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+    .border {
+      border: none !important;
+      box-shadow: none !important;
+    }
+    .bg-white {
+      background: white !important;
+    }
+    .shadow-sm {
+      box-shadow: none !important;
+    }
+    .voucher {
+      width: 80mm;
+      padding: 0;
+      margin: 0;
+      border: 1px solid #000;
+    }
+    .header {
+      text-align: center;
+      border-bottom: 1px solid #000;
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 0;
+    }
+    .info-row {
+      margin: 0;
+    }
+    .label {
+      font-weight: bold;
+      display: inline-block;
+      width: 25mm;
+    }
+    .value {
+      display: inline-block;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 1px solid #000;
+      font-size: 16px;
+    }
+    @page {
+      size: 90mm auto;
+      margin: 0;
+    }
+
+    /* Ocultar elementos de Bootstrap en impresión */
+    .row {
+      display: block !important;
+    }
+    .col-md-3,
+    .col-md-9,
+    .col-sm-4,
+    .col-sm-8,
+    .col-12 {
+      display: block !important;
+      width: 100% !important;
+      flex: none !important;
+    }
+    .col-md-3,
+    .col-sm-4 {
+      width: 25mm !important;
+      font-weight: bold;
+      display: inline-block !important;
+    }
+    .col-md-9,
+    .col-sm-8 {
+      width: calc(100% - 25mm) !important;
+      display: inline-block !important;
+    }
+    h2 {
+      font-size: 20px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+    }
+    .mb-2 {
+      margin-bottom: 0 !important;
+    }
+    .mb-4 {
+      margin-bottom: 0 !important;
+    }
+    .mt-4 {
+      margin-top: 0 !important;
+    }
+    .pt-3 {
+      padding-top: 0 !important;
+    }
+    .pb-3 {
+      padding-bottom: 0 !important;
+    }
+    .p-4 {
+      padding: 0 !important;
+    }
+    .text-center {
+      text-align: center !important;
+    }
+    .text-muted {
+      color: black !important;
+    }
+    .border-top {
+      border-top: 1px solid #000 !important;
+    }
+    .border-bottom {
+      border-bottom: 1px solid #000 !important;
+    }
+  }
+</style>
+{% endblock %} {% block extra_js %}
+<script>
+  // Función para redirigir según el origen
+  function redirigirSegunOrigen() {
+    // Obtener el parámetro de origen de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const origen = urlParams.get("origen");
+
+    if (origen === "crear") {
+      // Si viene del formulario de crear, volver al formulario
+      window.location.href = "{% url 'atrasos:create' %}";
+    } else {
+      // Por defecto, volver al listado
+      window.location.href = "{% url 'atrasos:list' %}";
+    }
+  }
+
+  // Función para manejar la impresión y redirección
+  function imprimirYRedirigir() {
+    // Imprimir el documento
+    window.print();
+
+    // Redirigir después de un tiempo para dar tiempo a que se cierre el diálogo de impresión
+    setTimeout(redirigirSegunOrigen, 2500);
+  }
+
+  // Ejecutar cuando el documento esté completamente cargado
+  document.addEventListener("DOMContentLoaded", function () {
+    imprimirYRedirigir(1500);
+  });
+</script>
+{% endblock %}
