@@ -1,693 +1,967 @@
 {% extends 'base.html' %} 
-{% load static %} {% block title %}EduModulo - La
-Plataforma que Impulsa tu Colegio | Solicita tu Demo{% endblock %} 
+{% load static %} 
+{% block title %}EduModulo - La Plataforma que Impulsa tu Colegio | Solicita tu Demo{% endblock %} 
 {% block meta_description %}
-<meta
-  name="description"
-  content="EduModulo: la plataforma de gestión escolar que aumenta la eficiencia, mejora la comunicación y ahorra tiempo. Solicita tu demo y transforma tu colegio."
-/>
-<meta
-  name="keywords"
-  content="software gestión escolar, plataforma colegio, demo EduModulo, sistema educativo, ventas colegio"
-/>
+<meta name="description" content="EduModulo: la plataforma de gestión escolar que aumenta la eficiencia, mejora la comunicación y ahorra tiempo. Solicita tu demo y transforma tu colegio."/>
+<meta name="keywords" content="software gestión escolar, plataforma colegio, demo EduModulo, sistema educativo, ventas colegio"/>
 <meta name="author" content="EduModulo" />
 <meta property="og:title" content="EduModulo - Impulsa tu Colegio" />
-<meta
-  property="og:description"
-  content="Solicita una demo personalizada y descubre cómo EduModulo puede transformar tu gestión escolar."
-/>
+<meta property="og:description" content="Solicita una demo personalizada y descubre cómo EduModulo puede transformar tu gestión escolar."/>
 <meta property="og:image" content="{% static 'images/og-image.jpg' %}" />
 <meta property="og:url" content="{{ request.build_absolute_uri }}" />
 <meta property="og:type" content="website" />
 <link rel="canonical" href="{{ request.build_absolute_uri }}" />
-{% endblock %} {% block extra_css %}
-<link
-  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
-  rel="stylesheet"
-/>
+{% endblock %} 
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
-  body {
-    font-family: "Inter", Arial, sans-serif;
-  }
-  .main-content,
-  .navbar-authenticated,
-  .public-container {
-    margin-left: 0 !important;
-    width: 100%;
-    padding: 0;
-  }
   :root {
-    --primary: #3b82f6;
-    --primary-dark: #1d4ed8;
+    --primary: #4f46e5;
+    --primary-dark: #3730a3;
+    --primary-light: #6366f1;
     --accent: #f59e0b;
+    --accent-dark: #d97706;
     --success: #10b981;
     --danger: #ef4444;
     --text-main: #1e293b;
     --text-light: #64748b;
+    --text-lighter: #94a3b8;
     --bg: #f8fafc;
+    --bg-light: #ffffff;
+    --bg-dark: #0f172a;
     --white: #fff;
     --radius: 1rem;
-    --shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
+    --radius-lg: 1.5rem;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
   }
+
+  body {
+    font-family: "Inter", sans-serif;
+    line-height: 1.6;
+    color: var(--text-main);
+  }
+
+  .main-content, .navbar-authenticated, .public-container {
+    margin-left: 0 !important;
+    width: 100%;
+    padding: 0;
+  }
+
+  /* Hero Section */
   .hero-sales {
-    background: linear-gradient(
-      135deg,
-      var(--primary-dark) 0%,
-      var(--primary) 100%
-    );
+    background: var(--gradient-hero);
     color: white;
-    padding: 6rem 0 4rem;
+    padding: 8rem 0 6rem;
     text-align: center;
     position: relative;
     overflow: hidden;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
   }
+
+  .hero-sales::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"/><circle cx="800" cy="300" r="150" fill="url(%23a)"/><circle cx="400" cy="700" r="120" fill="url(%23a)"/></svg>');
+    opacity: 0.3;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
   .hero-sales h1 {
-    font-size: clamp(2.5rem, 6vw, 4rem);
-    font-weight: 800;
-    margin-bottom: 1.5rem;
-    background: linear-gradient(90deg, #fff 0%, #e0e7ef 100%);
+    font-family: "Poppins", sans-serif;
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    font-weight: 900;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     letter-spacing: -0.02em;
+    line-height: 1.1;
+    animation: fadeInUp 1s ease-out;
   }
+
   .hero-sales .subtitle {
-    font-size: 1.3rem;
-    color: #e0e7ef;
-    margin-bottom: 2.5rem;
+    font-size: 1.4rem;
+    color: #e0e7ff;
+    margin-bottom: 3rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    font-weight: 400;
+    line-height: 1.6;
+    animation: fadeInUp 1s ease-out 0.2s both;
+  }
+
+  .hero-sales .subtitle b {
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+    animation: fadeInUp 1s ease-out 0.4s both;
+  }
+
+  .cta-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 1.2rem 2.5rem;
+    border-radius: var(--radius-lg);
+    border: none;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .cta-btn:hover::before {
+    left: 100%;
+  }
+
+  .cta-btn:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: var(--shadow-xl);
+    color: white;
+    text-decoration: none;
+  }
+
+  .cta-btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .cta-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .hero-sales .trust {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    flex-wrap: wrap;
+    font-size: 1rem;
+    color: #e0e7ff;
+    animation: fadeInUp 1s ease-out 0.6s both;
+  }
+
+  .hero-sales .trust span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius);
+    backdrop-filter: blur(10px);
+  }
+
+  .hero-sales .trust i {
+    color: var(--success);
+    font-size: 1.1rem;
+  }
+
+  /* Benefits Section */
+  .benefits-section {
+    background: var(--bg);
+    padding: 6rem 0 4rem;
+    position: relative;
+  }
+
+  .benefits-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(to bottom, transparent, var(--bg));
+  }
+
+  .benefits-title {
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+    position: relative;
+  }
+
+  .benefits-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--text-light);
+    margin-bottom: 4rem;
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
   }
-  .cta-btn {
-    background: linear-gradient(90deg, var(--accent), var(--primary));
-    color: white;
-    font-weight: 700;
-    font-size: 1.2rem;
-    padding: 1.1rem 2.8rem;
-    border-radius: var(--radius);
-    border: none;
-    box-shadow: var(--shadow);
-    transition: transform 0.2s, box-shadow 0.2s;
-    margin: 0 0.5rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.7rem;
-  }
-  .cta-btn:hover {
-    transform: translateY(-4px) scale(1.03);
-    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.18);
-  }
-  .hero-sales .trust {
-    margin-top: 2.5rem;
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    flex-wrap: wrap;
-    font-size: 1rem;
-    color: #e0e7ef;
-  }
-  .hero-sales .trust i {
-    color: var(--success);
-    margin-right: 0.5rem;
-  }
-  .benefits-section {
-    background: var(--bg);
-    padding: 5rem 0 3rem;
-  }
-  .benefits-title {
-    text-align: center;
-    font-size: 2.3rem;
-    font-weight: 800;
-    color: var(--text-main);
-    margin-bottom: 2rem;
-  }
+
   .benefits-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 2rem;
-    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
   }
+
   .benefit-card {
     background: var(--white);
-    border-radius: var(--radius);
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow);
-    padding: 2.2rem 2rem 1.5rem;
-    max-width: 340px;
-    min-width: 260px;
-    text-align: left;
-    border-top: 5px solid var(--primary);
-    transition: box-shadow 0.2s, border-color 0.2s;
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .benefit-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  .benefit-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .benefit-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .benefit-card i {
+    font-size: 3rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1.5rem;
+    display: block;
+  }
+
+  .benefit-title {
+    font-family: "Poppins", sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+  }
+
+  .benefit-desc {
+    color: var(--text-light);
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  /* About Section */
+  .about-section {
+    background: var(--white);
+    padding: 6rem 0;
     position: relative;
   }
-  .benefit-card:hover {
-    box-shadow: 0 16px 48px rgba(59, 130, 246, 0.13);
-    border-top: 5px solid var(--accent);
+
+  .about-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    text-align: center;
   }
-  .benefit-card i {
-    font-size: 2.2rem;
-    color: var(--primary);
+
+  .about-text {
+    font-size: 1.3rem;
+    color: var(--text-main);
+    font-weight: 500;
+    margin-bottom: 4rem;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+  }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .stat-card {
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .stat-card i {
+    font-size: 2.5rem;
     margin-bottom: 1rem;
     display: block;
   }
-  .benefit-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--text-main);
-    margin-bottom: 0.7rem;
+
+  .stat-card .stat-number {
+    font-family: "Poppins", sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
   }
-  .benefit-desc {
+
+  .stat-card .stat-label {
     color: var(--text-light);
     font-size: 1rem;
   }
-  .testimonials-section {
-    background: var(--white);
-    padding: 4rem 0 3rem;
+
+  /* Process Section */
+  .process-section {
+    background: var(--bg);
+    padding: 6rem 0;
   }
-  .testimonials-title {
-    text-align: center;
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--primary-dark);
-    margin-bottom: 2.5rem;
-  }
-  .testimonials-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+
+  .process-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
   }
-  .testimonial-card {
+
+  .process-step {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2rem;
+    text-align: center;
+    position: relative;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease;
+  }
+
+  .process-step:hover {
+    transform: translateY(-4px);
+  }
+
+  .step-number {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    background: var(--gradient-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+
+  /* FAQ Section */
+  .faq-section {
+    background: var(--white);
+    padding: 6rem 0;
+  }
+
+  .faq-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .faq-item {
     background: var(--bg);
     border-radius: var(--radius);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .faq-item:hover {
     box-shadow: var(--shadow);
-    padding: 2rem 1.5rem 1.5rem;
-    max-width: 340px;
-    min-width: 260px;
-    text-align: left;
-    border-left: 5px solid var(--primary);
-    position: relative;
   }
-  .testimonial-card .author {
-    display: flex;
-    align-items: center;
-    margin-top: 1.2rem;
-    gap: 1rem;
-  }
-  .testimonial-avatar {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-    background: var(--primary);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 1.2rem;
-  }
-  .testimonial-info h4 {
-    margin: 0;
-    font-size: 1rem;
+
+  .faq-question {
     font-weight: 700;
     color: var(--primary-dark);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
-  .testimonial-info p {
-    margin: 0;
-    font-size: 0.9rem;
+
+  .faq-answer {
     color: var(--text-light);
+    line-height: 1.6;
   }
-  .testimonial-text {
-    font-size: 1.05rem;
-    color: var(--text-main);
-    font-style: italic;
-  }
+
+  /* Contact Section */
   .contact-sales-section {
-    background: var(--primary-dark);
+    background: var(--gradient-primary);
     color: white;
-    padding: 4rem 0 3rem;
+    padding: 6rem 0;
     text-align: center;
+    position: relative;
+    overflow: hidden;
   }
+
+  .contact-sales-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="b" cx="50%" cy="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="100" cy="100" r="80" fill="url(%23b)"/><circle cx="900" cy="200" r="120" fill="url(%23b)"/><circle cx="300" cy="800" r="100" fill="url(%23b)"/></svg>');
+    opacity: 0.3;
+  }
+
+  .contact-content {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
   .contact-sales-section h2 {
-    font-size: 2rem;
+    font-family: "Poppins", sans-serif;
+    font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 800;
-    margin-bottom: 1.2rem;
+    margin-bottom: 1.5rem;
   }
+
   .contact-sales-section p {
-    color: #e0e7ef;
-    margin-bottom: 2.2rem;
+    color: #e0e7ff;
+    margin-bottom: 3rem;
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
   }
+
   .contact-form-sales {
-    max-width: 420px;
+    max-width: 500px;
     margin: 0 auto;
     background: var(--white);
     color: var(--text-main);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 2.5rem 2rem 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    padding: 3rem 2.5rem;
     text-align: left;
   }
+
   .contact-form-sales label {
     font-weight: 600;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.5rem;
     display: block;
+    color: var(--text-main);
   }
+
   .contact-form-sales input,
   .contact-form-sales textarea,
   .contact-form-sales select {
     width: 100%;
     border: 2px solid #e5e7eb;
-    border-radius: 0.5rem;
-    padding: 0.8rem 1rem;
-    margin-bottom: 1.1rem;
+    border-radius: var(--radius);
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.5rem;
     font-size: 1rem;
     background: #f9fafb;
-    transition: border 0.2s;
+    transition: all 0.3s ease;
+    font-family: "Inter", sans-serif;
   }
+
   .contact-form-sales input:focus,
   .contact-form-sales textarea:focus,
   .contact-form-sales select:focus {
-    border: 2px solid var(--primary);
+    border-color: var(--primary);
     outline: none;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    background: white;
   }
+
   .contact-form-sales .btn {
     width: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--primary));
+    background: var(--gradient-accent);
     color: white;
     font-weight: 700;
     font-size: 1.1rem;
-    padding: 1rem 0;
-    border-radius: 0.7rem;
+    padding: 1.2rem 0;
+    border-radius: var(--radius);
     border: none;
     box-shadow: var(--shadow);
-    transition: background 0.2s, transform 0.2s;
-    margin-top: 0.5rem;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
   }
+
   .contact-form-sales .btn:hover {
-    background: linear-gradient(90deg, var(--primary), var(--accent));
-    transform: translateY(-2px) scale(1.01);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
   }
+
+  /* Footer */
   .footer-sales {
-    background: #1e293b;
+    background: var(--bg-dark);
     color: #cbd5e1;
-    padding: 2rem 0 1rem;
+    padding: 3rem 0 2rem;
     text-align: center;
     font-size: 1rem;
-    letter-spacing: 0.01em;
   }
+
   .footer-sales a {
-    color: var(--primary);
-    text-decoration: underline;
-    margin: 0 0.5rem;
+    color: var(--primary-light);
+    text-decoration: none;
+    transition: color 0.3s ease;
   }
-  @media (max-width: 900px) {
-    .benefits-list,
-    .testimonials-list {
+
+  .footer-sales a:hover {
+    color: var(--accent);
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero-sales {
+      padding: 6rem 0 4rem;
+      min-height: auto;
+    }
+
+    .cta-buttons {
       flex-direction: column;
       align-items: center;
     }
-    .benefit-card,
-    .testimonial-card {
-      max-width: 95vw;
-      min-width: 0;
+
+    .cta-btn {
+      width: 100%;
+      max-width: 300px;
+      justify-content: center;
+    }
+
+    .hero-sales .trust {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .benefits-list {
+      grid-template-columns: 1fr;
+      padding: 0 1rem;
+    }
+
+    .process-steps {
+      grid-template-columns: 1fr;
+      padding: 0 1rem;
+    }
+
+    .about-stats {
+      grid-template-columns: 1fr;
+    }
+
+    .contact-form-sales {
+      margin: 0 1rem;
+      padding: 2rem 1.5rem;
     }
   }
+
+  /* Scroll animations */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 </style>
-{% endblock %} {% block content %}
+{% endblock %} 
+
+{% block content %}
 <div class="public-container">
-  <!-- HERO VENTAS -->
+  <!-- HERO SECTION -->
   <section class="hero-sales" id="inicio">
-    <h1>Convierte la Gestión Escolar en tu Mejor Ventaja Competitiva</h1>
-    <div class="subtitle">
-      Aumenta la eficiencia, mejora la comunicación y ahorra tiempo con
-      EduModulo.
-      <b
-        >Solicita tu demo personalizada y descubre cómo podemos transformar tu
-        colegio.</b
-      >
-    </div>
-    <a href="#contact-sales" class="cta-btn"
-      ><i class="fas fa-rocket"></i> Solicitar Demo</a
-    >
-    <div class="trust">
-      <span><i class="fas fa-check-circle"></i> +50 colegios ya confían</span>
-      <span><i class="fas fa-shield-alt"></i> 100% Seguro</span>
-      <span><i class="fas fa-headset"></i> Soporte 24/7</span>
+    <div class="hero-content">
+      <h1>Transforma tu Colegio con EduModulo</h1>
+      <div class="subtitle">
+        La plataforma integral que revoluciona la gestión escolar. 
+        <b>Aumenta la eficiencia, mejora la comunicación y ahorra tiempo valioso.</b>
+      </div>
+      <div class="cta-buttons">
+        <a href="#contact" class="cta-btn">
+          <i class="fas fa-rocket"></i> Solicitar Demo Gratuita
+        </a>
+        <a href="#features" class="cta-btn cta-btn-secondary">
+          <i class="fas fa-play"></i> Ver Funcionalidades
+        </a>
+      </div>
+      <div class="trust">
+        <span><i class="fas fa-check-circle"></i> +50 colegios confían en nosotros</span>
+        <span><i class="fas fa-shield-alt"></i> 100% Seguro y confiable</span>
+        <span><i class="fas fa-headset"></i> Soporte especializado 24/7</span>
+      </div>
     </div>
   </section>
 
-  <!-- BENEFICIOS VENTA -->
+  <!-- BENEFICIOS SECTION -->
   <section class="benefits-section" id="features">
     <div class="benefits-title">¿Por qué elegir EduModulo?</div>
+    <div class="benefits-subtitle">
+      Descubre las ventajas que hacen de EduModulo la solución preferida por los mejores colegios
+    </div>
     <div class="benefits-list">
-      <div class="benefit-card">
+      <div class="benefit-card fade-in">
         <i class="fas fa-bolt"></i>
         <div class="benefit-title">Implementación Rápida</div>
         <div class="benefit-desc">
-          Tu colegio funcionando en menos de 48 horas, sin dolores de cabeza ni
-          procesos complejos.
+          Tu colegio funcionando en menos de 48 horas, sin dolores de cabeza ni procesos complejos. 
+          Migración de datos incluida.
         </div>
       </div>
-      <div class="benefit-card">
+      <div class="benefit-card fade-in">
         <i class="fas fa-users"></i>
         <div class="benefit-title">Soporte Personalizado</div>
         <div class="benefit-desc">
-          Acompañamiento experto desde el primer día. Resolvemos tus dudas y
-          capacitamos a tu equipo.
+          Acompañamiento experto desde el primer día. Resolvemos tus dudas y capacitamos a todo tu equipo.
         </div>
       </div>
-      <div class="benefit-card">
+      <div class="benefit-card fade-in">
         <i class="fas fa-chart-line"></i>
         <div class="benefit-title">Resultados Medibles</div>
         <div class="benefit-desc">
-          Ahorra hasta 10 horas semanales en tareas administrativas y mejora la
-          comunicación con apoderados.
+          Ahorra hasta 10 horas semanales en tareas administrativas y mejora la comunicación 
+          con apoderados en un 80%.
         </div>
       </div>
-      <div class="benefit-card">
+      <div class="benefit-card fade-in">
         <i class="fas fa-lock"></i>
-        <div class="benefit-title">Seguridad y Confianza</div>
+        <div class="benefit-title">Seguridad Garantizada</div>
         <div class="benefit-desc">
-          Cumplimos con normativas de protección de datos y garantizamos la
-          privacidad de tu comunidad.
+          Cumplimos con todas las normativas de protección de datos y garantizamos 
+          la privacidad de tu comunidad educativa.
         </div>
       </div>
-      <div class="benefit-card">
+      <div class="benefit-card fade-in">
         <i class="fas fa-mobile-alt"></i>
-        <div class="benefit-title">Acceso desde cualquier lugar</div>
+        <div class="benefit-title">Acceso Multiplataforma</div>
         <div class="benefit-desc">
-          Plataforma 100% online, compatible con cualquier dispositivo y siempre
-          disponible.
+          Plataforma 100% online, compatible con cualquier dispositivo y siempre disponible 
+          desde cualquier lugar.
         </div>
       </div>
-    </div>
-  </section>
-
-  {% comment %}
-  <!-- TESTIMONIOS VENTA -->
-  <section class="testimonials-section">
-    <div class="testimonials-title">Historias de Éxito</div>
-    <div class="testimonials-list">
-      <div class="testimonial-card">
-        <div class="testimonial-text">
-          "EduModulo nos permitió reducir el tiempo de gestión administrativa en
-          un 60%. La comunicación con apoderados es ahora instantánea y
-          transparente."
-        </div>
-        <div class="author">
-          <div class="testimonial-avatar">MR</div>
-          <div class="testimonial-info">
-            <h4>María Rodríguez</h4>
-            <p>Directora, Colegio San Patricio</p>
-          </div>
-        </div>
-      </div>
-      <div class="testimonial-card">
-        <div class="testimonial-text">
-          "El soporte es excelente y la plataforma muy intuitiva. En menos de
-          una semana, todo el equipo estaba usando EduModulo sin problemas."
-        </div>
-        <div class="author">
-          <div class="testimonial-avatar">CL</div>
-          <div class="testimonial-info">
-            <h4>Carlos López</h4>
-            <p>Coordinador TI, Instituto Moderno</p>
-          </div>
-        </div>
-      </div>
-      <div class="testimonial-card">
-        <div class="testimonial-text">
-          "Como apoderada, valoro la transparencia y la facilidad para estar
-          informada. Recibo notificaciones inmediatas y puedo seguir el progreso
-          de mi hijo en tiempo real."
-        </div>
-        <div class="author">
-          <div class="testimonial-avatar">AG</div>
-          <div class="testimonial-info">
-            <h4>Ana García</h4>
-            <p>Apoderada, Liceo Técnico</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  {% endcomment %}
-
-  <!-- SOBRE NOSOTROS -->
-  <section
-    id="about"
-    class="benefits-section"
-    style="background: #f8fafc; padding-top: 4rem; padding-bottom: 4rem"
-  >
-    <div class="benefits-title">Sobre Nosotros</div>
-    <div style="max-width: 900px; margin: 0 auto; text-align: center">
-      <p
-        style="
-          font-size: 1.2rem;
-          color: var(--text-main);
-          font-weight: 500;
-          margin-bottom: 2.2rem;
-        "
-      >
-        <b>EduModulo</b> nació de la experiencia directa de educadores y
-        expertos en tecnología que conocen los desafíos reales de la gestión
-        escolar en Chile. Nuestro equipo combina pasión por la educación y
-        excelencia tecnológica para crear una plataforma que realmente
-        transforma la vida de colegios, docentes, estudiantes y apoderados.
-      </p>
-      <div
-        style="
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-          gap: 2.5rem;
-        "
-      >
-        <div
-          style="
-            flex: 1 1 220px;
-            min-width: 220px;
-            max-width: 320px;
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 24px rgba(59, 130, 246, 0.07);
-            padding: 2rem 1.5rem;
-          "
-        >
-          <i class="fas fa-users fa-2x mb-3" style="color: var(--primary)"></i>
-          <div style="font-weight: 700; font-size: 1.1rem">
-            +10 años de experiencia
-          </div>
-          <div style="color: var(--text-light); font-size: 1rem">
-            en gestión educativa y desarrollo de software
-          </div>
-        </div>
-        <div
-          style="
-            flex: 1 1 220px;
-            min-width: 220px;
-            max-width: 320px;
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 24px rgba(59, 130, 246, 0.07);
-            padding: 2rem 1.5rem;
-          "
-        >
-          <i
-            class="fas fa-handshake fa-2x mb-3"
-            style="color: var(--success)"
-          ></i>
-          <div style="font-weight: 700; font-size: 1.1rem">Compromiso real</div>
-          <div style="color: var(--text-light); font-size: 1rem">
-            con la mejora continua y el acompañamiento a cada colegio
-          </div>
-        </div>
-        <div
-          style="
-            flex: 1 1 220px;
-            min-width: 220px;
-            max-width: 320px;
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 24px rgba(59, 130, 246, 0.07);
-            padding: 2rem 1.5rem;
-          "
-        >
-          <i class="fas fa-award fa-2x mb-3" style="color: var(--accent)"></i>
-          <div style="font-weight: 700; font-size: 1.1rem">+50 colegios</div>
-          <div style="color: var(--text-light); font-size: 1rem">
-            ya confían en EduModulo para su gestión diaria
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ¿CÓMO FUNCIONA? -->
-  <section
-    class="benefits-section"
-    style="background: #fff; padding-top: 3rem; padding-bottom: 3rem"
-  >
-    <div class="benefits-title">¿Cómo es el proceso?</div>
-    <div class="benefits-list" style="gap: 1.5rem">
-      <div class="benefit-card" style="border-top: 5px solid var(--accent)">
-        <i class="fas fa-calendar-check"></i>
-        <div class="benefit-title">1. Agenda tu Demo</div>
-        <div class="benefit-desc">
-          Coordina una reunión con nuestro equipo y conoce la plataforma en
-          acción, adaptada a las necesidades de tu colegio.
-        </div>
-      </div>
-      <div class="benefit-card" style="border-top: 5px solid var(--primary)">
+      <div class="benefit-card fade-in">
         <i class="fas fa-cogs"></i>
-        <div class="benefit-title">2. Implementación Guiada</div>
+        <div class="benefit-title">Personalización Total</div>
         <div class="benefit-desc">
-          Te acompañamos paso a paso en la configuración y capacitación. ¡En
-          menos de 48 horas puedes estar operando!
-        </div>
-      </div>
-      <div class="benefit-card" style="border-top: 5px solid var(--success)">
-        <i class="fas fa-rocket"></i>
-        <div class="benefit-title">3. Soporte y Crecimiento</div>
-        <div class="benefit-desc">
-          Recibe soporte personalizado y actualizaciones constantes para que tu
-          colegio siempre esté a la vanguardia.
+          Adaptamos la plataforma a las necesidades específicas de tu colegio. 
+          Tu marca, tus colores, tu forma de trabajar.
         </div>
       </div>
     </div>
   </section>
 
-  <!-- PREGUNTAS FRECUENTES (FAQ) -->
-  <section
-    class="benefits-section"
-    style="background: var(--bg); padding-top: 3rem; padding-bottom: 3rem"
-  >
+  <!-- SOBRE NOSOTROS SECTION -->
+  <section class="about-section" id="about">
+    <div class="about-content">
+      <div class="benefits-title">Sobre Nosotros</div>
+      <div class="about-text">
+        <b>EduModulo</b> nació de la experiencia directa de educadores y expertos en tecnología 
+        que conocen los desafíos reales de la gestión escolar en Chile. Nuestro equipo combina 
+        pasión por la educación y excelencia tecnológica para crear una plataforma que realmente 
+        transforma la vida de colegios, docentes, estudiantes y apoderados.
+      </div>
+      <div class="about-stats">
+        <div class="stat-card fade-in">
+          <i class="fas fa-users" style="color: var(--primary)"></i>
+          <div class="stat-number">+10</div>
+          <div class="stat-label">años de experiencia en gestión educativa</div>
+        </div>
+        <div class="stat-card fade-in">
+          <i class="fas fa-handshake" style="color: var(--success)"></i>
+          <div class="stat-number">100%</div>
+          <div class="stat-label">compromiso con la mejora continua</div>
+        </div>
+        <div class="stat-card fade-in">
+          <i class="fas fa-award" style="color: var(--accent)"></i>
+          <div class="stat-number">+50</div>
+          <div class="stat-label">colegios ya confían en EduModulo</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESO SECTION -->
+  <section class="process-section">
+    <div class="benefits-title">¿Cómo es el proceso?</div>
+    <div class="benefits-subtitle">
+      Un camino simple y efectivo hacia la transformación digital de tu colegio
+    </div>
+    <div class="process-steps">
+      <div class="process-step fade-in">
+        <div class="step-number">1</div>
+        <i class="fas fa-calendar-check" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 1.5rem;"></i>
+        <div class="benefit-title">Agenda tu Demo</div>
+        <div class="benefit-desc">
+          Coordina una reunión personalizada con nuestro equipo y conoce la plataforma 
+          en acción, adaptada a las necesidades específicas de tu colegio.
+        </div>
+      </div>
+      <div class="process-step fade-in">
+        <div class="step-number">2</div>
+        <i class="fas fa-cogs" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1.5rem;"></i>
+        <div class="benefit-title">Implementación Guiada</div>
+        <div class="benefit-desc">
+          Te acompañamos paso a paso en la configuración y capacitación. 
+          ¡En menos de 48 horas puedes estar operando al 100%!
+        </div>
+      </div>
+      <div class="process-step fade-in">
+        <div class="step-number">3</div>
+        <i class="fas fa-rocket" style="font-size: 2.5rem; color: var(--success); margin-bottom: 1.5rem;"></i>
+        <div class="benefit-title">Soporte y Crecimiento</div>
+        <div class="benefit-desc">
+          Recibe soporte personalizado y actualizaciones constantes para que tu colegio 
+          siempre esté a la vanguardia de la tecnología educativa.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ SECTION -->
+  <section class="faq-section">
     <div class="benefits-title">Preguntas Frecuentes</div>
-    <div style="max-width: 700px; margin: 0 auto">
-      <div style="margin-bottom: 1.5rem">
-        <div
-          style="
-            font-weight: 700;
-            color: var(--primary-dark);
-            margin-bottom: 0.3rem;
-          "
-        >
-          <i class="fas fa-question-circle"></i> ¿Cuánto tiempo toma la
-          implementación?
+    <div class="faq-container">
+      <div class="faq-item fade-in">
+        <div class="faq-question">
+          <i class="fas fa-question-circle"></i>
+          ¿Cuánto tiempo toma la implementación?
         </div>
-        <div style="color: var(--text-light)">
-          En la mayoría de los casos, tu colegio puede estar usando EduModulo en
-          menos de 48 horas desde la firma del acuerdo.
+        <div class="faq-answer">
+          En la mayoría de los casos, tu colegio puede estar usando EduModulo en menos de 48 horas 
+          desde la firma del acuerdo. Incluimos migración de datos y capacitación completa.
         </div>
       </div>
-      <div style="margin-bottom: 1.5rem">
-        <div
-          style="
-            font-weight: 700;
-            color: var(--primary-dark);
-            margin-bottom: 0.3rem;
-          "
-        >
-          <i class="fas fa-question-circle"></i> ¿Puedo migrar mis datos
-          actuales?
+      <div class="faq-item fade-in">
+        <div class="faq-question">
+          <i class="fas fa-question-circle"></i>
+          ¿Puedo migrar mis datos actuales?
         </div>
-        <div style="color: var(--text-light)">
-          Sí, nuestro equipo te ayuda a importar datos desde tu sistema anterior
-          para que no pierdas información.
+        <div class="faq-answer">
+          Sí, nuestro equipo especializado te ayuda a importar datos desde tu sistema anterior 
+          para que no pierdas ninguna información importante.
         </div>
       </div>
-      <div style="margin-bottom: 1.5rem">
-        <div
-          style="
-            font-weight: 700;
-            color: var(--primary-dark);
-            margin-bottom: 0.3rem;
-          "
-        >
-          <i class="fas fa-question-circle"></i> ¿Qué soporte ofrecen?
+      <div class="faq-item fade-in">
+        <div class="faq-question">
+          <i class="fas fa-question-circle"></i>
+          ¿Qué tipo de soporte ofrecen?
         </div>
-        <div style="color: var(--text-light)">
-          Soporte técnico especializado 24/7 por chat, correo y teléfono.
-          Además, capacitaciones incluidas para tu equipo.
+        <div class="faq-answer">
+          Soporte técnico especializado 24/7 por chat, correo y teléfono. Además, 
+          capacitaciones incluidas para tu equipo y actualizaciones constantes.
         </div>
       </div>
-      <div style="margin-bottom: 1.5rem">
-        <div
-          style="
-            font-weight: 700;
-            color: var(--primary-dark);
-            margin-bottom: 0.3rem;
-          "
-        >
-          <i class="fas fa-question-circle"></i> ¿Hay permanencia o contratos
-          largos?
+      <div class="faq-item fade-in">
+        <div class="faq-question">
+          <i class="fas fa-question-circle"></i>
+          ¿Hay permanencia o contratos largos?
         </div>
-        <div style="color: var(--text-light)">
-          No. Puedes cancelar cuando quieras, sin ataduras ni costos ocultos.
+        <div class="faq-answer">
+          No. Puedes cancelar cuando quieras, sin ataduras ni costos ocultos. 
+          Creemos en la calidad de nuestro servicio.
+        </div>
+      </div>
+      <div class="faq-item fade-in">
+        <div class="faq-question">
+          <i class="fas fa-question-circle"></i>
+          ¿Es compatible con todos los dispositivos?
+        </div>
+        <div class="faq-answer">
+          Sí, EduModulo es 100% responsive y funciona perfectamente en computadores, 
+          tablets y smartphones con cualquier navegador moderno.
         </div>
       </div>
     </div>
   </section>
 
-  <!-- CONTACTO VENTA -->
+  <!-- CONTACTO SECTION -->
   <section id="contact" class="contact-sales-section">
-    <h2>Solicita tu Demo Personalizada</h2>
-    <p>
-      Déjanos tus datos y un especialista te contactará para mostrarte cómo
-      EduModulo puede transformar tu colegio.
-    </p>
-    <form id="contactFormSales" class="contact-form-sales" novalidate>
-      <label for="name">Nombre Completo *</label>
-      <input type="text" id="name" name="name" required />
-      <label for="email">Correo Electrónico *</label>
-      <input type="email" id="email" name="email" required />
-      <label for="institution">Institución *</label>
-      <input type="text" id="institution" name="institution" required />
-      <label for="phone">Teléfono</label>
-      <input type="tel" id="phone" name="phone" />
-      <label for="message">¿Qué te gustaría mejorar en tu colegio?</label>
-      <textarea id="message" name="message" rows="4" required></textarea>
-      <button type="submit" class="btn">
-        <i class="fas fa-paper-plane"></i> Solicitar Demo
-      </button>
-    </form>
+    <div class="contact-content">
+      <h2>Solicita tu Demo Personalizada</h2>
+      <p>
+        Déjanos tus datos y un especialista te contactará para mostrarte cómo 
+        EduModulo puede transformar tu colegio en menos de 48 horas.
+      </p>
+      <form id="contactFormSales" class="contact-form-sales" novalidate>
+        <label for="name">Nombre Completo *</label>
+        <input type="text" id="name" name="name" required placeholder="Tu nombre completo" />
+        
+        <label for="email">Correo Electrónico *</label>
+        <input type="email" id="email" name="email" required placeholder="tu@email.com" />
+        
+        <label for="institution">Institución *</label>
+        <input type="text" id="institution" name="institution" required placeholder="Nombre de tu colegio" />
+        
+        <label for="phone">Teléfono</label>
+        <input type="tel" id="phone" name="phone" placeholder="+56 9 1234 5678" />
+        
+        <label for="message">¿Qué te gustaría mejorar en tu colegio? *</label>
+        <textarea id="message" name="message" rows="4" required placeholder="Cuéntanos sobre los desafíos que enfrentas..."></textarea>
+        
+        <button type="submit" class="btn">
+          <i class="fas fa-paper-plane"></i> Solicitar Demo Gratuita
+        </button>
+      </form>
+    </div>
   </section>
 
-  <!-- FOOTER VENTA -->
+  <!-- FOOTER -->
   <footer class="footer-sales">
     <div>
       © {{ now|date:'Y' }} EduModulo. Todos los derechos reservados. |
       <a href="mailto:contacto@edumodulo.cl">contacto@edumodulo.cl</a>
     </div>
-    <div style="margin-top: 0.5rem; font-size: 0.95rem">
-      Hecho con <i class="fas fa-heart" style="color: #f59e0b"></i> para la
-      educación chilena.
+    <div style="margin-top: 1rem; font-size: 0.95rem">
+      Hecho con <i class="fas fa-heart" style="color: var(--accent)"></i> para la educación chilena.
     </div>
   </footer>
 </div>
 
 <script>
-  // Validación y envío del formulario de ventas
+  // Scroll animations
+  function checkScroll() {
+    const elements = document.querySelectorAll('.fade-in');
+    elements.forEach(element => {
+      const elementTop = element.getBoundingClientRect().top;
+      const elementVisible = 150;
+      
+      if (elementTop < window.innerHeight - elementVisible) {
+        element.classList.add('visible');
+      }
+    });
+  }
+
+  // Form validation and submission
   document.addEventListener("DOMContentLoaded", function () {
+    // Add scroll listener
+    window.addEventListener('scroll', checkScroll);
+    checkScroll(); // Check on load
+
     const form = document.getElementById("contactFormSales");
     form.addEventListener("submit", function (e) {
       e.preventDefault();
+      
       let valid = true;
-      ["name", "email", "institution", "message"].forEach((field) => {
+      const requiredFields = ["name", "email", "institution", "message"];
+      
+      requiredFields.forEach((field) => {
         const input = document.getElementById(field);
         if (!input.value.trim()) {
           input.style.borderColor = "#ef4444";
+          input.style.boxShadow = "0 0 0 3px rgba(239, 68, 68, 0.1)";
           valid = false;
         } else {
           input.style.borderColor = "#e5e7eb";
+          input.style.boxShadow = "none";
         }
       });
-      if (!valid) return;
+      
+      if (!valid) {
+        alert("Por favor completa todos los campos obligatorios.");
+        return;
+      }
+      
       const formData = new FormData(form);
       const btn = form.querySelector(".btn");
+      const originalText = btn.innerHTML;
+      
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+      
       fetch("/contact/", {
         method: "POST",
         body: formData,
@@ -698,23 +972,26 @@ Plataforma que Impulsa tu Colegio | Solicita tu Demo{% endblock %}
           if (data.success) {
             form.reset();
             btn.innerHTML = '<i class="fas fa-check"></i> ¡Mensaje Enviado!';
+            btn.style.background = "var(--success)";
+            
             setTimeout(() => {
-              btn.innerHTML =
-                '<i class="fas fa-paper-plane"></i> Solicitar Demo';
+              btn.innerHTML = originalText;
+              btn.style.background = "";
               btn.disabled = false;
-            }, 2500);
+            }, 3000);
           } else {
             alert("Error: " + (data.message || "Error desconocido"));
-            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Solicitar Demo';
+            btn.innerHTML = originalText;
             btn.disabled = false;
           }
         })
         .catch(() => {
-          alert("Ocurrió un error al enviar el mensaje.");
-          btn.innerHTML = '<i class="fas fa-paper-plane"></i> Solicitar Demo';
+          alert("Ocurrió un error al enviar el mensaje. Por favor intenta nuevamente.");
+          btn.innerHTML = originalText;
           btn.disabled = false;
         });
     });
+    
     function getCookie(name) {
       let cookieValue = null;
       if (document.cookie && document.cookie !== "") {
