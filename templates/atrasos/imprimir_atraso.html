@@ -217,31 +217,55 @@
 <script>
   // Función para redirigir según el origen
   function redirigirSegunOrigen() {
+    console.log("Intentando redirigir...");
+
     // Obtener el parámetro de origen de la URL
     const urlParams = new URLSearchParams(window.location.search);
     const origen = urlParams.get("origen");
 
+    console.log("Origen detectado:", origen);
+
     if (origen === "crear") {
-      // Si viene del formulario de crear, volver al formulario
-      window.location.href = "{% url 'atrasos:create' %}";
+      console.log("Redirigiendo al formulario de crear...");
+      window.location.replace("{% url 'atrasos:create' %}");
+    } else if (origen === "list") {
+      console.log("Redirigiendo al listado...");
+      window.location.replace("{% url 'atrasos:list' %}");
     } else {
-      // Por defecto, volver al listado
-      window.location.href = "{% url 'atrasos:list' %}";
+      console.log(
+        "Origen no reconocido, redirigiendo al listado por defecto..."
+      );
+      window.location.replace("{% url 'atrasos:list' %}");
     }
   }
 
+  // Evento cuando se completa la impresión
+  window.addEventListener("afterprint", function () {
+    console.log("Evento afterprint detectado");
+    redirigirSegunOrigen();
+  });
+
   // Función para manejar la impresión y redirección
   function imprimirYRedirigir() {
+    console.log("Iniciando proceso de impresión...");
+
     // Imprimir el documento
     window.print();
 
-    // Redirigir después de un tiempo para dar tiempo a que se cierre el diálogo de impresión
-    setTimeout(redirigirSegunOrigen, 2500);
+    // Fallback: si afterprint no funciona, usar timeout después de 2 segundos
+    setTimeout(function () {
+      console.log("Fallback: redirigiendo por timeout");
+      redirigirSegunOrigen();
+    }, 2000);
   }
 
   // Ejecutar cuando el documento esté completamente cargado
   document.addEventListener("DOMContentLoaded", function () {
-    imprimirYRedirigir(1500);
+    console.log("DOM cargado, iniciando proceso...");
+    // Pequeño delay para asegurar que la página esté lista
+    setTimeout(function () {
+      imprimirYRedirigir();
+    }, 500);
   });
 </script>
 {% endblock %}
