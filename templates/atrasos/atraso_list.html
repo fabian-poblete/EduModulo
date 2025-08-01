@@ -196,7 +196,7 @@
               <td>
                 <div class="d-flex gap-1 flex-wrap">
                   <button
-                    onclick="imprimirVoucherAtraso('{{ atraso.estudiante.nombre|escapejs }}', '{{ atraso.estudiante.rut|escapejs }}', '{{ atraso.estudiante.curso.nombre|escapejs }}', '{{ atraso.fecha|escapejs }}', '{{ atraso.hora|escapejs }}', {{ atraso.justificado|yesno:"true,false" }}, '{{ atraso.observacion|default:"-"|escapejs }}')"
+                    onclick="imprimirVoucherAtraso('{{ atraso.estudiante.nombre|escapejs }}', '{{ atraso.estudiante.rut|escapejs }}', '{{ atraso.estudiante.curso.nombre|escapejs }}', '{{ atraso.fecha|escapejs }}', '{{ atraso.hora|escapejs }}', {{ atraso.justificado|yesno:"true,false" }}, '{{ atraso.observacion|default:"-"|escapejs }}', {{ atraso.id }})"
                     class="btn btn-sm btn-info"
                     title="Imprimir"
                   >
@@ -643,8 +643,20 @@
     let timeoutIdModal;
     let modalInstance = null;
 
+    // Función para detectar dispositivo móvil
+    function isMobileDevice() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+    }
+
     // Función para imprimir voucher de atraso
-    function imprimirVoucherAtraso(nombre, rut, curso, fecha, hora, justificado, observacion) {
+    function imprimirVoucherAtraso(nombre, rut, curso, fecha, hora, justificado, observacion, atrasoId) {
+      // Si es dispositivo móvil, redirigir a la página de impresión
+      if (isMobileDevice()) {
+        window.location.href = `{% url 'atrasos:imprimir' 0 %}`.replace('0', atrasoId) + '?origen=list';
+        return;
+      }
+
+      // Para desktop, usar el método original con window.open()
       const voucherTemplate = document.getElementById('voucherTemplateAtraso');
       const voucherNombre = document.getElementById('voucherNombreAtraso');
       const voucherRut = document.getElementById('voucherRutAtraso');
