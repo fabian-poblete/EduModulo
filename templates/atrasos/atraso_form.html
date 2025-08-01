@@ -255,8 +255,20 @@
     // Ejecutar la función para ocultar mensajes
     ocultarMensajesExito();
 
+    // Función para detectar dispositivo móvil
+    function isMobileDevice() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+    }
+
     // Función para imprimir voucher de atraso
-    function imprimirVoucherAtraso(nombre, rut, curso, fecha, hora, justificado, observacion) {
+    function imprimirVoucherAtraso(nombre, rut, curso, fecha, hora, justificado, observacion, atrasoId) {
+      // Si es dispositivo móvil y tenemos el ID del atraso, redirigir a la página de impresión
+      if (isMobileDevice() && atrasoId) {
+        window.location.href = `{% url 'atrasos:imprimir' 0 %}`.replace('0', atrasoId) + '?origen=crear';
+        return;
+      }
+
+      // Para desktop o cuando no tenemos ID, usar el método original con window.open()
       const voucherTemplate = document.getElementById('voucherTemplateAtraso');
       const voucherNombre = document.getElementById('voucherNombreAtraso');
       const voucherRut = document.getElementById('voucherRutAtraso');
@@ -329,7 +341,8 @@
         '{{ request.session.atraso_creado_fecha|escapejs }}',
         '{{ request.session.atraso_creado_hora|escapejs }}',
         {{ request.session.atraso_creado_justificado|yesno:"true,false" }},
-        '{{ request.session.atraso_creado_observacion|escapejs }}'
+        '{{ request.session.atraso_creado_observacion|escapejs }}',
+        {{ request.session.atraso_creado_id }}
       );
 
       // Limpiar la sesión después de imprimir
