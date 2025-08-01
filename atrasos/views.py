@@ -15,7 +15,7 @@ from notificaciones.utils import enviar_notificacion
 def puede_ver_atrasos(user):
     if not user.is_authenticated:
         return False
-    return user.is_superuser or user.perfil.tipo_usuario in ['admin_colegio', 'profesor', 'apoderado']
+    return user.is_superuser or user.perfil.tipo_usuario in ['admin_colegio', 'porteria', 'profesor', 'apoderado']
 
 
 @login_required
@@ -23,7 +23,7 @@ def atraso_list(request):
     # Obtener los atrasos según el tipo de usuario
     if request.user.is_superuser:
         atrasos = Atraso.objects.all()
-    elif request.user.perfil.tipo_usuario == 'admin_colegio':
+    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'porteria']:
         atrasos = Atraso.objects.filter(
             estudiante__curso__colegio=request.user.perfil.colegio)
     elif request.user.perfil.tipo_usuario == 'profesor':
@@ -157,13 +157,13 @@ def buscar_estudiantes(request):
 def atraso_delete(request, pk):
     atraso = get_object_or_404(Atraso, pk=pk)
 
-    # Verificar permisos (superuser o admin_colegio del mismo colegio)
+    # Verificar permisos (superuser, admin_colegio o porteria del mismo colegio)
     can_delete = False
     if request.user.is_superuser:
         can_delete = True
-    elif request.user.perfil.tipo_usuario == 'admin_colegio':
+    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'porteria']:
         if hasattr(request.user.perfil, 'colegio'):
-            # Asegurarse de que el colegio del atraso coincida con el del admin
+            # Asegurarse de que el colegio del atraso coincida con el del usuario
             if atraso.estudiante and atraso.estudiante.curso and atraso.estudiante.curso.colegio == request.user.perfil.colegio:
                 can_delete = True
 

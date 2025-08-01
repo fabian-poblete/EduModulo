@@ -846,7 +846,7 @@
           </ul>
         </div>
         <!-- Activities Section -->
-        {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio'%}
+        {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio,porteria' %}
         <div class="sidebar-section">
           <div class="sidebar-section-title">Actividades</div>
           <ul class="sidebar-menu">
@@ -870,6 +870,7 @@
                 <span class="sidebar-menu-text">Atrasos</span>
               </a>
             </li>
+            {% if user.is_superuser or user.perfil.tipo_usuario ==  'admin_colegio' %}
             <li class="sidebar-menu-item">
               <a
                 class="sidebar-menu-link"
@@ -880,6 +881,7 @@
                 <span class="sidebar-menu-text">Salidas Almuerzo</span>
               </a>
             </li>
+            {% endif %}
           </ul>
         </div>
         {% endif %}
@@ -1045,8 +1047,12 @@
             </div>
             <div class="user-role">
               {% if user.is_superuser %} Super Administrador 
-              {% elif user.perfil.tipo_usuario == 'admin_colegio' %} Admin. Colegio
-              {%else %} Usuario {% endif %}
+              {% elif user.perfil.tipo_usuario == 'admin_colegio' %} Admin. Colegio 
+              {% elif user.perfil.tipo_usuario == 'porteria' %} Portería 
+              {% elif user.perfil.tipo_usuario == 'administrativo' %} Administrativo 
+              {% elif user.perfil.tipo_usuario == 'profesor' %} Profesor 
+              {% elif user.perfil.tipo_usuario == 'apoderado' %} Apoderado 
+              {% else %} Usuario {% endif %}
             </div>
           </div>
           <i class="fas fa-chevron-up user-chevron"></i>

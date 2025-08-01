@@ -14,7 +14,7 @@ from cursos.models import Curso
 def puede_ver_salidas(user):
     if not user.is_authenticated:
         return False
-    return user.is_superuser or user.perfil.tipo_usuario in ['admin_colegio', 'profesor', 'apoderado']
+    return user.is_superuser or user.perfil.tipo_usuario in ['admin_colegio', 'porteria', 'profesor', 'apoderado']
 
 
 @login_required
@@ -23,7 +23,7 @@ def lista_salidas(request):
     # Filter salidas based on user type (similar to atrasos_list)
     if request.user.is_superuser:
         salidas = Salida.objects.all()
-    elif request.user.perfil.tipo_usuario == 'admin_colegio':
+    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'porteria']:
         salidas = Salida.objects.filter(
             estudiante__curso__colegio=request.user.perfil.colegio)
     elif request.user.perfil.tipo_usuario == 'profesor':
@@ -52,7 +52,7 @@ def lista_salidas(request):
 
     # Contar el total de salidas
     total_salidas = salidas.count()
-    
+
     return render(request, 'salidas/lista_salidas.html', {
         'salidas': salidas,
         'fecha_filtro': fecha_filtro,
@@ -140,7 +140,7 @@ def buscar_estudiantes_salida(request):
             'id': estudiante.id,
             'nombre': estudiante.nombre,
             'rut': estudiante.rut,
-            'curso': estudiante.curso.nombre  # Assuming curso has a nombre attribute
+            'curso': estudiante.curso.nombre
         })
 
     return JsonResponse(results, safe=False)
@@ -150,13 +150,13 @@ def buscar_estudiantes_salida(request):
 def salida_delete(request, pk):
     salida = get_object_or_404(Salida, pk=pk)
 
-    # Verificar permisos (superuser or admin_colegio of the same school)
+    # Verificar permisos (superuser, admin_colegio or porteria of the same school)
     can_delete = False
     if request.user.is_superuser:
         can_delete = True
-    elif request.user.perfil.tipo_usuario == 'admin_colegio':
+    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'porteria']:
         if hasattr(request.user.perfil, 'colegio'):
-            # Ensure the salida's student's school matches the admin's school
+            # Ensure the salida's student's school matches the user's school
             if salida.estudiante and salida.estudiante.curso and salida.estudiante.curso.colegio == request.user.perfil.colegio:
                 can_delete = True
 
@@ -193,11 +193,11 @@ def imprimir_salida(request, salida_id):
 def marcar_regreso(request, pk):
     salida = get_object_or_404(Salida, pk=pk)
 
-    # Verificar permisos (superuser, admin_colegio, o profesor del colegio)
+    # Verificar permisos (superuser, admin_colegio, porteria o profesor del colegio)
     can_mark_return = False
     if request.user.is_superuser:
         can_mark_return = True
-    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'profesor']:
+    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'porteria', 'profesor']:
         if hasattr(request.user.perfil, 'colegio'):
             if salida.estudiante.curso.colegio == request.user.perfil.colegio:
                 can_mark_return = True
