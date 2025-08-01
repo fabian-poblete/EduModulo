@@ -402,6 +402,208 @@
     100% { transform: rotate(360deg); }
   }
 
+  /* ===== ESTILOS PARA EL VOUCHER ===== */
+  
+  /* Estilos base del voucher */
+  .voucher-container {
+    width: 100%;
+    max-width: 80mm;
+    margin: 0 auto;
+    font-family: 'Courier New', monospace;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .voucher-header {
+    text-align: center;
+    padding: 10px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  .voucher-header h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .voucher-content {
+    padding: 10px;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .voucher-content p {
+    margin: 4px 0;
+    padding: 2px 0;
+  }
+
+  .voucher-content strong {
+    color: #333;
+  }
+
+  .voucher-content span {
+    color: #666;
+  }
+
+  /* Media queries para diferentes dispositivos */
+  
+  /* Móviles pequeños (hasta 480px) */
+  @media screen and (max-width: 480px) {
+    .voucher-container {
+      max-width: 100%;
+      margin: 10px;
+      border-radius: 8px;
+    }
+    
+    .voucher-header {
+      padding: 15px 10px;
+    }
+    
+    .voucher-header h3 {
+      font-size: 16px;
+    }
+    
+    .voucher-content {
+      padding: 15px 10px;
+      font-size: 14px;
+    }
+    
+    .voucher-content p {
+      margin: 6px 0;
+      padding: 3px 0;
+    }
+  }
+
+  /* Tablets (481px - 768px) */
+  @media screen and (min-width: 481px) and (max-width: 768px) {
+    .voucher-container {
+      max-width: 90%;
+      margin: 20px auto;
+    }
+    
+    .voucher-header h3 {
+      font-size: 15px;
+    }
+    
+    .voucher-content {
+      font-size: 13px;
+    }
+  }
+
+  /* Tablets grandes y desktop pequeño (769px - 1024px) */
+  @media screen and (min-width: 769px) and (max-width: 1024px) {
+    .voucher-container {
+      max-width: 70mm;
+    }
+  }
+
+  /* Desktop (1025px+) */
+  @media screen and (min-width: 1025px) {
+    .voucher-container {
+      max-width: 80mm;
+    }
+  }
+
+  /* ===== ESTILOS DE IMPRESIÓN ===== */
+  
+  /* Impresión general */
+  @media print {
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      background: white !important;
+    }
+    
+    .voucher-container {
+      width: 80mm !important;
+      max-width: 80mm !important;
+      padding: 5mm !important;
+      margin: 0 !important;
+      border: none !important;
+      border-radius: 0 !important;
+      font-family: 'Courier New', monospace !important;
+      background: white !important;
+    }
+    
+    .voucher-header {
+      padding: 5mm !important;
+      background: white !important;
+      border-bottom: 1px solid #000 !important;
+    }
+    
+    .voucher-header h3 {
+      font-size: 14px !important;
+      margin: 0 !important;
+    }
+    
+    .voucher-content {
+      padding: 5mm !important;
+      font-size: 12px !important;
+    }
+    
+    .voucher-content p {
+      margin: 2px 0 !important;
+      padding: 1px 0 !important;
+    }
+    
+    @page {
+      size: 80mm auto !important;
+      margin: 0 !important;
+    }
+  }
+
+  /* Impresión específica para móviles */
+  @media print and (max-width: 480px) {
+    .voucher-container {
+      width: 100% !important;
+      max-width: 100% !important;
+      padding: 3mm !important;
+    }
+    
+    .voucher-header h3 {
+      font-size: 16px !important;
+    }
+    
+    .voucher-content {
+      font-size: 14px !important;
+    }
+    
+    @page {
+      size: auto !important;
+      margin: 3mm !important;
+    }
+  }
+
+  /* Impresión específica para tablets */
+  @media print and (min-width: 481px) and (max-width: 768px) {
+    .voucher-container {
+      width: 70mm !important;
+      max-width: 70mm !important;
+    }
+    
+    @page {
+      size: 70mm auto !important;
+    }
+  }
+
+  /* Impresión específica para impresoras térmicas */
+  @media print and (min-width: 769px) {
+    .voucher-container {
+      width: 80mm !important;
+      max-width: 80mm !important;
+    }
+    
+    @page {
+      size: 80mm auto !important;
+      margin: 0 !important;
+    }
+  }
+
      /* Estilos para formulario rápido en móvil y tablet */
    @media (max-width: 991px) {
     .card-header h6 {
@@ -601,19 +803,19 @@
 
 <!-- Template para el voucher de atraso -->
 <div id="voucherTemplateAtraso" style="display: none;">
-  <div class="voucher-container" style="width: 80mm; padding: 5mm; margin: 0 auto; font-family: 'Courier New', monospace;">
-    <div style="text-align: center; margin-bottom: 10px;">
-      <h3 style="margin: 0; font-size: 14px;" id="voucherTituloAtraso">COMPROBANTE DE ATRASO</h3>
+  <div class="voucher-container">
+    <div class="voucher-header">
+      <h3 id="voucherTituloAtraso">COMPROBANTE DE ATRASO</h3>
     </div>
-         <div style="margin-bottom: 10px; font-size: 12px;">
-       <p style="margin: 2px 0;"><strong>Estudiante:</strong><br><span id="voucherNombreAtraso"></span></p>
-       <p style="margin: 2px 0;"><strong>RUT:</strong><br><span id="voucherRutAtraso"></span></p>
-       <p style="margin: 2px 0;"><strong>Curso:</strong><br><span id="voucherCursoAtraso"></span></p>
-       <p style="margin: 2px 0;"><strong>Fecha:</strong><br><span id="voucherFechaAtraso"></span></p>
-       <p style="margin: 2px 0;"><strong>Hora:</strong><br><span id="voucherHoraAtraso"></span></p>
-       <p style="margin: 2px 0;"><strong>Estado:</strong><br><span id="voucherEstadoAtraso"></span></p>
-       <p style="margin: 2px 0;"><strong>Observación:</strong><br><span id="voucherObservacionAtraso"></span></p>
-     </div>
+    <div class="voucher-content">
+      <p><strong>Estudiante:</strong><br><span id="voucherNombreAtraso"></span></p>
+      <p><strong>RUT:</strong><br><span id="voucherRutAtraso"></span></p>
+      <p><strong>Curso:</strong><br><span id="voucherCursoAtraso"></span></p>
+      <p><strong>Fecha:</strong><br><span id="voucherFechaAtraso"></span></p>
+      <p><strong>Hora:</strong><br><span id="voucherHoraAtraso"></span></p>
+      <p><strong>Estado:</strong><br><span id="voucherEstadoAtraso"></span></p>
+      <p><strong>Observación:</strong><br><span id="voucherObservacionAtraso"></span></p>
+    </div>
   </div>
 </div>
 {% endblock %}
@@ -663,28 +865,216 @@
       voucherEstado.textContent = justificado ? 'Justificado' : 'No Justificado';
       voucherObservacion.textContent = observacion;
 
+      // Detectar si es dispositivo móvil
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isTablet = /iPad|Android/i.test(navigator.userAgent) && window.innerWidth >= 768;
+      
       // Crear una ventana de impresión
       const ventanaImpresion = window.open('', '_blank');
       ventanaImpresion.document.write(`
         <html>
           <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Comprobante de Atraso</title>
             <style>
-              @media print {
-                body { 
-                  margin: 0; 
-                  padding: 0;
-                  width: 80mm;
+              /* Estilos base del voucher */
+              .voucher-container {
+                width: 100%;
+                max-width: 80mm;
+                margin: 0 auto;
+                font-family: 'Courier New', monospace;
+                background: white;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                overflow: hidden;
+              }
+
+              .voucher-header {
+                text-align: center;
+                padding: 10px;
+                background: #f8f9fa;
+                border-bottom: 1px solid #dee2e6;
+              }
+
+              .voucher-header h3 {
+                margin: 0;
+                font-size: 14px;
+                font-weight: bold;
+                color: #333;
+              }
+
+              .voucher-content {
+                padding: 10px;
+                font-size: 12px;
+                line-height: 1.4;
+              }
+
+              .voucher-content p {
+                margin: 4px 0;
+                padding: 2px 0;
+              }
+
+              .voucher-content strong {
+                color: #333;
+              }
+
+              .voucher-content span {
+                color: #666;
+              }
+
+              /* Media queries para diferentes dispositivos */
+              
+              /* Móviles pequeños (hasta 480px) */
+              @media screen and (max-width: 480px) {
+                .voucher-container {
+                  max-width: 100%;
+                  margin: 10px;
+                  border-radius: 8px;
                 }
-                .voucher-container { 
+                
+                .voucher-header {
+                  padding: 15px 10px;
+                }
+                
+                .voucher-header h3 {
+                  font-size: 16px;
+                }
+                
+                .voucher-content {
+                  padding: 15px 10px;
+                  font-size: 14px;
+                }
+                
+                .voucher-content p {
+                  margin: 6px 0;
+                  padding: 3px 0;
+                }
+              }
+
+              /* Tablets (481px - 768px) */
+              @media screen and (min-width: 481px) and (max-width: 768px) {
+                .voucher-container {
+                  max-width: 90%;
+                  margin: 20px auto;
+                }
+                
+                .voucher-header h3 {
+                  font-size: 15px;
+                }
+                
+                .voucher-content {
+                  font-size: 13px;
+                }
+              }
+
+              /* Tablets grandes y desktop pequeño (769px - 1024px) */
+              @media screen and (min-width: 769px) and (max-width: 1024px) {
+                .voucher-container {
+                  max-width: 70mm;
+                }
+              }
+
+              /* Desktop (1025px+) */
+              @media screen and (min-width: 1025px) {
+                .voucher-container {
+                  max-width: 80mm;
+                }
+              }
+
+              /* ===== ESTILOS DE IMPRESIÓN ===== */
+              
+              /* Impresión general */
+              @media print {
+                body {
+                  margin: 0 !important;
+                  padding: 0 !important;
+                  width: 100% !important;
+                  background: white !important;
+                }
+                
+                .voucher-container {
                   width: 80mm !important;
+                  max-width: 80mm !important;
                   padding: 5mm !important;
                   margin: 0 !important;
+                  border: none !important;
+                  border-radius: 0 !important;
                   font-family: 'Courier New', monospace !important;
+                  background: white !important;
                 }
+                
+                .voucher-header {
+                  padding: 5mm !important;
+                  background: white !important;
+                  border-bottom: 1px solid #000 !important;
+                }
+                
+                .voucher-header h3 {
+                  font-size: 14px !important;
+                  margin: 0 !important;
+                }
+                
+                .voucher-content {
+                  padding: 5mm !important;
+                  font-size: 12px !important;
+                }
+                
+                .voucher-content p {
+                  margin: 2px 0 !important;
+                  padding: 1px 0 !important;
+                }
+                
                 @page {
-                  size: 80mm auto;
-                  margin: 0;
+                  size: 80mm auto !important;
+                  margin: 0 !important;
+                }
+              }
+
+              /* Impresión específica para móviles */
+              @media print and (max-width: 480px) {
+                .voucher-container {
+                  width: 100% !important;
+                  max-width: 100% !important;
+                  padding: 3mm !important;
+                }
+                
+                .voucher-header h3 {
+                  font-size: 16px !important;
+                }
+                
+                .voucher-content {
+                  font-size: 14px !important;
+                }
+                
+                @page {
+                  size: auto !important;
+                  margin: 3mm !important;
+                }
+              }
+
+              /* Impresión específica para tablets */
+              @media print and (min-width: 481px) and (max-width: 768px) {
+                .voucher-container {
+                  width: 70mm !important;
+                  max-width: 70mm !important;
+                }
+                
+                @page {
+                  size: 70mm auto !important;
+                }
+              }
+
+              /* Impresión específica para impresoras térmicas */
+              @media print and (min-width: 769px) {
+                .voucher-container {
+                  width: 80mm !important;
+                  max-width: 80mm !important;
+                }
+                
+                @page {
+                  size: 80mm auto !important;
+                  margin: 0 !important;
                 }
               }
             </style>
@@ -698,12 +1088,23 @@
       
       // Imprimir automáticamente cuando se carga la página
       ventanaImpresion.onload = function() {
-        ventanaImpresion.print();
+        // Para dispositivos móviles, dar más tiempo para que se cargue completamente
+        const printDelay = isMobile ? 2000 : 1000;
         
-        // Esperar un poco antes de cerrar la ventana para dar tiempo a que se cierre el cuadro de impresión
         setTimeout(function() {
-          ventanaImpresion.close();
-        }, 1000); // 1000 milisegundos = 1 segundo
+          try {
+            ventanaImpresion.print();
+            
+            // Esperar antes de cerrar la ventana
+            setTimeout(function() {
+              ventanaImpresion.close();
+            }, printDelay);
+          } catch (error) {
+            console.error('Error al imprimir:', error);
+            // Si falla la impresión, mostrar el voucher en pantalla
+            ventanaImpresion.focus();
+          }
+        }, 500);
       };
     }
 
@@ -1148,28 +1549,216 @@
     voucherEstado.textContent = justificado ? 'Justificado' : 'No Justificado';
     voucherObservacion.textContent = observacion;
 
+    // Detectar si es dispositivo móvil
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isTablet = /iPad|Android/i.test(navigator.userAgent) && window.innerWidth >= 768;
+
     // Crear una ventana de impresión
     const ventanaImpresion = window.open('', '_blank');
     ventanaImpresion.document.write(`
       <html>
         <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Comprobante de Atraso</title>
           <style>
-            @media print {
-              body { 
-                margin: 0; 
-                padding: 0;
-                width: 80mm;
+            /* Estilos base del voucher */
+            .voucher-container {
+              width: 100%;
+              max-width: 80mm;
+              margin: 0 auto;
+              font-family: 'Courier New', monospace;
+              background: white;
+              border: 1px solid #ccc;
+              border-radius: 4px;
+              overflow: hidden;
+            }
+
+            .voucher-header {
+              text-align: center;
+              padding: 10px;
+              background: #f8f9fa;
+              border-bottom: 1px solid #dee2e6;
+            }
+
+            .voucher-header h3 {
+              margin: 0;
+              font-size: 14px;
+              font-weight: bold;
+              color: #333;
+            }
+
+            .voucher-content {
+              padding: 10px;
+              font-size: 12px;
+              line-height: 1.4;
+            }
+
+            .voucher-content p {
+              margin: 4px 0;
+              padding: 2px 0;
+            }
+
+            .voucher-content strong {
+              color: #333;
+            }
+
+            .voucher-content span {
+              color: #666;
+            }
+
+            /* Media queries para diferentes dispositivos */
+            
+            /* Móviles pequeños (hasta 480px) */
+            @media screen and (max-width: 480px) {
+              .voucher-container {
+                max-width: 100%;
+                margin: 10px;
+                border-radius: 8px;
               }
-              .voucher-container { 
+              
+              .voucher-header {
+                padding: 15px 10px;
+              }
+              
+              .voucher-header h3 {
+                font-size: 16px;
+              }
+              
+              .voucher-content {
+                padding: 15px 10px;
+                font-size: 14px;
+              }
+              
+              .voucher-content p {
+                margin: 6px 0;
+                padding: 3px 0;
+              }
+            }
+
+            /* Tablets (481px - 768px) */
+            @media screen and (min-width: 481px) and (max-width: 768px) {
+              .voucher-container {
+                max-width: 90%;
+                margin: 20px auto;
+              }
+              
+              .voucher-header h3 {
+                font-size: 15px;
+              }
+              
+              .voucher-content {
+                font-size: 13px;
+              }
+            }
+
+            /* Tablets grandes y desktop pequeño (769px - 1024px) */
+            @media screen and (min-width: 769px) and (max-width: 1024px) {
+              .voucher-container {
+                max-width: 70mm;
+              }
+            }
+
+            /* Desktop (1025px+) */
+            @media screen and (min-width: 1025px) {
+              .voucher-container {
+                max-width: 80mm;
+              }
+            }
+
+            /* ===== ESTILOS DE IMPRESIÓN ===== */
+            
+            /* Impresión general */
+            @media print {
+              body {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                background: white !important;
+              }
+              
+              .voucher-container {
                 width: 80mm !important;
+                max-width: 80mm !important;
                 padding: 5mm !important;
                 margin: 0 !important;
+                border: none !important;
+                border-radius: 0 !important;
                 font-family: 'Courier New', monospace !important;
+                background: white !important;
               }
+              
+              .voucher-header {
+                padding: 5mm !important;
+                background: white !important;
+                border-bottom: 1px solid #000 !important;
+              }
+              
+              .voucher-header h3 {
+                font-size: 14px !important;
+                margin: 0 !important;
+              }
+              
+              .voucher-content {
+                padding: 5mm !important;
+                font-size: 12px !important;
+              }
+              
+              .voucher-content p {
+                margin: 2px 0 !important;
+                padding: 1px 0 !important;
+              }
+              
               @page {
-                size: 80mm auto;
-                margin: 0;
+                size: 80mm auto !important;
+                margin: 0 !important;
+              }
+            }
+
+            /* Impresión específica para móviles */
+            @media print and (max-width: 480px) {
+              .voucher-container {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 3mm !important;
+              }
+              
+              .voucher-header h3 {
+                font-size: 16px !important;
+              }
+              
+              .voucher-content {
+                font-size: 14px !important;
+              }
+              
+              @page {
+                size: auto !important;
+                margin: 3mm !important;
+              }
+            }
+
+            /* Impresión específica para tablets */
+            @media print and (min-width: 481px) and (max-width: 768px) {
+              .voucher-container {
+                width: 70mm !important;
+                max-width: 70mm !important;
+              }
+              
+              @page {
+                size: 70mm auto !important;
+              }
+            }
+
+            /* Impresión específica para impresoras térmicas */
+            @media print and (min-width: 769px) {
+              .voucher-container {
+                width: 80mm !important;
+                max-width: 80mm !important;
+              }
+              
+              @page {
+                size: 80mm auto !important;
+                margin: 0 !important;
               }
             }
           </style>
@@ -1183,12 +1772,23 @@
     
     // Imprimir automáticamente cuando se carga la página
     ventanaImpresion.onload = function() {
-      ventanaImpresion.print();
+      // Para dispositivos móviles, dar más tiempo para que se cargue completamente
+      const printDelay = isMobile ? 2000 : 1000;
       
-      // Esperar un poco antes de cerrar la ventana para dar tiempo a que se cierre el cuadro de impresión
       setTimeout(function() {
-        ventanaImpresion.close();
-      }, 1000); // 1000 milisegundos = 1 segundo
+        try {
+          ventanaImpresion.print();
+          
+          // Esperar antes de cerrar la ventana
+          setTimeout(function() {
+            ventanaImpresion.close();
+          }, printDelay);
+        } catch (error) {
+          console.error('Error al imprimir:', error);
+          // Si falla la impresión, mostrar el voucher en pantalla
+          ventanaImpresion.focus();
+        }
+      }, 500);
     };
   }
 </script>
