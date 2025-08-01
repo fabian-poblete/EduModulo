@@ -168,7 +168,7 @@ def enviar_sms_apoderado(estudiante, mensaje, debug=False):
         print("🚀 Llamando a función enviar_sms...")
         response = enviar_sms(telefono, mensaje, senderId, debug)
         print(f"📨 Respuesta del servicio SMS: {response}")
-
+        print(f"📨 hola")
         # Puedes analizar la respuesta para determinar si fue exitosa
         if 'status' in response and '000' in response:
             print("✅ SMS enviado exitosamente (status 000)")
