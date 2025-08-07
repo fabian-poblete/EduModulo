@@ -147,6 +147,33 @@ def enviar_email_apoderado(estudiante, mensaje):
         return 'fallida'
 
 
+def limpiar_telefono_sms(telefono):
+    """Limpiar formato de teléfono para SMS con LabsMobile"""
+    if not telefono:
+        return None
+
+    # Convertir a string y limpiar
+    telefono_str = str(telefono).strip()
+
+    # Remover decimales (.0)
+    if telefono_str.endswith('.0'):
+        telefono_str = telefono_str[:-2]
+
+    # Remover puntos y espacios
+    telefono_str = re.sub(r'[.\s]', '', telefono_str)
+
+    # Asegurar que tenga código de país para Chile
+    if telefono_str.startswith('9') and len(telefono_str) == 9:
+        telefono_str = '56' + telefono_str
+    elif telefono_str.startswith('56') and len(telefono_str) == 11:
+        pass  # Ya tiene código de país
+    else:
+        return None  # Formato inválido
+
+    # Agregar corchetes para LabsMobile
+    return f"[+{telefono_str}]"
+
+
 def enviar_sms_apoderado(estudiante, mensaje, debug=False):
     print(f"📱 Iniciando envío SMS para estudiante: {estudiante}")
 
@@ -160,22 +187,32 @@ def enviar_sms_apoderado(estudiante, mensaje, debug=False):
         print("❌ No hay teléfono disponible para enviar SMS")
         return 'fallida'
 
+    # Limpiar formato del teléfono
+    telefono_limpio = limpiar_telefono_sms(telefono)
+    if not telefono_limpio:
+        print(f"❌ Formato de teléfono inválido: {telefono}")
+        return 'fallida'
+
+    print(f"📞 Teléfono limpio: {telefono_limpio}")
+
     senderId = os.getenv('LABSMOBILE_SENDER_ID', 'EduModulo')
     print(f"🏷️ Sender ID: {senderId}")
     print(f"📝 Mensaje a enviar: {mensaje}")
 
     try:
         print("🚀 Llamando a función enviar_sms...")
-        response = enviar_sms(telefono, mensaje, senderId, debug)
+        response = enviar_sms(telefono_limpio, mensaje, senderId, debug)
         print(f"📨 Respuesta del servicio SMS: {response}")
-        print(f"📨 hola")
-        # Puedes analizar la respuesta para determinar si fue exitosa
-        if 'status' in response and '000' in response:
+
+        # Analizar respuesta XML de LabsMobile
+        if 'code' in response and '0' in response:
+            print("✅ SMS enviado exitosamente (code 0)")
+            return 'enviada'
+        elif 'status' in response and '000' in response:
             print("✅ SMS enviado exitosamente (status 000)")
             return 'enviada'
-
-        if 'OK' in response or '000' in response:
-            print("✅ SMS enviado exitosamente")
+        elif 'OK' in response:
+            print("✅ SMS enviado exitosamente (OK)")
             return 'enviada'
         else:
             print("❌ SMS falló")
