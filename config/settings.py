@@ -5,6 +5,11 @@ import dj_database_url
 from dotenv import load_dotenv
 load_dotenv()
 
+# Configuración de LabsMobile (cargada desde .env)
+LABSMOBILE_USERNAME = os.environ.get('LABSMOBILE_USERNAME')
+LABSMOBILE_PASSWORD = os.environ.get('LABSMOBILE_PASSWORD')
+LABSMOBILE_SENDER_ID = os.environ.get('LABSMOBILE_SENDER_ID', 'EduModulo')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

@@ -1,4 +1,5 @@
 import os
+import re
 import requests
 import json
 import urllib.parse
@@ -149,29 +150,41 @@ def enviar_email_apoderado(estudiante, mensaje):
 
 def limpiar_telefono_sms(telefono):
     """Limpiar formato de teléfono para SMS con LabsMobile"""
+    print(f"🔧 Limpiando teléfono: {telefono}")
+
     if not telefono:
+        print("❌ Teléfono vacío")
         return None
 
     # Convertir a string y limpiar
     telefono_str = str(telefono).strip()
+    print(f"📞 Teléfono como string: {telefono_str}")
 
     # Remover decimales (.0)
     if telefono_str.endswith('.0'):
         telefono_str = telefono_str[:-2]
+        print(f"📞 Sin decimales: {telefono_str}")
 
     # Remover puntos y espacios
     telefono_str = re.sub(r'[.\s]', '', telefono_str)
+    print(f"📞 Sin puntos/espacios: {telefono_str}")
 
     # Asegurar que tenga código de país para Chile
     if telefono_str.startswith('9') and len(telefono_str) == 9:
         telefono_str = '56' + telefono_str
+        print(f"📞 Agregado código país: {telefono_str}")
     elif telefono_str.startswith('56') and len(telefono_str) == 11:
+        print(f"📞 Ya tiene código país: {telefono_str}")
         pass  # Ya tiene código de país
     else:
+        print(
+            f"❌ Formato inválido: {telefono_str} (longitud: {len(telefono_str)})")
         return None  # Formato inválido
 
     # Agregar corchetes para LabsMobile
-    return f"[+{telefono_str}]"
+    resultado = f"[+{telefono_str}]"
+    print(f"📞 Resultado final: {resultado}")
+    return resultado
 
 
 def enviar_sms_apoderado(estudiante, mensaje, debug=False):
