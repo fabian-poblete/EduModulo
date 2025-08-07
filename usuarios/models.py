@@ -57,6 +57,11 @@ class Perfil(models.Model):
     def puede_administrar_colegio(self):
         return self.es_admin_colegio
 
+    @property
+    def es_equipo_soporte(self):
+        """Determina si el usuario es parte del equipo de soporte"""
+        return self.tipo_usuario in ['admin_colegio', 'administrativo']
+
 
 @receiver(post_save, sender=User)
 def crear_perfil_usuario(sender, instance, created, **kwargs):

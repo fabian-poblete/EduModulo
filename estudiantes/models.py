@@ -34,7 +34,13 @@ class Estudiante(models.Model):
         """Formatea el RUT para mostrarlo con puntos y guión"""
         if len(self.rut) < 2:
             return self.rut
-        numero = self.rut[:-1]
-        dv = self.rut[-1].upper()
-        numero_formateado = f"{int(numero):,}".replace(',', '.')
-        return f"{numero_formateado}-{dv}"
+        try:
+            numero = self.rut[:-1]
+            dv = self.rut[-1].upper()
+            if numero.isdigit():
+                numero_formateado = f"{int(numero):,}".replace(',', '.')
+                return f"{numero_formateado}-{dv}"
+            else:
+                return self.rut
+        except (ValueError, IndexError):
+            return self.rut
