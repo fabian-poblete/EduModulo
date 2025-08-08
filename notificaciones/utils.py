@@ -237,7 +237,7 @@ def enviar_sms_apoderado(estudiante, mensaje, debug=False):
 
 def render_mensaje(tipo_evento, estudiante, evento):
     if tipo_evento == 'atraso':
-        return f"Estimado apoderado, se ha registrado un atraso para el estudiante {estudiante} el día {evento.fecha}."
+        return f"Se registró un atraso para el/la estudiante a las {evento.hora.strftime('%H:%M')} el día {evento.fecha.strftime('%d/%m/%Y')}\nColegio Maria Auxiliadora"
     elif tipo_evento == 'salida':
-        return f"Estimado apoderado, se ha registrado una salida para el estudiante {estudiante} el día {evento.fecha}."
+        return f"Se registró una salida para el/la estudiante a las {evento.hora.strftime('%H:%M')} el día {evento.fecha.strftime('%d/%m/%Y')}\nColegio Maria Auxiliadora"
     return ""
