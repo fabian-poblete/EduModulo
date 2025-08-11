@@ -30,6 +30,7 @@ def usuario_list(request):
             perfil__colegio=request.user.perfil.colegio)
         can_edit = True
         can_delete = True
+
     else:
         messages.error(request, 'No tienes permiso para ver esta página.')
         return redirect('dashboard:index')

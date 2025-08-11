@@ -63,23 +63,33 @@ class UserForm(forms.ModelForm):
 class PerfilForm(forms.ModelForm):
     class Meta:
         model = Perfil
-        fields = ['tipo_usuario', 'colegio']
+        fields = ['colegio', 'tipo_usuario', 'nivel_acceso',
+                  'telefono', 'imprimir_automaticamente']
         widgets = {
-            'tipo_usuario': forms.Select(attrs={'class': 'form-select'}),
-            'colegio': forms.Select(attrs={'class': 'form-select'})
+            'colegio': forms.Select(attrs={'class': 'form-control'}),
+            'tipo_usuario': forms.Select(attrs={'class': 'form-control'}),
+            'nivel_acceso': forms.Select(attrs={'class': 'form-control'}),
+            'telefono': forms.TextInput(attrs={'class': 'form-control'}),
+            'imprimir_automaticamente': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
-        # Solo se permiten los tipos: admin_colegio, porteria, administrativo
+        # Solo se permiten los tipos: admin_colegio, porteria, superusuario, administrativo
         tipo_usuario_choices = [
             ('admin_colegio', 'Administrador de Colegio'),
             ('porteria', 'Portería'),
+            ('superusuario', 'Superusuario'),
             ('administrativo', 'Administrativo'),
         ]
         self.fields['tipo_usuario'].choices = tipo_usuario_choices
+
+        # Si estamos editando (instance existe), hacer nivel_acceso no requerido
+        # ya que se establece automáticamente en el método clean()
+        if self.instance and self.instance.pk:
+            self.fields['nivel_acceso'].required = False
 
     def clean(self):
         cleaned_data = super().clean()
@@ -96,6 +106,8 @@ class PerfilForm(forms.ModelForm):
             cleaned_data['nivel_acceso'] = 'intermedio'
         elif tipo_usuario == 'porteria':
             cleaned_data['nivel_acceso'] = 'basico'
+        elif tipo_usuario == 'superusuario':
+            cleaned_data['nivel_acceso'] = 'avanzado'
         elif tipo_usuario == 'administrativo':
             cleaned_data['nivel_acceso'] = 'intermedio'
         return cleaned_data
@@ -108,9 +120,48 @@ class PerfilForm(forms.ModelForm):
                 instance.nivel_acceso = 'intermedio'
             elif instance.tipo_usuario == 'porteria':
                 instance.nivel_acceso = 'basico'
+            elif instance.tipo_usuario == 'superusuario':
+                instance.nivel_acceso = 'avanzado'
             elif instance.tipo_usuario == 'administrativo':
                 instance.nivel_acceso = 'intermedio'
 
         if commit:
             instance.save()
         return instance
+
+
+class PerfilUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Perfil
+        fields = ['tipo_usuario', 'colegio', 'nivel_acceso',
+                  'telefono', 'imprimir_automaticamente']
+        widgets = {
+            'tipo_usuario': forms.Select(attrs={'class': 'form-select'}),
+            'colegio': forms.Select(attrs={'class': 'form-select'}),
+            'nivel_acceso': forms.Select(attrs={'class': 'form-select'}),
+            'telefono': forms.TextInput(attrs={'class': 'form-control'}),
+            'imprimir_automaticamente': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Si estamos editando (instance existe), hacer nivel_acceso no requerido
+        # ya que se establece automáticamente según el tipo de usuario
+        if self.instance and self.instance.pk:
+            self.fields['nivel_acceso'].required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+        tipo_usuario = cleaned_data.get('tipo_usuario')
+
+        # Establecer nivel de acceso según tipo de usuario
+        if tipo_usuario == 'admin_colegio':
+            cleaned_data['nivel_acceso'] = 'intermedio'
+        elif tipo_usuario == 'porteria':
+            cleaned_data['nivel_acceso'] = 'basico'
+        elif tipo_usuario == 'superusuario':
+            cleaned_data['nivel_acceso'] = 'avanzado'
+        elif tipo_usuario == 'administrativo':
+            cleaned_data['nivel_acceso'] = 'intermedio'
+        return cleaned_data

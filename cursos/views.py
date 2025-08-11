@@ -17,6 +17,10 @@ def curso_list(request):
     elif request.user.perfil.tipo_usuario == 'admin_colegio':
         cursos = Curso.objects.filter(colegio=request.user.perfil.colegio)
         can_edit = True
+    # Administrativos ven cursos de su colegio pero no pueden editar
+    elif request.user.perfil.tipo_usuario == 'administrativo':
+        cursos = Curso.objects.filter(colegio=request.user.perfil.colegio)
+        can_edit = False
     # Profesores ven cursos de su colegio pero no pueden editar
     elif request.user.perfil.tipo_usuario == 'profesor':
         cursos = Curso.objects.filter(colegio=request.user.perfil.colegio)

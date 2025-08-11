@@ -22,7 +22,7 @@ def can_manage_inventory(user, colegio):
 def categoria_list(request):
     if request.user.is_superuser:
         categorias = Categoria.objects.all()
-    elif hasattr(request.user, 'perfil') and request.user.perfil.tipo_usuario == 'admin_colegio':
+    elif hasattr(request.user, 'perfil') and request.user.perfil.tipo_usuario in ['admin_colegio', 'administrativo']:
         categorias = Categoria.objects.filter(
             colegio=request.user.perfil.colegio)
     else:
@@ -122,7 +122,7 @@ def categoria_delete(request, pk):
 def ubicacion_list(request):
     if request.user.is_superuser:
         ubicaciones = Ubicacion.objects.all()
-    elif hasattr(request.user, 'perfil') and request.user.perfil.tipo_usuario == 'admin_colegio':
+    elif hasattr(request.user, 'perfil') and request.user.perfil.tipo_usuario in ['admin_colegio', 'administrativo']:
         ubicaciones = Ubicacion.objects.filter(
             colegio=request.user.perfil.colegio)
     else:
@@ -206,7 +206,7 @@ def ubicacion_delete(request, pk):
 def estado_list(request):
     if request.user.is_superuser:
         estados = Estado.objects.all()
-    elif hasattr(request.user, 'perfil') and request.user.perfil.tipo_usuario == 'admin_colegio':
+    elif hasattr(request.user, 'perfil') and request.user.perfil.tipo_usuario in ['admin_colegio', 'administrativo']:
         estados = Estado.objects.filter(colegio=request.user.perfil.colegio)
     else:
         messages.error(request, 'No tienes permiso para ver los estados.')
@@ -285,7 +285,7 @@ def estado_delete(request, pk):
 def articulo_list(request):
     if request.user.is_superuser:
         articulos = Articulo.objects.all()
-    elif hasattr(request.user, 'perfil') and request.user.perfil.tipo_usuario == 'admin_colegio':
+    elif hasattr(request.user, 'perfil') and request.user.perfil.tipo_usuario in ['admin_colegio', 'administrativo']:
         articulos = Articulo.objects.filter(
             colegio=request.user.perfil.colegio)
     else:

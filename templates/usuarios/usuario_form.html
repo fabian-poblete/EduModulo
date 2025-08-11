@@ -1,5 +1,5 @@
-{% extends 'base.html' %} {% block title %}{{ title }}{% endblock %} 
-{% block content %}
+{% extends 'base.html' %} 
+{% block title %}{{ title }}{% endblock %} {% block content %}
 <div class="container py-4">
   <div class="row justify-content-center">
     <div class="col-md-8">
@@ -24,20 +24,14 @@
                 id="{{ user_form.email.id_for_label }}"
                 class="form-control {% if user_form.email.errors %}is-invalid{% endif %}"
                 value="{{ user_form.email.value|default:'' }}"
-                {%
-                if
-                not
-                is_edit
-                %}required{%
-                endif
-                %}
+                {% if not is_edit %}required{% endif %}
               />
               <div class="form-text">
                 Este será tu nombre de usuario para iniciar sesión
               </div>
               {% if user_form.email.errors %}
               <div class="invalid-feedback">
-                {% for error in user_form.email.errors %} {{ error }} {% endfor%}
+                {% for error in user_form.email.errors %} {{ error }} {%endfor%}
               </div>
               {% endif %}
             </div>
@@ -58,7 +52,8 @@
                 />
                 {% if user_form.first_name.errors %}
                 <div class="invalid-feedback">
-                  {% for error in user_form.first_name.errors %} {{ error }} {%endfor %}
+                  {% for error in user_form.first_name.errors %} {{ error }}
+                  {%endfor %}
                 </div>
                 {% endif %}
               </div>
@@ -77,7 +72,8 @@
                 />
                 {% if user_form.last_name.errors %}
                 <div class="invalid-feedback">
-                  {% for error in user_form.last_name.errors %} {{ error }} {%endfor %}
+                  {% for error in user_form.last_name.errors %} {{ error }}
+                  {%endfor %}
                 </div>
                 {% endif %}
               </div>
@@ -103,7 +99,8 @@
                 </div>
                 {% if user_form.password.errors %}
                 <div class="invalid-feedback">
-                  {% for error in user_form.password.errors %} {{ error }} {%endfor %}
+                  {% for error in user_form.password.errors %} {{ error }}
+                  {%endfor %}
                 </div>
                 {% endif %}
               </div>
@@ -123,8 +120,8 @@
                 <div class="form-text">Confirma tu contraseña</div>
                 {% if user_form.confirm_password.errors %}
                 <div class="invalid-feedback">
-                  {% for error in user_form.confirm_password.errors %} {{ error
-                  }} {% endfor %}
+                  {% for error in user_form.confirm_password.errors %} {{
+                  error}} {% endfor %}
                 </div>
                 {% endif %}
               </div>
@@ -148,7 +145,8 @@
                 </div>
                 {% if user_form.password.errors %}
                 <div class="invalid-feedback">
-                  {% for error in user_form.password.errors %} {{ error }} {%endfor %}
+                  {% for error in user_form.password.errors %} {{ error }}
+                  {%endfor %}
                 </div>
                 {% endif %}
               </div>
@@ -167,8 +165,8 @@
                 <div class="form-text">Confirma la nueva contraseña</div>
                 {% if user_form.confirm_password.errors %}
                 <div class="invalid-feedback">
-                  {% for error in user_form.confirm_password.errors %} {{ error
-                  }} {% endfor %}
+                  {% for error in user_form.confirm_password.errors %} 
+                  {{error}} {% endfor %}
                 </div>
                 {% endif %}
               </div>
@@ -184,7 +182,8 @@
                 class="form-label"
                 >Tipo de Usuario</label
               >
-              {{ perfil_form.tipo_usuario }} {% if perfil_form.tipo_usuario.errors %}
+              {{ perfil_form.tipo_usuario }}
+              {% if perfil_form.tipo_usuario.errors %}
               <div class="invalid-feedback d-block">
                 {% for error in perfil_form.tipo_usuario.errors %} {{ error }}
                 {% endfor %}
@@ -200,7 +199,44 @@
               >
               {{ perfil_form.colegio }} {% if perfil_form.colegio.errors %}
               <div class="invalid-feedback d-block">
-                {% for error in perfil_form.colegio.errors %} {{ error }} {%endfor %}
+                {% for error in perfil_form.colegio.errors %} {{ error }}
+                {%endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label
+                for="{{ perfil_form.telefono.id_for_label }}"
+                class="form-label"
+                >Teléfono</label
+              >
+              {{ perfil_form.telefono }} {% if perfil_form.telefono.errors %}
+              <div class="invalid-feedback d-block">
+                {% for error in perfil_form.telefono.errors %} {{ error }}
+                {%endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <div class="form-check">
+                {{ perfil_form.imprimir_automaticamente }}
+                <label
+                  class="form-check-label"
+                  for="{{ perfil_form.imprimir_automaticamente.id_for_label }}"
+                >
+                  Imprimir automáticamente
+                </label>
+              </div>
+              <small class="form-text text-muted">
+                Si está marcado, se intentará imprimir automáticamente los
+                atrasos y salidas desde la web
+              </small>
+              {% if perfil_form.imprimir_automaticamente.errors %}
+              <div class="invalid-feedback d-block">
+                {% for error in perfil_form.imprimir_automaticamente.errors %}
+                {{ error }} {%endfor %}
               </div>
               {% endif %}
             </div>

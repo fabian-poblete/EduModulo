@@ -15,7 +15,7 @@ from notificaciones.utils import enviar_notificacion
 def puede_ver_atrasos(user):
     if not user.is_authenticated:
         return False
-    return user.is_superuser or user.perfil.tipo_usuario in ['admin_colegio', 'porteria', 'profesor', 'apoderado']
+    return user.is_superuser or user.perfil.tipo_usuario in ['admin_colegio', 'porteria', 'profesor', 'apoderado', 'administrativo']
 
 
 @login_required
@@ -23,7 +23,7 @@ def atraso_list(request):
     # Obtener los atrasos según el tipo de usuario
     if request.user.is_superuser:
         atrasos = Atraso.objects.all()
-    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'porteria']:
+    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'porteria', 'administrativo']:
         atrasos = Atraso.objects.filter(
             estudiante__curso__colegio=request.user.perfil.colegio)
     elif request.user.perfil.tipo_usuario == 'profesor':
@@ -76,17 +76,18 @@ def atraso_create(request):
                     colegio=atraso.estudiante.curso.colegio,
                     tipo_evento='atraso'
                 )
-                # Guardar el ID del atraso creado en la sesión para imprimir
-                request.session['atraso_creado_id'] = atraso.id
-                request.session['atraso_creado_nombre'] = atraso.estudiante.nombre
-                request.session['atraso_creado_rut'] = atraso.estudiante.rut
-                request.session['atraso_creado_curso'] = atraso.estudiante.curso.nombre
-                request.session['atraso_creado_fecha'] = atraso.fecha.strftime(
-                    '%Y-%m-%d')
-                request.session['atraso_creado_hora'] = atraso.hora.strftime(
-                    '%H:%M')
-                request.session['atraso_creado_justificado'] = atraso.justificado
-                request.session['atraso_creado_observacion'] = atraso.observacion or '-'
+                # Guardar el ID del atraso creado en la sesión para imprimir (solo si está configurado)
+                if hasattr(request.user, 'perfil') and request.user.perfil.debe_imprimir_automaticamente:
+                    request.session['atraso_creado_id'] = atraso.id
+                    request.session['atraso_creado_nombre'] = atraso.estudiante.nombre
+                    request.session['atraso_creado_rut'] = atraso.estudiante.rut
+                    request.session['atraso_creado_curso'] = atraso.estudiante.curso.nombre
+                    request.session['atraso_creado_fecha'] = atraso.fecha.strftime(
+                        '%Y-%m-%d')
+                    request.session['atraso_creado_hora'] = atraso.hora.strftime(
+                        '%H:%M')
+                    request.session['atraso_creado_justificado'] = atraso.justificado
+                    request.session['atraso_creado_observacion'] = atraso.observacion or '-'
 
                 messages.success(request, 'Atraso registrado exitosamente.')
 
@@ -157,11 +158,11 @@ def buscar_estudiantes(request):
 def atraso_delete(request, pk):
     atraso = get_object_or_404(Atraso, pk=pk)
 
-    # Verificar permisos (superuser, admin_colegio o porteria del mismo colegio)
+    # Verificar permisos (superuser, admin_colegio, administrativo o porteria del mismo colegio)
     can_delete = False
     if request.user.is_superuser:
         can_delete = True
-    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'porteria']:
+    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'porteria', 'administrativo']:
         if hasattr(request.user.perfil, 'colegio'):
             # Asegurarse de que el colegio del atraso coincida con el del usuario
             if atraso.estudiante and atraso.estudiante.curso and atraso.estudiante.curso.colegio == request.user.perfil.colegio:

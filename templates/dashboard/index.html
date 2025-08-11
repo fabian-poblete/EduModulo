@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} 
 {% block title %}Dashboard{% endblock %} {% block extra_css %}
 <style>
   .dashboard-container {
@@ -504,7 +504,8 @@
       </div>
     </div>
   </div>
-    {% comment %} <!-- Quick Access Section -->
+  {% comment %}
+  <!-- Quick Access Section -->
   <div class="row section-spacing">
     {% if user.is_authenticated %}
     <div class="col-lg-3 col-md-6 mb-4">
@@ -523,7 +524,9 @@
       </div>
     </div>
     {% endif %}
-    {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor apoderado' %}
+  {% endcomment %}
+  
+    {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' or user.perfil.tipo_usuario == 'profesor' or user.perfil.tipo_usuario == 'apoderado' %}
     <div class="col-lg-3 col-md-6 mb-4">
       <div class="quick-access-card success">
         <div class="quick-access-icon">
@@ -536,8 +539,8 @@
         </a>
       </div>
     </div>
-    {% endif %}
-    {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio profesor' %}
+    {% endif %} 
+    {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' or user.perfil.tipo_usuario == 'profesor' %}
     <div class="col-lg-3 col-md-6 mb-4">
       <div class="quick-access-card warning">
         <div class="quick-access-icon">
@@ -550,7 +553,7 @@
         </a>
       </div>
     </div>
-    {% endif %}
+    {% endif %} 
     {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
     <div class="col-lg-3 col-md-6 mb-4">
       <div class="quick-access-card info">
@@ -565,8 +568,7 @@
       </div>
     </div>
     {% endif %}
-  </div> {% endcomment %}
-
+  </div>
 
   <!-- Data Tables Section -->
   <div class="row g-3">
@@ -575,7 +577,7 @@
       <div class="data-card">
         <div class="data-card-header">
           <h5 class="data-card-title">Últimos Cursos</h5>
-          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
+          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'  %}
           <a href="{% url 'cursos:create' %}" class="btn btn-modern primary">
             <i class="fas fa-plus"></i>
             Nuevo Curso
@@ -636,7 +638,7 @@
       <div class="data-card">
         <div class="data-card-header">
           <h5 class="data-card-title">Últimos Estudiantes</h5>
-          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
+          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'  %}
           <a
             href="{% url 'estudiantes:create' %}"
             class="btn btn-modern primary"

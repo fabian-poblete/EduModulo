@@ -51,6 +51,26 @@ def index(request):
             estudiante__curso__colegio=colegio).count()
         porcentaje_bueno = round(
             (articulos_bueno / total_articulos * 100) if total_articulos > 0 else 0)
+    elif request.user.perfil.tipo_usuario == 'administrativo':
+        # Administrativos ven datos de su colegio (solo lectura)
+        colegio = request.user.perfil.colegio
+        cursos = Curso.objects.filter(colegio=colegio)
+        estudiantes = Estudiante.objects.filter(curso__colegio=colegio)
+        usuarios = User.objects.filter(perfil__colegio=colegio, is_active=True)
+        articulos = Articulo.objects.filter(colegio=colegio)
+        total_cursos = cursos.count()
+        total_estudiantes = estudiantes.count()
+        total_usuarios = usuarios.count()
+        total_articulos = articulos.count()
+        cursos_activos = cursos.filter(activo=True).count()
+        estudiantes_activos = estudiantes.filter(activo=True).count()
+        articulos_bueno = articulos.filter(estado__nombre='Bueno').count()
+        total_atrasos = Atraso.objects.filter(
+            estudiante__curso__colegio=colegio).count()
+        total_salidas = Salida.objects.filter(
+            estudiante__curso__colegio=colegio).count()
+        porcentaje_bueno = round(
+            (articulos_bueno / total_articulos * 100) if total_articulos > 0 else 0)
     elif request.user.perfil.tipo_usuario == 'profesor':
         # Profesores ven datos de su colegio
         colegio = request.user.perfil.colegio

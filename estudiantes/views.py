@@ -28,6 +28,12 @@ def estudiante_list(request):
         estudiantes = Estudiante.objects.filter(
             curso__colegio=request.user.perfil.colegio)
         can_edit = True
+    elif request.user.perfil.tipo_usuario == 'administrativo':
+        cursos = Curso.objects.filter(
+            colegio=request.user.perfil.colegio, activo=True)
+        estudiantes = Estudiante.objects.filter(
+            curso__colegio=request.user.perfil.colegio)
+        can_edit = False  # Solo lectura para administrativos
     elif request.user.perfil.tipo_usuario == 'profesor':
         cursos = Curso.objects.filter(
             colegio=request.user.perfil.colegio, activo=True)
@@ -72,7 +78,7 @@ def estudiante_list(request):
         'estudiantes': estudiantes_page,
         'cursos': cursos,
         'can_edit': can_edit,
-        'is_admin': request.user.is_superuser or request.user.perfil.tipo_usuario in ['admin_colegio', 'soporte'],
+        'is_admin': request.user.is_superuser or request.user.perfil.tipo_usuario in ['admin_colegio', 'soporte', 'administrativo'],
         'curso_id': curso_id,
         'estado': estado,
         'busqueda': busqueda,
@@ -454,7 +460,7 @@ def edicion_masiva(request):
 
 @login_required
 def descargar_estudiantes(request):
-    if not request.user.is_superuser and request.user.perfil.tipo_usuario != 'admin_colegio':
+    if not request.user.is_superuser and request.user.perfil.tipo_usuario not in ['admin_colegio', 'administrativo']:
         messages.error(request, 'No tienes permiso para realizar esta acción.')
         return redirect('estudiantes:list')
 
@@ -614,7 +620,7 @@ def estudiante_detail(request, pk):
     # Verificar permisos
     if request.user.is_superuser:
         can_view = True
-    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'profesor']:
+    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'profesor', 'administrativo']:
         can_view = estudiante.curso.colegio == request.user.perfil.colegio
     else:
         can_view = False

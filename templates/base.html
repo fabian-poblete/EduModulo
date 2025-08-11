@@ -802,51 +802,52 @@
                 <span class="sidebar-menu-text">Dashboard</span>
               </a>
             </li>
-            <!-- Academic Section -->
-            {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio' %}
-            <div class="sidebar-section">
-              <div class="sidebar-section-title">Académico</div>
-              <ul class="sidebar-menu">
-                <li class="sidebar-menu-item">
-                  <a
-                    class="sidebar-menu-link"
-                    href="{% url 'estudiantes:list' %}"
-                    data-tooltip="Estudiantes"
-                  >
-                    <i class="fas fa-user-graduate sidebar-menu-icon"></i>
-                    <span class="sidebar-menu-text">Estudiantes</span>
-                  </a>
-                </li>
-                {% comment %}
-                <li class="sidebar-menu-item">
-                  <a
-                    class="sidebar-menu-link"
-                    href="{% url 'revision_pruebas:lista_revisiones' %}"
-                    data-tooltip="Revisión de Pruebas"
-                  >
-                    <i class="fas fa-file-alt sidebar-menu-icon"></i>
-                    <span class="sidebar-menu-text">Revisión de Pruebas</span>
-                  </a>
-                </li>
-                {% endcomment %}
-              </ul>
-            </div>
-            {% endif %} {% comment %}
+          </ul>
+        </div>
+
+        <!-- Academic Section -->
+        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' or user.perfil.tipo_usuario == 'administrativo' %}
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">Académico</div>
+          <ul class="sidebar-menu">
             <li class="sidebar-menu-item">
               <a
                 class="sidebar-menu-link"
-                href="{% url 'comunicaciones:lista_mensajes' %}"
-                data-tooltip="Comunicaciones"
+                href="{% url 'estudiantes:list' %}"
+                data-tooltip="Estudiantes"
               >
-                <i class="fas fa-comments sidebar-menu-icon"></i>
-                <span class="sidebar-menu-text">Comunicaciones</span>
+                <i class="fas fa-user-graduate sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Estudiantes</span>
+              </a>
+            </li>
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'cursos:list' %}"
+                data-tooltip="Cursos"
+              >
+                <i class="fas fa-chalkboard sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Cursos</span>
+              </a>
+            </li>
+            {% comment %}
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'revision_pruebas:lista_revisiones' %}"
+                data-tooltip="Revisión de Pruebas"
+              >
+                <i class="fas fa-file-alt sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Revisión de Pruebas</span>
               </a>
             </li>
             {% endcomment %}
           </ul>
         </div>
+        {% endif %}
+
         <!-- Activities Section -->
-        {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio,porteria' %}
+        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' or user.perfil.tipo_usuario == 'porteria' or user.perfil.tipo_usuario == 'administrativo' %}
         <div class="sidebar-section">
           <div class="sidebar-section-title">Actividades</div>
           <ul class="sidebar-menu">
@@ -870,14 +871,14 @@
                 <span class="sidebar-menu-text">Atrasos</span>
               </a>
             </li>
-            {% if user.is_superuser or user.perfil.tipo_usuario ==  'admin_colegio' %}
+            {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' or user.perfil.tipo_usuario == 'administrativo' %}
             <li class="sidebar-menu-item">
               <a
                 class="sidebar-menu-link"
                 href="{% url 'salidas_almuerzo:autorizados_list' %}"
                 data-tooltip="Salidas Almuerzo"
               >
-                <i class="fas fa-clock sidebar-menu-icon"></i>
+                <i class="fas fa-utensils sidebar-menu-icon"></i>
                 <span class="sidebar-menu-text">Salidas Almuerzo</span>
               </a>
             </li>
@@ -887,7 +888,7 @@
         {% endif %}
 
         <!-- Analytics Section -->
-        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'%}
+        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' or user.perfil.tipo_usuario == 'administrativo' %}
         <div class="sidebar-section">
           <div class="sidebar-section-title">Analytics</div>
           <ul class="sidebar-menu">
@@ -906,7 +907,7 @@
         {% endif %}
 
         <!-- Administration Section -->
-        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'%}
+        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' or user.perfil.tipo_usuario == 'administrativo' %}
         <div class="sidebar-section">
           <div class="sidebar-section-title">Administración</div>
           <ul class="sidebar-menu">
@@ -921,8 +922,8 @@
                 <span class="sidebar-menu-text">Colegios</span>
               </a>
             </li>
-            {% endif %} 
-            {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
+            {% endif %}
+            {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' or user.perfil.tipo_usuario == 'administrativo' %}
             <li class="sidebar-menu-item">
               <a
                 class="sidebar-menu-link"
@@ -942,16 +943,6 @@
               >
                 <i class="fas fa-users sidebar-menu-icon"></i>
                 <span class="sidebar-menu-text">Usuarios</span>
-              </a>
-            </li>
-            <li class="sidebar-menu-item">
-              <a
-                class="sidebar-menu-link"
-                href="{% url 'cursos:list' %}"
-                data-tooltip="Cursos"
-              >
-                <i class="fas fa-chalkboard sidebar-menu-icon"></i>
-                <span class="sidebar-menu-text">Cursos</span>
               </a>
             </li>
           </ul>
@@ -979,7 +970,7 @@
         {% endcomment %}
 
         <!-- Inventario Section -->
-        {% if user.is_superuser or user.perfil.tipo_usuario in 'admin_colegio'%}
+        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'  %}
         <div class="sidebar-section">
           <div class="sidebar-section-title">Inventario</div>
           <ul class="sidebar-menu">
@@ -1049,7 +1040,7 @@
               {% if user.is_superuser %} Super Administrador 
               {% elif user.perfil.tipo_usuario == 'admin_colegio' %} Admin. Colegio 
               {% elif user.perfil.tipo_usuario == 'porteria' %} Portería 
-              {% elif user.perfil.tipo_usuario == 'administrativo' %} Administrativo 
+              {% elif user.perfil.tipo_usuario == 'administrativo' %} Administrativo
               {% elif user.perfil.tipo_usuario == 'profesor' %} Profesor 
               {% elif user.perfil.tipo_usuario == 'apoderado' %} Apoderado 
               {% else %} Usuario {% endif %}

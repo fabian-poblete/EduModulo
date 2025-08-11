@@ -9,6 +9,7 @@ class Perfil(models.Model):
     TIPO_USUARIO_CHOICES = [
         ('admin_colegio', 'Administrador de Colegio'),
         ('porteria', 'Portería'),
+        ('superusuario', 'Superusuario'),
         ('administrativo', 'Administrativo'),
     ]
 
@@ -16,19 +17,32 @@ class Perfil(models.Model):
         ('basico', 'Básico'),
         ('intermedio', 'Intermedio'),
         ('avanzado', 'Avanzado'),
+        ('admin', 'Administrador'),
     ]
 
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name='perfil')
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    colegio = models.ForeignKey(
+        'colegios.Colegio', on_delete=models.CASCADE, null=True, blank=True)
     tipo_usuario = models.CharField(
-        max_length=20, choices=TIPO_USUARIO_CHOICES)
+        max_length=20, choices=TIPO_USUARIO_CHOICES, default='porteria')
     nivel_acceso = models.CharField(
         max_length=20, choices=NIVEL_ACCESO_CHOICES, default='basico')
-    colegio = models.ForeignKey(
-        Colegio, on_delete=models.CASCADE, null=True, blank=True, related_name='usuarios')
-    activo = models.BooleanField(default=True)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_actualizacion = models.DateTimeField(auto_now=True)
+    telefono = models.CharField(max_length=20, blank=True, null=True)
+    imprimir_automaticamente = models.BooleanField(
+        default=True,
+        verbose_name="Imprimir automáticamente",
+        help_text="Si está marcado, se intentará imprimir automáticamente desde la web"
+    )
+
+    @property
+    def debe_imprimir_automaticamente(self):
+        """
+        Los usuarios de portería SIEMPRE imprimen automáticamente
+        Otros usuarios siguen su configuración personal
+        """
+        if self.tipo_usuario == 'porteria':
+            return True
+        return self.imprimir_automaticamente
 
     class Meta:
         verbose_name = 'Perfil'
@@ -60,7 +74,7 @@ class Perfil(models.Model):
     @property
     def es_equipo_soporte(self):
         """Determina si el usuario es parte del equipo de soporte"""
-        return self.tipo_usuario in ['admin_colegio', 'administrativo']
+        return self.tipo_usuario in ['admin_colegio', 'superusuario', 'administrativo']
 
 
 @receiver(post_save, sender=User)

@@ -14,7 +14,7 @@ from cursos.models import Curso
 def puede_ver_salidas(user):
     if not user.is_authenticated:
         return False
-    return user.is_superuser or user.perfil.tipo_usuario in ['admin_colegio', 'porteria', 'profesor', 'apoderado']
+    return user.is_superuser or user.perfil.tipo_usuario in ['admin_colegio', 'porteria', 'profesor', 'apoderado', 'administrativo']
 
 
 @login_required
@@ -23,7 +23,7 @@ def lista_salidas(request):
     # Filter salidas based on user type (similar to atrasos_list)
     if request.user.is_superuser:
         salidas = Salida.objects.all()
-    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'porteria']:
+    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'porteria', 'administrativo']:
         salidas = Salida.objects.filter(
             estudiante__curso__colegio=request.user.perfil.colegio)
     elif request.user.perfil.tipo_usuario == 'profesor':
@@ -98,11 +98,11 @@ def registrar_salida(request):
 def detalle_salida(request, pk):
     salida = get_object_or_404(Salida, pk=pk)
     perfil = request.user.perfil
-    # Permitir ver solo si es admin_colegio, profesor del colegio, o apoderado del estudiante
+    # Permitir ver solo si es admin_colegio, administrativo, profesor del colegio, o apoderado del estudiante
     if perfil.tipo_usuario == 'apoderado':
         if salida.estudiante.email_apoderado1 != perfil.user.email and salida.estudiante.email_apoderado2 != perfil.user.email:
             return HttpResponseForbidden()
-    elif perfil.tipo_usuario in ['profesor', 'admin_colegio']:
+    elif perfil.tipo_usuario in ['profesor', 'admin_colegio', 'administrativo']:
         if salida.colegio != perfil.colegio:
             return HttpResponseForbidden()
     return render(request, 'salidas/detalle_salida.html', {'salida': salida})
@@ -150,11 +150,11 @@ def buscar_estudiantes_salida(request):
 def salida_delete(request, pk):
     salida = get_object_or_404(Salida, pk=pk)
 
-    # Verificar permisos (superuser, admin_colegio or porteria of the same school)
+    # Verificar permisos (superuser, admin_colegio, administrativo or porteria of the same school)
     can_delete = False
     if request.user.is_superuser:
         can_delete = True
-    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'porteria']:
+    elif request.user.perfil.tipo_usuario in ['admin_colegio', 'porteria', 'administrativo']:
         if hasattr(request.user.perfil, 'colegio'):
             # Ensure the salida's student's school matches the user's school
             if salida.estudiante and salida.estudiante.curso and salida.estudiante.curso.colegio == request.user.perfil.colegio:
