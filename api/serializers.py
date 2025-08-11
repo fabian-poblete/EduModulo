@@ -82,11 +82,39 @@ class SalidaSerializer(serializers.ModelSerializer):
 
 
 class AtrasoSerializer(serializers.ModelSerializer):
-    estudiante = serializers.SlugRelatedField(
-        queryset=Estudiante.objects.all(),
-        slug_field='rut',
-        write_only=True
-    )
+    # Cambiar a CharField para validación personalizada
+    estudiante = serializers.CharField(write_only=True)
+
+    def validate_estudiante(self, value):
+        """Validar y convertir el RUT del estudiante con lógica k↔0"""
+        if not value:
+            raise serializers.ValidationError(
+                "El RUT del estudiante es requerido")
+
+        # Limpiar el RUT de puntos, espacios y guiones
+        rut_limpio = value.replace('.', '').replace(
+            '-', '').replace(' ', '').upper()
+
+        # Si termina en 'K', buscar por 'K' y por '0'
+        if rut_limpio.endswith('K'):
+            rut_con_0 = rut_limpio[:-1] + '0'
+            estudiante = Estudiante.objects.filter(
+                rut__in=[rut_limpio, rut_con_0]).first()
+        # Si termina en '0', buscar por '0' y por 'K'
+        elif rut_limpio.endswith('0'):
+            rut_con_k = rut_limpio[:-1] + 'K'
+            estudiante = Estudiante.objects.filter(
+                rut__in=[rut_limpio, rut_con_k]).first()
+        # Si no termina en 'K' ni '0', buscar exacto
+        else:
+            estudiante = Estudiante.objects.filter(rut=rut_limpio).first()
+
+        if not estudiante:
+            raise serializers.ValidationError(
+                f"Estudiante con RUT {value} no encontrado")
+
+        # Retornar el ID del estudiante para la inserción
+        return estudiante.id
 
     class Meta:
         model = Atraso
