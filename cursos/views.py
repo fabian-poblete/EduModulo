@@ -145,6 +145,17 @@ def curso_detail(request, pk):
     estudiantes_count = estudiantes.count()
     atrasos_count = atrasos.count()
     salidas_count = salidas.count()
+
+    # Verificar permisos de edición
+    if request.user.is_superuser:
+        can_edit_estudiantes = True
+    elif request.user.perfil.tipo_usuario == 'admin_colegio':
+        can_edit_estudiantes = curso.colegio == request.user.perfil.colegio
+    elif request.user.perfil.tipo_usuario == 'administrativo':
+        can_edit_estudiantes = curso.colegio == request.user.perfil.colegio
+    else:
+        can_edit_estudiantes = False
+
     return render(request, 'cursos/curso_detail.html', {
         'curso': curso,
         'colegio': curso.colegio,
@@ -154,4 +165,5 @@ def curso_detail(request, pk):
         'estudiantes': estudiantes,
         'atrasos': atrasos,
         'salidas': salidas,
+        'can_edit_estudiantes': can_edit_estudiantes,
     })
