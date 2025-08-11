@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework as django_filters
 from .serializers import (
     UserSerializer, UserDetailSerializer, GroupSerializer,
     EstudianteSerializer, SalidaSerializer, AtrasoSerializer
@@ -72,13 +73,46 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         return response
 
 
+class EstudianteFilter(django_filters.FilterSet):
+    """Filtro personalizado para estudiantes que permite búsqueda por RUT con conversión k↔0"""
+    rut = django_filters.CharFilter(method='filter_rut')
+    curso = django_filters.NumberFilter()
+    activo = django_filters.BooleanFilter()
+
+    def filter_rut(self, queryset, name, value):
+        if value:
+            # Limpiar el RUT de puntos, espacios y guiones
+            rut_limpio = value.replace('.', '').replace(
+                '-', '').replace(' ', '').upper()
+
+            # Si termina en 'K', buscar tanto por 'K' como por '0'
+            if rut_limpio.endswith('K'):
+                rut_con_0 = rut_limpio[:-1] + '0'
+                return queryset.filter(rut__in=[rut_limpio, rut_con_0])
+
+            # Si termina en '0', buscar tanto por '0' como por 'K'
+            elif rut_limpio.endswith('0'):
+                rut_con_k = rut_limpio[:-1] + 'K'
+                return queryset.filter(rut__in=[rut_limpio, rut_con_k])
+
+            # Si no termina en 'K' ni '0', buscar exacto
+            else:
+                return queryset.filter(rut__icontains=rut_limpio)
+
+        return queryset
+
+    class Meta:
+        model = Estudiante
+        fields = ['curso', 'activo']
+
+
 class EstudianteViewSet(viewsets.ModelViewSet):
     serializer_class = EstudianteSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
 
-    filterset_fields = ['curso', 'activo', 'rut']
+    filterset_class = EstudianteFilter  # Usar filtro personalizado
     search_fields = ['nombre', 'rut', 'email_estudiante',
                      'email_apoderado1', 'email_apoderado2']
     ordering_fields = ['nombre', 'fecha_creacion']
