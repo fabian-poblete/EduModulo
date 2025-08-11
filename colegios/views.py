@@ -5,8 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from .models import Colegio
 from .forms import ColegioForm
-
-# Create your views here.
+from usuarios.models import Perfil
 
 
 class SuperuserRequiredMixin(UserPassesTestMixin):
@@ -35,8 +34,9 @@ class ColegioDetailView(LoginRequiredMixin, SuperuserRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         colegio = self.object
-        # Usuarios asociados
-        context['usuarios'] = colegio.usuarios.select_related('user').all()
+        # Usuarios asociados - CORREGIDO
+        context['usuarios'] = Perfil.objects.filter(
+            colegio=colegio).select_related('user')
         # Cursos asociados
         context['cursos'] = colegio.cursos.all()
         # Estudiantes asociados (a través de cursos)
