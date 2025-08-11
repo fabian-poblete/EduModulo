@@ -82,7 +82,7 @@ class SalidaSerializer(serializers.ModelSerializer):
 
 
 class AtrasoSerializer(serializers.ModelSerializer):
-    # Cambiar a CharField para validación personalizada
+    # Usar CharField para recibir el RUT como string
     estudiante = serializers.CharField(write_only=True)
 
     def validate_estudiante(self, value):
@@ -92,7 +92,7 @@ class AtrasoSerializer(serializers.ModelSerializer):
                 "El RUT del estudiante es requerido")
 
         # Limpiar el RUT de puntos, espacios y guiones
-        rut_limpio = value.replace('.', '').replace(
+        rut_limpio = str(value).replace('.', '').replace(
             '-', '').replace(' ', '').upper()
 
         # Si termina en 'K', buscar por 'K' y por '0'
@@ -113,8 +113,8 @@ class AtrasoSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 f"Estudiante con RUT {value} no encontrado")
 
-        # Retornar el ID del estudiante para la inserción
-        return estudiante.id
+        # Retornar la instancia del estudiante para la inserción
+        return estudiante
 
     class Meta:
         model = Atraso
