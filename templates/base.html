@@ -969,24 +969,7 @@
         </div>
         {% endcomment %}
 
-        <!-- Inventario Section -->
-        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'  %}
-        <div class="sidebar-section">
-          <div class="sidebar-section-title">Inventario</div>
-          <ul class="sidebar-menu">
-            <li class="sidebar-menu-item">
-              <a
-                class="sidebar-menu-link"
-                href="{% url 'inventario:dashboard' %}"
-                data-tooltip="Inventario"
-              >
-                <i class="fas fa-boxes sidebar-menu-icon"></i>
-                <span class="sidebar-menu-text">Inventario</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-        {% endif %}
+
 
         <!-- Soporte Section -->
         <div class="sidebar-section">

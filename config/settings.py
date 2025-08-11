@@ -69,7 +69,6 @@ INSTALLED_APPS = [
     'comunicaciones',
     'salidas',
     'atrasos',
-    'inventario',
     'system_backup',
     'api',
     'notificaciones',

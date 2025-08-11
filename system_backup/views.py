@@ -135,8 +135,7 @@ def create_backup(request):
                         'salidas.salida',
                         'atrasos.atraso',
                         'estudiantes.estudiante',
-                        'cursos.curso',
-                        'inventario.categoria'
+                        'cursos.curso'
                     ]
 
                     # Verificar modelos disponibles
@@ -373,7 +372,6 @@ def restore_backup(request, backup_id):
                     'atrasos.atraso',
                     'estudiantes.estudiante',
                     'cursos.curso',
-                    'inventario.categoria',
                     # Add other models if they have a 'colegio' field and should be backed up per school
                 ]
 

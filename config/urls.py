@@ -6,8 +6,10 @@ from django.contrib.auth import views as auth_views
 
 from django.http import JsonResponse
 
+
 def health_check(request):
     return JsonResponse({'status': 'ok'})
+
 
 urlpatterns = [
     path("ping/", health_check),
@@ -19,7 +21,6 @@ urlpatterns = [
     path('colegios/', include('colegios.urls')),
     path('cursos/', include('cursos.urls')),
     path('estudiantes/', include('estudiantes.urls')),
-    path('inventario/', include('inventario.urls')),
     path('salidas/', include('salidas.urls')),
     path('atrasos/', include('atrasos.urls')),
     path('reportes/', include('reportes.urls')),

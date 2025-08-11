@@ -490,19 +490,7 @@
     </div>
     {% endif %}
 
-    <div class="col-lg-3 col-md-6">
-      <div class="stats-card info">
-        <div class="stats-icon">
-          <i class="fas fa-boxes"></i>
-        </div>
-        <div class="stats-number">{{ total_articulos }}</div>
-        <div class="stats-label">Total Artículos</div>
-        <div class="stats-subtitle">
-          <i class="fas fa-check-circle"></i>
-          {{ porcentaje_bueno }}% en buen estado
-        </div>
-      </div>
-    </div>
+
   </div>
   {% comment %}
   <!-- Quick Access Section -->
@@ -554,20 +542,7 @@
       </div>
     </div>
     {% endif %} 
-    {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
-    <div class="col-lg-3 col-md-6 mb-4">
-      <div class="quick-access-card info">
-        <div class="quick-access-icon">
-          <i class="fas fa-boxes"></i>
-        </div>
-        <h5 class="quick-access-title">Inventario</h5>
-        <a href="{% url 'inventario:list' %}" class="btn btn-modern primary">
-          <i class="fas fa-arrow-right"></i>
-          Ir a Inventario
-        </a>
-      </div>
-    </div>
-    {% endif %}
+
   </div>
 
   <!-- Data Tables Section -->
@@ -697,75 +672,7 @@
       </div>
     </div>
 
-    <!-- Recent Inventory -->
-    <div class="col-lg-4 col-md-6">
-      <div class="data-card">
-        <div class="data-card-header">
-          <h5 class="data-card-title">Últimos Artículos</h5>
-          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
-          <a href="{% url 'inventario:add' %}" class="btn btn-modern primary">
-            <i class="fas fa-plus"></i>
-            Nuevo Artículo
-          </a>
-          {% endif %}
-        </div>
-        <div class="data-card-body">
-          {% if ultimos_articulos %}
-          <div class="table-responsive">
-            <table class="table modern-table">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Cantidad</th>
-                  <th>Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for articulo in ultimos_articulos %}
-                <tr>
-                  <td data-label="Nombre">
-                    <div class="fw-semibold">{{ articulo.nombre }}</div>
-                  </td>
-                  <td data-label="Cantidad">
-                    <div class="d-flex align-items-center">
-                      <span class="me-2">{{ articulo.cantidad }}</span>
-                      {% if articulo.cantidad <= articulo.stock_minimo %}
-                      <i
-                        class="fas fa-exclamation-triangle text-warning"
-                        title="Stock bajo"
-                      ></i>
-                      {% endif %}
-                    </div>
-                  </td>
-                  <td data-label="Estado">
-                    {% if articulo.estado %}
-                    <span
-                      class="status-badge"
-                      style="background-color: {{ articulo.estado.color }}20; color: {{ articulo.estado.color }}; border: 1px solid {{ articulo.estado.color }}40;"
-                    >
-                      <i class="{{ articulo.estado.icono }} me-1"></i>
-                      {{ articulo.estado.nombre }}
-                    </span>
-                    {% else %}
-                    <span class="text-muted">-</span>
-                    {% endif %}
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-          {% else %}
-          <div class="empty-state">
-            <div class="empty-state-icon">
-              <i class="fas fa-boxes"></i>
-            </div>
-            <p class="mb-0">No hay artículos registrados</p>
-          </div>
-          {% endif %}
-        </div>
-      </div>
-    </div>
+
   </div>
 
   <!-- Recent Users (Admin Only) -->
