@@ -84,3 +84,4 @@ EduModulo_desktop/
 scripts/
 
 verificar_rut_especifico.py
+test_serializer_atraso.py

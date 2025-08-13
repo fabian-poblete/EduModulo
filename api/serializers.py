@@ -86,7 +86,7 @@ class AtrasoSerializer(serializers.ModelSerializer):
     estudiante = serializers.CharField(write_only=True)
 
     def validate_estudiante(self, value):
-        """Validar y convertir el RUT del estudiante con lógica k↔0"""
+        """Validar y convertir el RUT del estudiante con lógica k↔0 (insensible a mayúsculas)"""
         if not value:
             raise serializers.ValidationError(
                 "El RUT del estudiante es requerido")
@@ -95,19 +95,22 @@ class AtrasoSerializer(serializers.ModelSerializer):
         rut_limpio = str(value).replace('.', '').replace(
             '-', '').replace(' ', '').upper()
 
-        # Si termina en 'K', buscar por 'K' y por '0'
+        # Si termina en 'K', buscar por 'K' y por '0' (insensible a mayúsculas)
         if rut_limpio.endswith('K'):
-            rut_con_0 = rut_limpio[:-1] + '0'
+            # Buscar insensible a mayúsculas/minúsculas usando regex
             estudiante = Estudiante.objects.filter(
-                rut__in=[rut_limpio, rut_con_0]).first()
-        # Si termina en '0', buscar por '0' y por 'K'
+                rut__iregex=r'^(' + rut_limpio[:-1] + '[Kk0])$'
+            ).first()
+        # Si termina en '0', buscar por '0' y por 'K' (insensible a mayúsculas)
         elif rut_limpio.endswith('0'):
-            rut_con_k = rut_limpio[:-1] + 'K'
+            # Buscar insensible a mayúsculas/minúsculas usando regex
             estudiante = Estudiante.objects.filter(
-                rut__in=[rut_limpio, rut_con_k]).first()
-        # Si no termina en 'K' ni '0', buscar exacto
+                rut__iregex=r'^(' + rut_limpio[:-1] + '[0Kk])$'
+            ).first()
+        # Si no termina en 'K' ni '0', buscar exacto pero insensible a mayúsculas
         else:
-            estudiante = Estudiante.objects.filter(rut=rut_limpio).first()
+            estudiante = Estudiante.objects.filter(
+                rut__iexact=rut_limpio).first()
 
         if not estudiante:
             raise serializers.ValidationError(
