@@ -262,22 +262,9 @@
                     </p>
                 </div>
                 <div class="col-md-4 text-end">
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-download"></i> Descargar Reporte
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'reportes:exportar_pdf' %}?{{ request.GET.urlencode }}">
-                                <i class="fas fa-file-pdf text-danger"></i> PDF
-                            </a></li>
-                            <li><a class="dropdown-item" href="{% url 'reportes:exportar_excel' %}?{{ request.GET.urlencode }}">
-                                <i class="fas fa-file-excel text-success"></i> Excel
-                            </a></li>
-                            <li><a class="dropdown-item" href="{% url 'reportes:exportar_csv' %}?{{ request.GET.urlencode }}">
-                                <i class="fas fa-file-csv text-info"></i> CSV
-                            </a></li>
-                        </ul>
-                    </div>
+                    <a class="btn btn-outline-primary" href="{% url 'reportes:exportar_pdf' %}?{{ request.GET.urlencode }}">
+                        <i class="fas fa-file-pdf text-danger"></i> Descargar PDF
+                    </a>
                     <a href="{% url 'dashboard:index' %}" class="btn btn-outline-secondary ms-2">
                         <i class="fas fa-arrow-left"></i> Volver al Dashboard
                     </a>
