@@ -82,3 +82,5 @@ EduModulo_desktop/
 
 # Scripts de validación y simulación
 scripts/
+
+verificar_rut_especifico.py

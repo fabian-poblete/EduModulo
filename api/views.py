@@ -85,19 +85,25 @@ class EstudianteFilter(django_filters.FilterSet):
             rut_limpio = value.replace('.', '').replace(
                 '-', '').replace(' ', '').upper()
 
-            # Si termina en 'K', buscar tanto por 'K' como por '0'
+            # Si termina en 'K', buscar tanto por 'K' como por '0' (insensible a mayúsculas)
             if rut_limpio.endswith('K'):
                 rut_con_0 = rut_limpio[:-1] + '0'
-                return queryset.filter(rut__in=[rut_limpio, rut_con_0])
+                # Buscar insensible a mayúsculas/minúsculas
+                return queryset.filter(
+                    rut__iregex=r'^(' + rut_limpio[:-1] + '[Kk0])$'
+                )
 
-            # Si termina en '0', buscar tanto por '0' como por 'K'
+            # Si termina en '0', buscar tanto por '0' como por 'K' (insensible a mayúsculas)
             elif rut_limpio.endswith('0'):
                 rut_con_k = rut_limpio[:-1] + 'K'
-                return queryset.filter(rut__in=[rut_limpio, rut_con_k])
+                # Buscar insensible a mayúsculas/minúsculas
+                return queryset.filter(
+                    rut__iregex=r'^(' + rut_limpio[:-1] + '[0Kk])$'
+                )
 
-            # Si no termina en 'K' ni '0', buscar exacto
+            # Si no termina en 'K' ni '0', buscar exacto pero insensible a mayúsculas
             else:
-                return queryset.filter(rut__icontains=rut_limpio)
+                return queryset.filter(rut__iexact=rut_limpio)
 
         return queryset
 
