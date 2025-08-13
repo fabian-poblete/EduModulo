@@ -63,12 +63,11 @@ class UserForm(forms.ModelForm):
 class PerfilForm(forms.ModelForm):
     class Meta:
         model = Perfil
-        fields = ['colegio', 'tipo_usuario', 'nivel_acceso',
+        fields = ['colegio', 'tipo_usuario',
                   'telefono', 'imprimir_automaticamente']
         widgets = {
             'colegio': forms.Select(attrs={'class': 'form-control'}),
             'tipo_usuario': forms.Select(attrs={'class': 'form-control'}),
-            'nivel_acceso': forms.Select(attrs={'class': 'form-control'}),
             'telefono': forms.TextInput(attrs={'class': 'form-control'}),
             'imprimir_automaticamente': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
@@ -76,6 +75,19 @@ class PerfilForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+
+        # Evitar llamar __str__ en instance si no tiene user asociado
+        safe_instance = None
+        try:
+            safe_instance = getattr(self, 'instance', None)
+            instance_id = getattr(safe_instance, 'id', None)
+            instance_user_id = getattr(
+                getattr(safe_instance, 'user', None), 'id', None)
+            print(
+                f"DEBUG PerfilForm.__init__: user_id={getattr(self.user, 'id', None)}, instance_id={instance_id}, instance_user_id={instance_user_id}")
+        except Exception as e:
+            print(
+                f"DEBUG PerfilForm.__init__: error inspeccionando instance: {e}")
 
         # Solo se permiten los tipos: admin_colegio, porteria, superusuario, administrativo
         tipo_usuario_choices = [
@@ -86,18 +98,20 @@ class PerfilForm(forms.ModelForm):
         ]
         self.fields['tipo_usuario'].choices = tipo_usuario_choices
 
-        # Si estamos editando (instance existe), hacer nivel_acceso no requerido
-        # ya que se establece automáticamente en el método clean()
-        if self.instance and self.instance.pk:
-            self.fields['nivel_acceso'].required = False
+        # El nivel_acceso se establece automáticamente en el método clean() y save()
+        print("DEBUG PerfilForm.__init__: nivel_acceso se establecerá automáticamente")
 
     def clean(self):
         cleaned_data = super().clean()
         tipo_usuario = cleaned_data.get('tipo_usuario')
         colegio = cleaned_data.get('colegio')
 
+        print(
+            f"DEBUG PerfilForm.clean: tipo_usuario={tipo_usuario}, colegio={colegio}")
+
         # Validar que todos los usuarios tengan un colegio asignado
         if not colegio:
+            print("DEBUG PerfilForm.clean: ERROR - No se seleccionó colegio")
             raise forms.ValidationError(
                 'Debe seleccionar un colegio para este usuario.')
 
@@ -110,10 +124,18 @@ class PerfilForm(forms.ModelForm):
             cleaned_data['nivel_acceso'] = 'avanzado'
         elif tipo_usuario == 'administrativo':
             cleaned_data['nivel_acceso'] = 'intermedio'
+
+        print(
+            f"DEBUG PerfilForm.clean: nivel_acceso establecido={cleaned_data.get('nivel_acceso')}")
         return cleaned_data
 
     def save(self, commit=True):
+        print(f"DEBUG PerfilForm.save: antes de save, commit={commit}")
         instance = super().save(commit=False)
+
+        print(
+            f"DEBUG PerfilForm.save: instance.tipo_usuario={instance.tipo_usuario}, instance.nivel_acceso={instance.nivel_acceso}")
+
         # Asegurar que el nivel de acceso se establezca al guardar
         if not instance.nivel_acceso:
             if instance.tipo_usuario == 'admin_colegio':
@@ -124,6 +146,9 @@ class PerfilForm(forms.ModelForm):
                 instance.nivel_acceso = 'avanzado'
             elif instance.tipo_usuario == 'administrativo':
                 instance.nivel_acceso = 'intermedio'
+
+        print(
+            f"DEBUG PerfilForm.save: nivel_acceso final={instance.nivel_acceso}")
 
         if commit:
             instance.save()

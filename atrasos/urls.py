@@ -11,6 +11,4 @@ urlpatterns = [
     path('<int:pk>/delete/', views.atraso_delete, name='delete'),
     path('imprimir/<int:atraso_id>/', views.imprimir_atraso, name='imprimir'),
     path('limpiar-sesion/', views.limpiar_sesion_atraso, name='limpiar_sesion'),
-    path('reportes/', views.reportes_atraso, name='reportes_atraso'),
-
 ]
