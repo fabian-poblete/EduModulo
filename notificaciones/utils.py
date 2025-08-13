@@ -66,7 +66,9 @@ def enviar_sms(destinations, message, senderId, debug):
 
 
 def enviar_notificacion(evento, estudiante, colegio, tipo_evento):
-    print(f"=== INICIANDO NOTIFICACIÓN ===")
+    print("="*60)
+    print("📱 FUNCIÓN ENVIAR_NOTIFICACION INICIADA")
+    print("="*60)
     print(f"Evento: {evento}")
     print(f"Estudiante: {estudiante}")
     print(f"Colegio: {colegio}")
@@ -77,6 +79,8 @@ def enviar_notificacion(evento, estudiante, colegio, tipo_evento):
         return
 
     print("✅ Notificaciones activas")
+    print(f"🔧 Canal configurado: {colegio.canal_notificacion}")
+
     mensaje = render_mensaje(tipo_evento, estudiante, evento)
     print(f"📝 Mensaje generado: {mensaje}")
 
@@ -102,17 +106,24 @@ def enviar_notificacion(evento, estudiante, colegio, tipo_evento):
 
         print(f"📊 Estado del envío: {estado}")
 
-        Notificacion.objects.create(
-            colegio=colegio,
-            estudiante=estudiante,
-            tipo_evento=tipo_evento,
-            canal=canal,
-            estado=estado,
-            mensaje=mensaje
-        )
-        print(f"💾 Notificación guardada en BD")
+        try:
+            Notificacion.objects.create(
+                colegio=colegio,
+                estudiante=estudiante,
+                tipo_evento=tipo_evento,
+                canal=canal,
+                estado=estado,
+                mensaje=mensaje
+            )
+            print(f"💾 Notificación guardada en BD para canal: {canal}")
+        except Exception as e:
+            print(f"❌ ERROR al guardar notificación: {e}")
+            import traceback
+            traceback.print_exc()
 
-    print("=== FIN NOTIFICACIÓN ===\n")
+    print("="*60)
+    print("📱 FUNCIÓN ENVIAR_NOTIFICACION COMPLETADA")
+    print("="*60)
 
 
 def enviar_email_apoderado(estudiante, mensaje):
