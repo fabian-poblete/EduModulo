@@ -84,14 +84,3 @@ def crear_perfil_usuario(sender, instance, created, **kwargs):
     """
     if created:
         Perfil.objects.create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def guardar_perfil_usuario(sender, instance, **kwargs):
-    """
-    Señal para guardar el perfil cuando se actualiza el usuario.
-    """
-    try:
-        instance.perfil.save()
-    except Perfil.DoesNotExist:
-        Perfil.objects.create(user=instance)
