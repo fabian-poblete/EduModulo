@@ -1,8 +1,9 @@
 from colegios.models import Colegio
 from cursos.models import Curso
 from estudiantes.models import Estudiante
-from salidas.models import Salida
+
 from atrasos.models import Atraso
+from salidas.models import Salida
 import matplotlib.pyplot as plt
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -48,9 +49,9 @@ def dashboard_analytics(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
     curso_id = request.GET.get('curso')
-    tipo_incidencia = request.GET.get('tipo_incidencia', 'todos')
+    tipo_incidencia = request.GET.get('tipo_incidencia')
 
-    # Aplicar filtros base
+    # Aplicar filtros base para atrasos y salidas
     filtros_atrasos = Q()
     filtros_salidas = Q()
 
@@ -66,15 +67,21 @@ def dashboard_analytics(request):
         filtros_atrasos &= Q(estudiante__curso_id=curso_id)
         filtros_salidas &= Q(estudiante__curso_id=curso_id)
 
-    # Obtener datos de atrasos
-    atrasos = Atraso.objects.filter(filtros_atrasos)
-    salidas = Salida.objects.none()
+    # Aplicar filtro de tipo de incidencia
+    if tipo_incidencia == 'atrasos':
+        filtros_salidas = Q(pk__isnull=True)  # No mostrar salidas
+    elif tipo_incidencia == 'salidas':
+        filtros_atrasos = Q(pk__isnull=True)  # No mostrar atrasos
 
-    # Métricas principales (solo atrasos)
+    # Obtener datos de atrasos y salidas
+    atrasos = Atraso.objects.filter(filtros_atrasos)
+    salidas = Salida.objects.filter(filtros_salidas)
+
+    # Métricas principales
     total_atrasos = atrasos.count()
-    total_salidas = 0
     atrasos_justificados = atrasos.filter(justificado=True).count()
     atrasos_no_justificados = atrasos.filter(justificado=False).count()
+    total_salidas = salidas.count()
 
     # Porcentajes
     porcentaje_justificados = (
@@ -89,7 +96,9 @@ def dashboard_analytics(request):
         no_justificados=Count('id', filter=Q(justificado=False))
     ).order_by('-total')
 
-    salidas_por_curso = []
+    salidas_por_curso = salidas.values('estudiante__curso__nombre').annotate(
+        total=Count('id')
+    ).order_by('-total')
 
     # Análisis temporal
     # Agrupamiento temporal compatible con SQLite y PostgreSQL
@@ -108,6 +117,18 @@ def dashboard_analytics(request):
             {'fecha_simple': fecha, **data}
             for fecha, data in sorted(atrasos_por_fecha_dict.items())
         ]
+
+    else:
+        atrasos_por_fecha = atrasos.annotate(
+            fecha_simple=TruncDate('fecha')
+        ).values('fecha_simple').annotate(
+            total=Count('id'),
+            justificados=Count('id', filter=Q(justificado=True)),
+            no_justificados=Count('id', filter=Q(justificado=False))
+        ).order_by('fecha_simple')
+
+    # Análisis temporal de salidas
+    if connection.vendor == 'sqlite':
         # Agrupar salidas por fecha en Python
         salidas_por_fecha_dict = defaultdict(lambda: {'total': 0})
         for salida in salidas:
@@ -118,13 +139,6 @@ def dashboard_analytics(request):
             for fecha, data in sorted(salidas_por_fecha_dict.items())
         ]
     else:
-        atrasos_por_fecha = atrasos.annotate(
-            fecha_simple=TruncDate('fecha')
-        ).values('fecha_simple').annotate(
-            total=Count('id'),
-            justificados=Count('id', filter=Q(justificado=True)),
-            no_justificados=Count('id', filter=Q(justificado=False))
-        ).order_by('fecha_simple')
         salidas_por_fecha = salidas.annotate(
             fecha_simple=TruncDate('fecha')
         ).values('fecha_simple').annotate(
@@ -140,7 +154,11 @@ def dashboard_analytics(request):
         atrasos_no_justificados=Count('id', filter=Q(justificado=False))
     ).order_by('-total_atrasos')[:10]
 
-    top_estudiantes_salidas = []
+    top_estudiantes_salidas = salidas.values(
+        'estudiante__nombre', 'estudiante__rut', 'estudiante__curso__nombre'
+    ).annotate(
+        total_salidas=Count('id')
+    ).order_by('-total_salidas')[:10]
 
     # Análisis por hora del día
     atrasos_por_hora = atrasos.values('hora').annotate(
@@ -172,18 +190,18 @@ def dashboard_analytics(request):
 
         # Métricas principales
         'total_atrasos': total_atrasos,
-        'total_salidas': total_salidas,
         'atrasos_justificados': atrasos_justificados,
         'atrasos_no_justificados': atrasos_no_justificados,
         'porcentaje_justificados': round(porcentaje_justificados, 1),
         'porcentaje_no_justificados': round(porcentaje_no_justificados, 1),
+        'total_salidas': total_salidas,
 
         # Datos para gráficos - serializados para JavaScript
         'atrasos_por_curso': json.dumps(prepare_data_for_js(list(atrasos_por_curso))),
-        'salidas_por_curso': json.dumps(prepare_data_for_js(list(salidas_por_curso))),
         'atrasos_por_fecha': json.dumps(prepare_data_for_js(list(atrasos_por_fecha))),
-        'salidas_por_fecha': json.dumps(prepare_data_for_js(list(salidas_por_fecha))),
         'atrasos_por_hora': json.dumps(prepare_data_for_js(list(atrasos_por_hora))),
+        'salidas_por_curso': json.dumps(prepare_data_for_js(list(salidas_por_curso))),
+        'salidas_por_fecha': json.dumps(prepare_data_for_js(list(salidas_por_fecha))),
 
         # Top estudiantes
         'top_estudiantes_atrasos': list(top_estudiantes_atrasos),
@@ -206,35 +224,25 @@ def api_datos_graficos(request):
     fecha_fin = request.GET.get('fecha_fin')
     curso_id = request.GET.get('curso')
 
-    # Aplicar filtros
+    # Aplicar filtros solo para atrasos
     filtros_atrasos = Q()
-    filtros_salidas = Q()
 
     if fecha_inicio:
         filtros_atrasos &= Q(fecha__gte=fecha_inicio)
-        filtros_salidas &= Q(fecha__gte=fecha_inicio)
 
     if fecha_fin:
         filtros_atrasos &= Q(fecha__lte=fecha_fin)
-        filtros_salidas &= Q(fecha__lte=fecha_fin)
 
     if curso_id:
         filtros_atrasos &= Q(estudiante__curso_id=curso_id)
-        filtros_salidas &= Q(estudiante__curso_id=curso_id)
 
     atrasos = Atraso.objects.filter(filtros_atrasos)
-    salidas = Salida.objects.none()
 
     if tipo_grafico == 'atrasos_por_curso':
         datos = atrasos.values('estudiante__curso__nombre').annotate(
             total=Count('id'),
             justificados=Count('id', filter=Q(justificado=True)),
             no_justificados=Count('id', filter=Q(justificado=False))
-        ).order_by('-total')
-
-    elif tipo_grafico == 'salidas_por_curso':
-        datos = salidas.values('estudiante__curso__nombre').annotate(
-            total=Count('id')
         ).order_by('-total')
 
     elif tipo_grafico == 'atrasos_temporales':
@@ -244,13 +252,6 @@ def api_datos_graficos(request):
             total=Count('id'),
             justificados=Count('id', filter=Q(justificado=True)),
             no_justificados=Count('id', filter=Q(justificado=False))
-        ).order_by('fecha_simple')
-
-    elif tipo_grafico == 'salidas_temporales':
-        datos = salidas.annotate(
-            fecha_simple=TruncDate('fecha')
-        ).values('fecha_simple').annotate(
-            total=Count('id')
         ).order_by('fecha_simple')
 
     elif tipo_grafico == 'atrasos_por_hora':
@@ -274,24 +275,19 @@ def reporte_detallado(request):
     curso_id = request.GET.get('curso')
     tipo_analisis = request.GET.get('tipo_analisis', 'general')
 
-    # Aplicar filtros
+    # Aplicar filtros solo para atrasos
     filtros_atrasos = Q()
-    filtros_salidas = Q()
 
     if fecha_inicio:
         filtros_atrasos &= Q(fecha__gte=fecha_inicio)
-        filtros_salidas &= Q(fecha__gte=fecha_inicio)
 
     if fecha_fin:
         filtros_atrasos &= Q(fecha__lte=fecha_fin)
-        filtros_salidas &= Q(fecha__lte=fecha_fin)
 
     if curso_id:
         filtros_atrasos &= Q(estudiante__curso_id=curso_id)
-        filtros_salidas &= Q(estudiante__curso_id=curso_id)
 
     atrasos = Atraso.objects.filter(filtros_atrasos)
-    salidas = Salida.objects.none()
 
     # Análisis detallado según tipo
     if tipo_analisis == 'tendencias':
@@ -310,15 +306,7 @@ def reporte_detallado(request):
                 {'mes': mes, **data}
                 for mes, data in sorted(atrasos_tendencias_dict.items())
             ]
-            # Agrupar salidas por mes en Python
-            salidas_tendencias_dict = defaultdict(lambda: {'total': 0})
-            for salida in salidas:
-                mes = salida.fecha.replace(day=1)
-                salidas_tendencias_dict[mes]['total'] += 1
-            salidas_tendencias = [
-                {'mes': mes, **data}
-                for mes, data in sorted(salidas_tendencias_dict.items())
-            ]
+
         else:
             atrasos_tendencias = atrasos.annotate(
                 mes=TruncMonth('fecha')
@@ -327,14 +315,9 @@ def reporte_detallado(request):
                 justificados=Count('id', filter=Q(justificado=True)),
                 no_justificados=Count('id', filter=Q(justificado=False))
             ).order_by('mes')
-            salidas_tendencias = salidas.annotate(
-                mes=TruncMonth('fecha')
-            ).values('mes').annotate(
-                total=Count('id')
-            ).order_by('mes')
+
         datos_analisis = {
             'atrasos_tendencias': list(atrasos_tendencias),
-            'salidas_tendencias': list(salidas_tendencias),
         }
 
     elif tipo_analisis == 'comportamiento':
@@ -356,7 +339,6 @@ def reporte_detallado(request):
         # Análisis general
         datos_analisis = {
             'total_atrasos': atrasos.count(),
-            'total_salidas': salidas.count(),
             'atrasos_justificados': atrasos.filter(justificado=True).count(),
             'atrasos_no_justificados': atrasos.filter(justificado=False).count(),
         }
@@ -385,29 +367,23 @@ def exportar_reporte_pdf(request):
     curso_id = request.GET.get('curso')
     tipo_incidencia = request.GET.get('tipo_incidencia', 'todos')
 
-    # Aplicar filtros base
+    # Aplicar filtros base solo para atrasos
     filtros_atrasos = Q()
-    filtros_salidas = Q()
 
     if fecha_inicio:
         filtros_atrasos &= Q(fecha__gte=fecha_inicio)
-        filtros_salidas &= Q(fecha__gte=fecha_inicio)
 
     if fecha_fin:
         filtros_atrasos &= Q(fecha__lte=fecha_fin)
-        filtros_salidas &= Q(fecha__lte=fecha_fin)
 
     if curso_id:
         filtros_atrasos &= Q(estudiante__curso_id=curso_id)
-        filtros_salidas &= Q(estudiante__curso_id=curso_id)
 
     # Obtener datos
     atrasos = Atraso.objects.filter(filtros_atrasos)
-    salidas = Salida.objects.none()
 
     # Métricas principales
     total_atrasos = atrasos.count()
-    total_salidas = salidas.count()
     atrasos_justificados = atrasos.filter(justificado=True).count()
     atrasos_no_justificados = atrasos.filter(justificado=False).count()
 
@@ -424,10 +400,6 @@ def exportar_reporte_pdf(request):
         no_justificados=Count('id', filter=Q(justificado=False))
     ).order_by('-total')
 
-    salidas_por_curso = salidas.values('estudiante__curso__nombre').annotate(
-        total=Count('id')
-    ).order_by('-total')
-
     # Top estudiantes
     top_estudiantes_atrasos = atrasos.values(
         'estudiante__nombre', 'estudiante__rut', 'estudiante__curso__nombre'
@@ -437,25 +409,16 @@ def exportar_reporte_pdf(request):
         atrasos_no_justificados=Count('id', filter=Q(justificado=False))
     ).order_by('-total_atrasos')[:10]
 
-    top_estudiantes_salidas = salidas.values(
-        'estudiante__nombre', 'estudiante__rut', 'estudiante__curso__nombre'
-    ).annotate(
-        total_salidas=Count('id')
-    ).order_by('-total_salidas')[:10]
-
     context = {
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
         'total_atrasos': total_atrasos,
-        'total_salidas': total_salidas,
         'atrasos_justificados': atrasos_justificados,
         'atrasos_no_justificados': atrasos_no_justificados,
         'porcentaje_justificados': round(porcentaje_justificados, 1),
         'porcentaje_no_justificados': round(porcentaje_no_justificados, 1),
         'atrasos_por_curso': list(atrasos_por_curso),
-        'salidas_por_curso': list(salidas_por_curso),
         'top_estudiantes_atrasos': list(top_estudiantes_atrasos),
-        'top_estudiantes_salidas': list(top_estudiantes_salidas),
         'fecha_generacion': timezone.now().strftime('%d/%m/%Y %H:%M'),
     }
 
@@ -520,34 +483,40 @@ def exportar_reporte_pdf(request):
     story.append(filtros_table)
     story.append(Spacer(1, 20))
 
-    # Métricas principales
+    # Métricas principales en tabla compacta
+    story.append(Spacer(1, 30))
     story.append(Paragraph("Métricas Principales", heading_style))
+    story.append(Spacer(1, 20))
+
+    # Tabla de métricas principales
     metrics_data = [
         ['Métrica', 'Valor'],
         ['Total Atrasos', str(total_atrasos)],
-        ['Atrasos Justificados', str(atrasos_justificados)],
-        ['Atrasos No Justificados', str(atrasos_no_justificados)],
-        ['Porcentaje Justificados', f"{round(porcentaje_justificados, 1)}%"],
-        ['Porcentaje No Justificados',
-            f"{round(porcentaje_no_justificados, 1)}%"],
+        ['Atrasos Justificados', f"{round(porcentaje_justificados, 1)}%"],
+        ['Atrasos No Justificados', f"{round(porcentaje_no_justificados, 1)}%"]
     ]
+
     metrics_table = Table(metrics_data, colWidths=[3*inch, 2*inch])
     metrics_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#366092')),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        # Solo el encabezado en blanco
+        ('TEXTCOLOR', (0, 0), (0, 0), colors.whitesmoke),
+        # El resto del contenido en negro
+        ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
         ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
         ('GRID', (0, 0), (-1, -1), 1, colors.grey),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1),
          [colors.white, colors.HexColor('#f9f9f9')]),
     ]))
     story.append(metrics_table)
-    story.append(Spacer(1, 20))
+    story.append(Spacer(1, 30))
 
     # Gráficos principales (embebidos como imágenes)
+
     def build_chart_atrasos_por_curso(data):
         labels = [item.get('estudiante__curso__nombre')
                   or 'Curso desconocido' for item in data][:10]
@@ -578,6 +547,7 @@ def exportar_reporte_pdf(request):
         return img_buffer
 
     chart1 = build_chart_atrasos_por_curso(list(atrasos_por_curso))
+    story.append(Spacer(1, 200))
 
     story.append(Paragraph("Visualizaciones", heading_style))
     if chart1:
@@ -587,6 +557,7 @@ def exportar_reporte_pdf(request):
         story.append(Spacer(1, 16))
 
     # Atrasos por curso
+    story.append(Spacer(1, 30))
     story.append(Paragraph("Atrasos por Curso", heading_style))
     if atrasos_por_curso:
         atrasos_curso_data = [
@@ -895,36 +866,6 @@ def exportar_reporte_pdf(request):
         story.append(Paragraph("No hay datos disponibles", styles['Normal']))
     story.append(Spacer(1, 20))
 
-    # Top estudiantes salidas
-    story.append(
-        Paragraph("Top 10 - Estudiantes con Más Salidas", heading_style))
-    if top_estudiantes_salidas:
-        top_salidas_data = [['Estudiante', 'RUT', 'Curso', 'Total Salidas']]
-        for item in top_estudiantes_salidas:
-            top_salidas_data.append([
-                item['estudiante__nombre'],
-                item['estudiante__rut'],
-                item['estudiante__curso__nombre'],
-                str(item['total_salidas'])
-            ])
-        top_salidas_table = Table(top_salidas_data, colWidths=[
-                                  2*inch, 1*inch, 2*inch, 1*inch])
-        top_salidas_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#366092')),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-            ('FONTSIZE', (0, 0), (-1, -1), 9),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-            ('GRID', (0, 0), (-1, -1), 1, colors.grey),
-            ('ROWBACKGROUNDS', (0, 1), (-1, -1),
-             [colors.white, colors.HexColor('#f9f9f9')]),
-        ]))
-        story.append(top_salidas_table)
-    else:
-        story.append(Paragraph("No hay datos disponibles", styles['Normal']))
-
     # Generar PDF
     doc.build(story)
     pdf = buffer.getvalue()
@@ -946,29 +887,23 @@ def exportar_reporte_excel(request):
     curso_id = request.GET.get('curso')
     tipo_incidencia = request.GET.get('tipo_incidencia', 'todos')
 
-    # Aplicar filtros base
+    # Aplicar filtros base solo para atrasos
     filtros_atrasos = Q()
-    filtros_salidas = Q()
 
     if fecha_inicio:
         filtros_atrasos &= Q(fecha__gte=fecha_inicio)
-        filtros_salidas &= Q(fecha__gte=fecha_inicio)
 
     if fecha_fin:
         filtros_atrasos &= Q(fecha__lte=fecha_fin)
-        filtros_salidas &= Q(fecha__lte=fecha_fin)
 
     if curso_id:
         filtros_atrasos &= Q(estudiante__curso_id=curso_id)
-        filtros_salidas &= Q(estudiante__curso_id=curso_id)
 
     # Obtener datos
     atrasos = Atraso.objects.filter(filtros_atrasos)
-    salidas = Salida.objects.filter(filtros_salidas)
 
     # Métricas principales
     total_atrasos = atrasos.count()
-    total_salidas = salidas.count()
     atrasos_justificados = atrasos.filter(justificado=True).count()
     atrasos_no_justificados = atrasos.filter(justificado=False).count()
 
@@ -979,10 +914,6 @@ def exportar_reporte_excel(request):
         no_justificados=Count('id', filter=Q(justificado=False))
     ).order_by('-total')
 
-    salidas_por_curso = salidas.values('estudiante__curso__nombre').annotate(
-        total=Count('id')
-    ).order_by('-total')
-
     # Top estudiantes
     top_estudiantes_atrasos = atrasos.values(
         'estudiante__nombre', 'estudiante__rut', 'estudiante__curso__nombre'
@@ -991,12 +922,6 @@ def exportar_reporte_excel(request):
         atrasos_justificados=Count('id', filter=Q(justificado=True)),
         atrasos_no_justificados=Count('id', filter=Q(justificado=False))
     ).order_by('-total_atrasos')[:10]
-
-    top_estudiantes_salidas = salidas.values(
-        'estudiante__nombre', 'estudiante__rut', 'estudiante__curso__nombre'
-    ).annotate(
-        total_salidas=Count('id')
-    ).order_by('-total_salidas')[:10]
 
     # Crear workbook de Excel
     wb = Workbook()
@@ -1012,7 +937,7 @@ def exportar_reporte_excel(request):
     center_alignment = Alignment(horizontal="center", vertical="center")
 
     # Título
-    ws1['A1'] = "REPORTE DE ANALYTICS - ATRASOS Y SALIDAS"
+    ws1['A1'] = "REPORTE DE ANALYTICS - ATRASOS"
     ws1['A1'].font = Font(bold=True, size=16)
     ws1.merge_cells('A1:E1')
 
@@ -1033,7 +958,6 @@ def exportar_reporte_excel(request):
 
     metrics_data = [
         ['Total Atrasos', total_atrasos],
-        ['Total Salidas', total_salidas],
         ['Atrasos Justificados', atrasos_justificados],
         ['Atrasos No Justificados', atrasos_no_justificados],
         ['Porcentaje Justificados',
@@ -1081,23 +1005,8 @@ def exportar_reporte_excel(request):
         chart_atrasos.width = 24
         ws2.add_chart(chart_atrasos, "F2")
 
-    # Hoja 3: Salidas por Curso
-    ws3 = wb.create_sheet("Salidas por Curso")
-
-    headers = ['Curso', 'Total Salidas']
-    for col, header in enumerate(headers, 1):
-        cell = ws3.cell(row=1, column=col)
-        cell.value = header
-        cell.font = header_font
-        cell.fill = header_fill
-        cell.alignment = center_alignment
-
-    for row, item in enumerate(salidas_por_curso, 2):
-        ws3.cell(row=row, column=1,
-                 value=item['estudiante__curso__nombre'] or 'Curso desconocido')
-        ws3.cell(row=row, column=2, value=item['total'])
-
     # Rankings por periodo para Excel
+
     def excel_periodic_rankings(qs):
         res = {}
         if connection.vendor == 'sqlite':
@@ -1265,18 +1174,6 @@ def exportar_reporte_excel(request):
     ws_year_s = build_students_sheet('Top Est. Año', er['yearly_students'])
     ws_year_c = build_courses_sheet('Top Cursos Año', er['yearly_courses'])
 
-    # Gráfico de pie: Salidas por curso
-    if ws3.max_row > 2:
-        chart_salidas = PieChart()
-        chart_salidas.title = "Salidas por Curso"
-        labels_ref = Reference(ws3, min_col=1, min_row=2, max_row=ws3.max_row)
-        data_ref = Reference(ws3, min_col=2, min_row=1, max_row=ws3.max_row)
-        chart_salidas.add_data(data_ref, titles_from_data=True)
-        chart_salidas.set_categories(labels_ref)
-        chart_salidas.height = 14
-        chart_salidas.width = 20
-        ws3.add_chart(chart_salidas, "D2")
-
     # Hoja 4: Top Estudiantes Atrasos
     ws4 = wb.create_sheet("Top Atrasos")
 
@@ -1297,24 +1194,8 @@ def exportar_reporte_excel(request):
         ws4.cell(row=row, column=5, value=item['atrasos_justificados'])
         ws4.cell(row=row, column=6, value=item['atrasos_no_justificados'])
 
-    # Hoja 5: Top Estudiantes Salidas
-    ws5 = wb.create_sheet("Top Salidas")
-
-    headers = ['Estudiante', 'RUT', 'Curso', 'Total Salidas']
-    for col, header in enumerate(headers, 1):
-        cell = ws5.cell(row=1, column=col)
-        cell.value = header
-        cell.font = header_font
-        cell.fill = header_fill
-        cell.alignment = center_alignment
-
-    for row, item in enumerate(top_estudiantes_salidas, 2):
-        ws5.cell(row=row, column=1, value=item['estudiante__nombre'])
-        ws5.cell(row=row, column=2, value=item['estudiante__rut'])
-        ws5.cell(row=row, column=3, value=item['estudiante__curso__nombre'])
-        ws5.cell(row=row, column=4, value=item['total_salidas'])
-
         # Ajustar ancho de columnas de forma segura
+
     def adjust_column_widths(worksheet):
         """Ajusta el ancho de las columnas de forma segura"""
         # Convertir número de columna a letra de forma manual
@@ -1346,7 +1227,7 @@ def exportar_reporte_excel(request):
             worksheet.column_dimensions[column_letter].width = adjusted_width
 
     # Aplicar ajuste de columnas a todas las hojas
-    for ws in [ws1, ws2, ws3, ws4, ws5]:
+    for ws in [ws1, ws2, ws4]:
         adjust_column_widths(ws)
 
     # Guardar archivo
@@ -1368,35 +1249,26 @@ def exportar_reporte_csv(request):
     curso_id = request.GET.get('curso')
     tipo_incidencia = request.GET.get('tipo_incidencia', 'todos')
 
-    # Aplicar filtros base
+    # Aplicar filtros base solo para atrasos
     filtros_atrasos = Q()
-    filtros_salidas = Q()
 
     if fecha_inicio:
         filtros_atrasos &= Q(fecha__gte=fecha_inicio)
-        filtros_salidas &= Q(fecha__gte=fecha_inicio)
 
     if fecha_fin:
         filtros_atrasos &= Q(fecha__lte=fecha_fin)
-        filtros_salidas &= Q(fecha__lte=fecha_fin)
 
     if curso_id:
         filtros_atrasos &= Q(estudiante__curso_id=curso_id)
-        filtros_salidas &= Q(estudiante__curso_id=curso_id)
 
     # Obtener datos
     atrasos = Atraso.objects.filter(filtros_atrasos)
-    salidas = Salida.objects.filter(filtros_salidas)
 
     # Análisis por curso
     atrasos_por_curso = atrasos.values('estudiante__curso__nombre').annotate(
         total=Count('id'),
         justificados=Count('id', filter=Q(justificado=True)),
         no_justificados=Count('id', filter=Q(justificado=False))
-    ).order_by('-total')
-
-    salidas_por_curso = salidas.values('estudiante__curso__nombre').annotate(
-        total=Count('id')
     ).order_by('-total')
 
     # Top estudiantes
@@ -1408,12 +1280,6 @@ def exportar_reporte_csv(request):
         atrasos_no_justificados=Count('id', filter=Q(justificado=False))
     ).order_by('-total_atrasos')[:10]
 
-    top_estudiantes_salidas = salidas.values(
-        'estudiante__nombre', 'estudiante__rut', 'estudiante__curso__nombre'
-    ).annotate(
-        total_salidas=Count('id')
-    ).order_by('-total_salidas')[:10]
-
     # Crear respuesta CSV
     response = HttpResponse(content_type='text/csv; charset=utf-8')
     response['Content-Disposition'] = f'attachment; filename="reporte_analytics_{timezone.now().strftime("%Y%m%d_%H%M")}.csv"'
@@ -1423,7 +1289,7 @@ def exportar_reporte_csv(request):
     writer = csv.writer(response)
 
     # Información del reporte
-    writer.writerow(['REPORTE DE ANALYTICS - ATRASOS Y SALIDAS'])
+    writer.writerow(['REPORTE DE ANALYTICS - ATRASOS'])
     writer.writerow([])
     writer.writerow(
         [f'Fecha generación: {timezone.now().strftime("%d/%m/%Y %H:%M")}'])
@@ -1438,16 +1304,6 @@ def exportar_reporte_csv(request):
             item['total'],
             item['justificados'],
             item['no_justificados']
-        ])
-    writer.writerow([])
-
-    # Salidas por curso
-    writer.writerow(['SALIDAS POR CURSO'])
-    writer.writerow(['Curso', 'Total Salidas'])
-    for item in salidas_por_curso:
-        writer.writerow([
-            item['estudiante__curso__nombre'] or 'Curso desconocido',
-            item['total']
         ])
     writer.writerow([])
 
@@ -1466,18 +1322,8 @@ def exportar_reporte_csv(request):
         ])
     writer.writerow([])
 
-    # Top estudiantes salidas
-    writer.writerow(['TOP 10 ESTUDIANTES CON MÁS SALIDAS'])
-    writer.writerow(['Estudiante', 'RUT', 'Curso', 'Total Salidas'])
-    for item in top_estudiantes_salidas:
-        writer.writerow([
-            item['estudiante__nombre'],
-            item['estudiante__rut'],
-            item['estudiante__curso__nombre'],
-            item['total_salidas']
-        ])
-
     # Rankings por periodo en CSV
+
     def csv_periodic_rankings(qs):
         res = {}
         if connection.vendor == 'sqlite':

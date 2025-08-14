@@ -290,29 +290,30 @@
                                    value="{{ fecha_fin|default:'' }}">
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="filter-group">
-                            <label class="filter-label">Curso</label>
-                            <select class="form-select" name="curso">
-                                <option value="">Todos los cursos</option>
-                                {% for curso in cursos %}
-                                <option value="{{ curso.id }}" {% if curso.id|stringformat:"s" == curso_id %}selected{% endif %}>
-                                    {{ curso.nombre }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="filter-group">
-                            <label class="filter-label">Tipo de Incidencia</label>
-                            <select class="form-select" name="tipo_incidencia">
-                                <option value="todos" {% if tipo_incidencia == 'todos' %}selected{% endif %}>Todas</option>
-                                <option value="atrasos" {% if tipo_incidencia == 'atrasos' %}selected{% endif %}>Solo Atrasos</option>
-                                <option value="salidas" {% if tipo_incidencia == 'salidas' %}selected{% endif %}>Solo Salidas</option>
-                            </select>
-                        </div>
-                    </div>
+                                         <div class="col-md-3">
+                         <div class="filter-group">
+                             <label class="filter-label">Curso</label>
+                             <select class="form-select" name="curso">
+                                 <option value="">Todos los cursos</option>
+                                 {% for curso in cursos %}
+                                 <option value="{{ curso.id }}" {% if curso.id|stringformat:"s" == curso_id %}selected{% endif %}>
+                                     {{ curso.nombre }}
+                                 </option>
+                                 {% endfor %}
+                             </select>
+                         </div>
+                     </div>
+                     <div class="col-md-3">
+                         <div class="filter-group">
+                             <label class="filter-label">Tipo de Incidencia</label>
+                             <select class="form-select" name="tipo_incidencia">
+                                 <option value="">Todas las incidencias</option>
+                                 <option value="atrasos" {% if tipo_incidencia == 'atrasos' %}selected{% endif %}>Solo Atrasos</option>
+                                 <option value="salidas" {% if tipo_incidencia == 'salidas' %}selected{% endif %}>Solo Salidas</option>
+                             </select>
+                         </div>
+                     </div>
+
                 </div>
                 <div class="row mt-3">
                     <div class="col-12">
@@ -338,15 +339,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="metric-card">
-                    <div class="metric-value text-success">{{ total_salidas }}</div>
-                    <div class="metric-label">Total Salidas</div>
-                    <div class="progress-custom mt-3">
-                        <div class="progress-bar-custom bg-success" style="width: 100%"></div>
-                    </div>
-                </div>
-            </div>
+
             <div class="col-lg-3 col-md-6">
                 <div class="metric-card">
                     <div class="metric-value text-warning">{{ porcentaje_justificados }}%</div>
@@ -360,10 +353,24 @@
                 <div class="metric-card">
                     <div class="metric-value text-danger">{{ porcentaje_no_justificados }}%</div>
                     <div class="metric-label">Atrasos No Justificados</div>
+                    <div class="progress-bar-custom bg-danger" style="width: {{ porcentaje_no_justificados }}%"></div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="metric-card">
+                    <div class="metric-value text-info">{{ total_salidas }}</div>
+                    <div class="metric-label">Total Salidas</div>
                     <div class="progress-custom mt-3">
-                        <div class="progress-bar-custom bg-danger" style="width: {{ porcentaje_no_justificados }}%"></div>
+                        <div class="progress-bar-custom bg-info" style="width: 100%"></div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Espaciado adicional -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div style="height: 50px;"></div>
             </div>
         </div>
 
@@ -381,7 +388,7 @@
             <div class="col-lg-6">
                 <div class="chart-container">
                     <h5 class="mb-4">
-                        <i class="fas fa-chart-pie text-success me-2"></i>
+                        <i class="fas fa-chart-bar text-info me-2"></i>
                         Salidas por Curso
                     </h5>
                     <canvas id="chartSalidasCurso" height="300"></canvas>
@@ -458,7 +465,7 @@
             <div class="col-lg-6">
                 <div class="table-container">
                     <h5 class="mb-4">
-                        <i class="fas fa-external-link-alt text-info me-2"></i>
+                        <i class="fas fa-trophy text-info me-2"></i>
                         Top 10 - Estudiantes con Más Salidas
                     </h5>
                     <div class="table-responsive">
@@ -481,7 +488,7 @@
                                         <span class="badge badge-info">{{ estudiante.estudiante__curso__nombre }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge badge-warning">{{ estudiante.total_salidas }}</span>
+                                        <span class="badge badge-info">{{ estudiante.total_salidas }}</span>
                                     </td>
                                 </tr>
                                 {% empty %}
@@ -513,16 +520,16 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Datos para los gráficos - ya están serializados como JSON
     const atrasosPorCurso = {{ atrasos_por_curso|safe }};
-    const salidasPorCurso = {{ salidas_por_curso|safe }};
     const atrasosPorFecha = {{ atrasos_por_fecha|safe }};
-    const salidasPorFecha = {{ salidas_por_fecha|safe }};
     const atrasosPorHora = {{ atrasos_por_hora|safe }};
+    const salidasPorCurso = {{ salidas_por_curso|safe }};
+    const salidasPorFecha = {{ salidas_por_fecha|safe }};
 
     console.log('Datos de atrasos por curso:', atrasosPorCurso);
-    console.log('Datos de salidas por curso:', salidasPorCurso);
     console.log('Datos de atrasos por fecha:', atrasosPorFecha);
-    console.log('Datos de salidas por fecha:', salidasPorFecha);
     console.log('Datos de atrasos por hora:', atrasosPorHora);
+    console.log('Datos de salidas por curso:', salidasPorCurso);
+    console.log('Datos de salidas por fecha:', salidasPorFecha);
 
     // Configuración común de Chart.js
     Chart.defaults.font.family = "'Inter', 'Segoe UI', sans-serif";
@@ -590,28 +597,38 @@ document.addEventListener('DOMContentLoaded', function() {
     if (salidasPorCurso && salidasPorCurso.length > 0) {
         const ctxSalidasCurso = document.getElementById('chartSalidasCurso').getContext('2d');
         new Chart(ctxSalidasCurso, {
-            type: 'doughnut',
+            type: 'bar',
             data: {
                 labels: salidasPorCurso.map(item => item.estudiante__curso__nombre || 'Curso desconocido'),
                 datasets: [{
+                    label: 'Total Salidas',
                     data: salidasPorCurso.map(item => item.total || 0),
-                    backgroundColor: [
-                        'rgba(102, 126, 234, 0.8)',
-                        'rgba(118, 75, 162, 0.8)',
-                        'rgba(255, 193, 7, 0.8)',
-                        'rgba(220, 53, 69, 0.8)',
-                        'rgba(40, 167, 69, 0.8)',
-                        'rgba(23, 162, 184, 0.8)'
-                    ],
-                    borderWidth: 2,
-                    borderColor: '#fff'
+                    backgroundColor: 'rgba(23, 162, 184, 0.8)',
+                    borderColor: 'rgba(23, 162, 184, 1)',
+                    borderWidth: 2
                 }]
             },
             options: {
                 responsive: true,
                 plugins: {
                     legend: {
-                        position: 'bottom',
+                        position: 'top',
+                    },
+                    title: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
                     }
                 }
             }
@@ -619,6 +636,8 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         showNoDataMessage('chartSalidasCurso', 'No hay datos de salidas por curso');
     }
+
+
 
     // Gráfico de Tendencias Temporales
     if ((atrasosPorFecha && atrasosPorFecha.length > 0) || (salidasPorFecha && salidasPorFecha.length > 0)) {
@@ -662,8 +681,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, {
                     label: 'Salidas',
                     data: fechasOrdenadas.map(fecha => salidasMap[fecha] || 0),
-                    borderColor: 'rgba(40, 167, 69, 1)',
-                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    borderColor: 'rgba(23, 162, 184, 1)',
+                    backgroundColor: 'rgba(23, 162, 184, 0.1)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.4
