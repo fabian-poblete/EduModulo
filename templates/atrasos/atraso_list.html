@@ -8,7 +8,13 @@
     <div>
       <h1 class="h2 h-md-1 mb-1">Atrasos</h1>
       <p class="text-muted mb-0">
-        Total: {{ total_atrasos }} registro{{ total_atrasos|pluralize }}
+        Total: {{ total_general }} registros
+      </p>
+      <p class="text-muted mb-0">
+        Semana Actual: {{ total_semanal }} registros ({{ inicio_semana|date:"d/m" }} - {{ fin_semana|date:"d/m" }})
+      </p>
+      <p class="text-muted mb-0">
+        Hoy: {{ total_diario }} registros ({{ hoy|date:"d/m/Y" }})
       </p>
     </div>
     
@@ -20,6 +26,12 @@
         <span>Reportes</span>
       </a>
 
+      <!-- Botón para reporte semanal -->
+      <a href="{% url 'reportes:reporte_semanal' %}" class="btn btn-info">
+        <i class="fas fa-calendar-week"></i>
+        <span>Reporte Semanal</span>
+      </a>
+
       <!-- Botón para registrar atraso -->
       <a href="{% url 'atrasos:create' %}" class="btn btn-primary">
         <i class="fas fa-plus"></i>
@@ -27,6 +39,28 @@
       </a>
     </div>
   </div>
+
+  <!-- Indicador de Filtros Activos -->
+  {% if fecha_filtro or busqueda %}
+  <div class="alert alert-info mb-4">
+    <div class="d-flex align-items-center">
+      <i class="fas fa-filter me-2"></i>
+      <div>
+        <strong>Filtros Activos:</strong>
+        {% if fecha_filtro %}
+          <span class="badge bg-primary me-2">Fecha: {{ fecha_filtro }}</span>
+        {% endif %}
+        {% if busqueda %}
+          <span class="badge bg-primary me-2">Búsqueda: "{{ busqueda }}"</span>
+        {% endif %}
+        <span class="text-muted">Mostrando {{ total_atrasos }} de {{ total_general }} registros</span>
+      </div>
+      <a href="{% url 'atrasos:list' %}" class="btn btn-sm btn-outline-secondary ms-auto">
+        <i class="fas fa-times"></i> Limpiar Filtros
+      </a>
+    </div>
+  </div>
+  {% endif %}
 
   <!-- Formulario rápido para móvil/tablet -->
   <div class="d-lg-none mb-4">

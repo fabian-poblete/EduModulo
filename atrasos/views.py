@@ -5,7 +5,7 @@ from django.urls import reverse
 from .models import Atraso
 from .forms import AtrasoForm
 from django.db.models import Q
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from django.http import JsonResponse
 from estudiantes.models import Estudiante
 from cursos.models import Curso
@@ -33,6 +33,22 @@ def atraso_list(request):
         messages.error(request, 'No tienes permiso para ver esta página.')
         return redirect('dashboard:index')
 
+    # Calcular totales adicionales ANTES de aplicar filtros
+    from django.utils import timezone
+    hoy = timezone.now().date()
+    inicio_semana = hoy - timedelta(days=hoy.weekday())
+    fin_semana = inicio_semana + timedelta(days=6)
+
+    # Totales por período (sin filtros)
+    total_general = atrasos.count()
+    total_semanal = atrasos.filter(
+        fecha__gte=inicio_semana, fecha__lte=fin_semana).count()
+    total_diario = atrasos.filter(fecha=hoy).count()
+
+    # Totales por estado (sin filtros)
+    total_justificados = atrasos.filter(justificado=True).count()
+    total_no_justificados = atrasos.filter(justificado=False).count()
+
     # Filtrar por fecha si se proporciona
     fecha_filtro = request.GET.get('fecha')
     if fecha_filtro:
@@ -50,14 +66,23 @@ def atraso_list(request):
             Q(estudiante__rut__icontains=busqueda)
         )
 
-    # Contar el total de atrasos
+    # Contar el total de atrasos filtrados
     total_atrasos = atrasos.count()
 
     return render(request, 'atrasos/atraso_list.html', {
         'atrasos': atrasos,
         'fecha_filtro': fecha_filtro,
         'busqueda': busqueda,
-        'total_atrasos': total_atrasos
+        'total_atrasos': total_atrasos,
+        # Nuevos totales
+        'total_general': total_general,
+        'total_semanal': total_semanal,
+        'total_diario': total_diario,
+        'total_justificados': total_justificados,
+        'total_no_justificados': total_no_justificados,
+        'inicio_semana': inicio_semana,
+        'fin_semana': fin_semana,
+        'hoy': hoy,
     })
 
 
