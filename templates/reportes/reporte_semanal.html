@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+
+{% block title %}Reporte Semanal - Semana {{ semana_actual }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1">Reporte Semanal - Semana {{ semana_actual }}</h2>
+                    <p class="text-muted mb-0">{{ inicio_semana|date:"d/m/Y" }} - {{ fin_semana|date:"d/m/Y" }}</p>
+                </div>
+                <div>
+                    <a href="{% url 'reportes:exportar_reporte_semanal_excel' %}" class="btn btn-success">
+                        <i class="fas fa-file-excel me-2"></i>Exportar Excel
+                    </a>
+                    <a href="{% url 'reportes:dashboard_analytics' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Métricas principales -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center border-primary">
+                <div class="card-body">
+                    <h3 class="text-primary mb-2">{{ total_atrasos }}</h3>
+                    <p class="card-text mb-0">Total Atrasos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center border-success">
+                <div class="card-body">
+                    <h3 class="text-success mb-2">{{ justificados }}</h3>
+                    <p class="card-text mb-0">Justificados</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center border-danger">
+                <div class="card-body">
+                    <h3 class="text-danger mb-2">{{ no_justificados }}</h3>
+                    <p class="card-text mb-0">No Justificados</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top 20 Estudiantes y Top 20 Cursos -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>Top 20 Estudiantes con Más Atrasos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive" style="max-height: 400px;">
+                        <table class="table table-sm table-hover">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>Estudiante</th>
+                                    <th>Curso</th>
+                                    <th>Total</th>
+                                    <th>J</th>
+                                    <th>NJ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for estudiante in top_estudiantes %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ estudiante.estudiante__nombre }}</strong>
+                                        <br><small class="text-muted">{{ estudiante.estudiante__rut }}</small>
+                                    </td>
+                                    <td>{{ estudiante.estudiante__curso__nombre }}</td>
+                                    <td><span class="badge bg-primary">{{ estudiante.total_atrasos }}</span></td>
+                                    <td><span class="badge bg-success">{{ estudiante.atrasos_justificados }}</span></td>
+                                    <td><span class="badge bg-danger">{{ estudiante.atrasos_no_justificados }}</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">No hay datos disponibles</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Top 20 Cursos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive" style="max-height: 400px;">
+                        <table class="table table-sm table-hover">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>Curso</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for curso in top_cursos %}
+                                <tr>
+                                    <td><strong>{{ curso.estudiante__curso__nombre }}</strong></td>
+                                    <td><span class="badge bg-info">{{ curso.total }}</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted">No hay datos disponibles</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top 20 Horas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Top 20 Horas Más Frecuentes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Hora</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for hora in top_horas %}
+                                <tr>
+                                    <td><strong>{{ hora.hora|time:"H:i" }}</strong></td>
+                                    <td><span class="badge bg-warning">{{ hora.total }}</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted">No hay datos disponibles</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Gráficos -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Faltas por Día de la Semana</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="chartDias" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Justificados vs No Justificados</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="chartJustificados" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js para gráficos -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Gráfico de días de la semana
+const ctxDias = document.getElementById('chartDias').getContext('2d');
+new Chart(ctxDias, {
+    type: 'bar',
+    data: {
+        labels: [
+            {% for dia in atrasos_por_dia %}
+                '{{ dias_semana|get_item:dia.dia_semana }}'{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'Atrasos',
+            data: [
+                {% for dia in atrasos_por_dia %}
+                    {{ dia.total }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            ],
+            backgroundColor: 'rgba(54, 162, 235, 0.8)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+
+// Gráfico de justificados vs no justificados
+const ctxJustificados = document.getElementById('chartJustificados').getContext('2d');
+new Chart(ctxJustificados, {
+    type: 'doughnut',
+    data: {
+        labels: ['Justificados', 'No Justificados'],
+        datasets: [{
+            data: [{{ justificados }}, {{ no_justificados }}],
+            backgroundColor: [
+                'rgba(40, 167, 69, 0.8)',
+                'rgba(220, 53, 69, 0.8)'
+            ],
+            borderColor: [
+                'rgba(40, 167, 69, 1)',
+                'rgba(220, 53, 69, 1)'
+            ],
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
+
+<!-- CSS adicional para tablas responsivas -->
+<style>
+.sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+}
+
+.table-responsive::-webkit-scrollbar {
+    width: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+</style>
+{% endblock %}

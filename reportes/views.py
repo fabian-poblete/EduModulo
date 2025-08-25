@@ -1,3 +1,4 @@
+from django.template.defaulttags import register
 from colegios.models import Colegio
 from cursos.models import Curso
 from estudiantes.models import Estudiante
@@ -26,6 +27,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.chart import BarChart, PieChart, Reference
+from openpyxl.utils import get_column_letter
 
 # ReportLab para PDF (más compatible con Windows)
 from reportlab.lib.pagesizes import A4
@@ -39,6 +41,12 @@ from reportlab.platypus import Image as RLImage
 # Matplotlib para gráficos en PDF (backend sin UI)
 import matplotlib
 matplotlib.use('Agg')
+
+
+@register.filter
+def get_item(dictionary, key):
+    """Filtro personalizado para acceder a elementos del diccionario en templates"""
+    return dictionary.get(key)
 
 
 @login_required
@@ -1408,4 +1416,287 @@ def exportar_reporte_csv(request):
 
     # Se excluyen rankings de cursos y anuales del CSV
 
+    return response
+
+
+@login_required
+def reporte_semanal(request):
+    """Reporte semanal similar al script Python"""
+
+    # Obtener semana actual
+    from datetime import datetime, timedelta
+    from django.utils import timezone
+
+    hoy = timezone.now().date()
+    semana_actual = hoy.isocalendar()[1]
+    inicio_semana = hoy - timedelta(days=hoy.weekday())
+    fin_semana = inicio_semana + timedelta(days=6)
+
+    # Filtros base
+    if request.user.is_superuser:
+        atrasos = Atraso.objects.all()
+    else:
+        atrasos = Atraso.objects.filter(
+            estudiante__curso__colegio=request.user.perfil.colegio
+        )
+
+    # Filtrar por semana actual
+    atrasos_semana = atrasos.filter(
+        fecha__gte=inicio_semana,
+        fecha__lte=fin_semana
+    )
+
+    # Top 20 estudiantes con más atrasos
+    top_estudiantes = atrasos_semana.values(
+        'estudiante__nombre', 'estudiante__rut', 'estudiante__curso__nombre'
+    ).annotate(
+        total_atrasos=Count('id'),
+        atrasos_justificados=Count('id', filter=Q(justificado=True)),
+        atrasos_no_justificados=Count('id', filter=Q(justificado=False))
+    ).order_by('-total_atrasos')[:20]
+
+    # Top 20 cursos
+    top_cursos = atrasos_semana.values('estudiante__curso__nombre').annotate(
+        total=Count('id')
+    ).order_by('-total')[:20]
+
+    # Top 20 horas
+    top_horas = atrasos_semana.values('hora').annotate(
+        total=Count('id')
+    ).order_by('-total')[:20]
+
+    # Análisis por día de la semana
+    if connection.vendor == 'sqlite':
+        # Para SQLite, procesar en Python
+        atrasos_por_dia = []
+        for atraso in atrasos_semana:
+            dia_semana = atraso.fecha.weekday()
+            # Buscar si ya existe este día
+            existing = next(
+                (x for x in atrasos_por_dia if x['dia_semana'] == dia_semana), None)
+            if existing:
+                existing['total'] += 1
+            else:
+                atrasos_por_dia.append({
+                    'dia_semana': dia_semana,
+                    'total': 1
+                })
+        atrasos_por_dia.sort(key=lambda x: x['dia_semana'])
+    else:
+        # Para PostgreSQL/MySQL, usar funciones nativas
+        from django.db.models.functions import ExtractWeekDay
+        atrasos_por_dia = atrasos_semana.annotate(
+            dia_semana=ExtractWeekDay('fecha')
+        ).values('dia_semana').annotate(
+            total=Count('id')
+        ).order_by('dia_semana')
+
+    # Mapeo de días
+    dias_semana = {
+        0: 'Lunes', 1: 'Martes', 2: 'Miércoles', 3: 'Jueves',
+        4: 'Viernes', 5: 'Sábado', 6: 'Domingo'
+    }
+
+    # Para compatibilidad con diferentes bases de datos
+    if connection.vendor == 'sqlite':
+        dias_semana = {
+            0: 'Lunes', 1: 'Martes', 2: 'Miércoles', 3: 'Jueves',
+            4: 'Viernes', 5: 'Sábado', 6: 'Domingo'
+        }
+    else:
+        # PostgreSQL/MySQL usan 1-7 para lunes-domingo
+        dias_semana = {
+            1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves',
+            5: 'Viernes', 6: 'Sábado', 7: 'Domingo'
+        }
+
+    # Estadísticas generales
+    total_atrasos = atrasos_semana.count()
+    justificados = atrasos_semana.filter(justificado=True).count()
+    no_justificados = atrasos_semana.filter(justificado=False).count()
+
+    context = {
+        'semana_actual': semana_actual,
+        'inicio_semana': inicio_semana,
+        'fin_semana': fin_semana,
+        'top_estudiantes': top_estudiantes,
+        'top_cursos': top_cursos,
+        'top_horas': top_horas,
+        'atrasos_por_dia': atrasos_por_dia,
+        'dias_semana': dias_semana,
+        'total_atrasos': total_atrasos,
+        'justificados': justificados,
+        'no_justificados': no_justificados,
+    }
+
+    return render(request, 'reportes/reporte_semanal.html', context)
+
+
+@login_required
+def exportar_reporte_semanal_excel(request):
+    """Exportar reporte semanal en Excel similar al script Python"""
+
+    # Obtener semana actual
+    from datetime import datetime, timedelta
+    from django.utils import timezone
+
+    hoy = timezone.now().date()
+    semana_actual = hoy.isocalendar()[1]
+    inicio_semana = hoy - timedelta(days=hoy.weekday())
+    fin_semana = inicio_semana + timedelta(days=6)
+
+    # Filtros base
+    if request.user.is_superuser:
+        atrasos = Atraso.objects.all()
+    else:
+        atrasos = Atraso.objects.filter(
+            estudiante__curso__colegio=request.user.perfil.colegio
+        )
+
+    # Filtrar por semana actual
+    atrasos_semana = atrasos.filter(
+        fecha__gte=inicio_semana,
+        fecha__lte=fin_semana
+    )
+
+    # Top 20 estudiantes con más atrasos
+    top_estudiantes = atrasos_semana.values(
+        'estudiante__nombre', 'estudiante__rut', 'estudiante__curso__nombre'
+    ).annotate(
+        total_atrasos=Count('id'),
+        atrasos_justificados=Count('id', filter=Q(justificado=True)),
+        atrasos_no_justificados=Count('id', filter=Q(justificado=False))
+    ).order_by('-total_atrasos')[:20]
+
+    # Top 20 cursos
+    top_cursos = atrasos_semana.values('estudiante__curso__nombre').annotate(
+        total=Count('id')
+    ).order_by('-total')[:20]
+
+    # Top 20 horas
+    top_horas = atrasos_semana.values('hora').annotate(
+        total=Count('id')
+    ).order_by('-total')[:20]
+
+    # Estadísticas generales
+    total_atrasos = atrasos_semana.count()
+    justificados = atrasos_semana.filter(justificado=True).count()
+    no_justificados = atrasos_semana.filter(justificado=False).count()
+
+    # Crear Excel con múltiples hojas
+    wb = Workbook()
+
+    # Hoja 1: Datos del Mes
+    ws1 = wb.active
+    ws1.title = "Datos del Mes"
+
+    # Estilos
+    header_font = Font(bold=True, color="FFFFFF")
+    header_fill = PatternFill(start_color="366092",
+                              end_color="366092", fill_type="solid")
+    center_alignment = Alignment(horizontal="center", vertical="center")
+
+    # Título
+    ws1['A1'] = f"REPORTE SEMANAL - SEMANA {semana_actual}"
+    ws1['A1'].font = Font(bold=True, size=16)
+    ws1.merge_cells('A1:E1')
+
+    # Período
+    ws1['A3'] = f"Período: {inicio_semana.strftime('%d/%m/%Y')} - {fin_semana.strftime('%d/%m/%Y')}"
+    ws1['A3'].font = Font(bold=True, size=12)
+
+    # Métricas principales
+    ws1['A5'] = "MÉTRICAS PRINCIPALES"
+    ws1['A5'].font = Font(bold=True, size=14)
+
+    metrics_data = [
+        ['Total Atrasos', total_atrasos],
+        ['Atrasos Justificados', justificados],
+        ['Atrasos No Justificados', no_justificados],
+        ['Porcentaje Justificados',
+            f"{round((justificados / total_atrasos * 100) if total_atrasos > 0 else 0, 1)}%"],
+    ]
+
+    for row, (metric, value) in enumerate(metrics_data, 6):
+        ws1.cell(row=row, column=1, value=metric)
+        ws1.cell(row=row, column=2, value=value)
+
+    # Hoja 2: Top Nombres
+    ws2 = wb.create_sheet("Top Nombres")
+
+    headers = ['Estudiante', 'RUT', 'Curso',
+               'Total Atrasos', 'Justificados', 'No Justificados']
+    for col, header in enumerate(headers, 1):
+        cell = ws2.cell(row=1, column=col)
+        cell.value = header
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = center_alignment
+
+    for row, item in enumerate(top_estudiantes, 2):
+        ws2.cell(row=row, column=1, value=item['estudiante__nombre'])
+        ws2.cell(row=row, column=2, value=item['estudiante__rut'])
+        ws2.cell(row=row, column=3, value=item['estudiante__curso__nombre'])
+        ws2.cell(row=row, column=4, value=item['total_atrasos'])
+        ws2.cell(row=row, column=5, value=item['atrasos_justificados'])
+        ws2.cell(row=row, column=6, value=item['atrasos_no_justificados'])
+
+    # Hoja 3: Top Cursos
+    ws3 = wb.create_sheet("Top Cursos")
+
+    headers = ['Curso', 'Total']
+    for col, header in enumerate(headers, 1):
+        cell = ws3.cell(row=1, column=col)
+        cell.value = header
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = center_alignment
+
+    for row, item in enumerate(top_cursos, 2):
+        ws3.cell(row=row, column=1, value=item['estudiante__curso__nombre'])
+        ws3.cell(row=row, column=2, value=item['total'])
+
+    # Hoja 4: Top Horas
+    ws4 = wb.create_sheet("Top Horas")
+
+    headers = ['Hora', 'Total']
+    for col, header in enumerate(headers, 1):
+        cell = ws4.cell(row=1, column=col)
+        cell.value = header
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = center_alignment
+
+    for row, item in enumerate(top_horas, 2):
+        ws4.cell(row=row, column=1, value=str(item['hora']))
+        ws4.cell(row=row, column=2, value=item['total'])
+
+    # Ajustar ancho de columnas
+    def adjust_column_widths(worksheet):
+        for col_num in range(1, worksheet.max_column + 1):
+            max_length = 0
+            for row_num in range(1, worksheet.max_row + 1):
+                try:
+                    cell = worksheet.cell(row=row_num, column=col_num)
+                    if cell.value:
+                        cell_length = len(str(cell.value))
+                        if cell_length > max_length:
+                            max_length = cell_length
+                except:
+                    pass
+            adjusted_width = min(max(max_length + 2, 8), 50)
+            worksheet.column_dimensions[get_column_letter(
+                col_num)].width = adjusted_width
+
+    # Aplicar ajuste de columnas a todas las hojas
+    for ws in [ws1, ws2, ws3, ws4]:
+        adjust_column_widths(ws)
+
+    # Crear respuesta HTTP
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="reporte_semanal_{semana_actual}_{timezone.now().strftime("%Y%m%d")}.xlsx"'
+
+    wb.save(response)
     return response

@@ -262,6 +262,9 @@
                     </p>
                 </div>
                 <div class="col-md-4 text-end">
+                    <a class="btn btn-outline-success me-2" href="{% url 'reportes:reporte_semanal' %}">
+                        <i class="fas fa-calendar-week text-success"></i> Reporte Semanal
+                    </a>
                     <a class="btn btn-outline-primary" href="{% url 'reportes:exportar_pdf' %}?{{ request.GET.urlencode }}">
                         <i class="fas fa-file-pdf text-danger"></i> Descargar PDF
                     </a>
@@ -320,7 +323,7 @@
                         <button type="submit" class="btn btn-filter me-2">
                             <i class="fas fa-search"></i> Aplicar Filtros
                         </button>
-                        <a href="{% url 'reportes:dashboard' %}" class="btn btn-clear">
+                        <a href="{% url 'reportes:dashboard_analytics' %}" class="btn btn-clear">
                             <i class="fas fa-eraser"></i> Limpiar Filtros
                         </a>
                     </div>

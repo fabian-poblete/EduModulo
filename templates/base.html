@@ -769,9 +769,7 @@
   </head>
 
   <body>
-    {% url 'public:home' as public_home_url %} 
-    {% url 'home' as home_url %} 
-    {%if user.is_authenticated and request.resolver_match.url_name != 'home' and request.resolver_match.namespace != 'public' and request.resolver_match.url_name != 'login' %}
+    {% url 'public:home' as public_home_url %} {% url 'home' as home_url %} {%if user.is_authenticated and request.resolver_match.url_name != 'home' and request.resolver_match.namespace != 'public' and request.resolver_match.url_name != 'login' %}
     <!-- Sidebar Overlay for Mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -847,7 +845,7 @@
         {% endif %}
 
         <!-- Activities Section -->
-        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' or user.perfil.tipo_usuario == 'porteria' or user.perfil.tipo_usuario == 'administrativo' %}
+        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'  or user.perfil.tipo_usuario == 'porteria' or user.perfil.tipo_usuario ==  'administrativo' %}
         <div class="sidebar-section">
           <div class="sidebar-section-title">Actividades</div>
           <ul class="sidebar-menu">
@@ -888,18 +886,28 @@
         {% endif %}
 
         <!-- Analytics Section -->
-        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' or user.perfil.tipo_usuario == 'administrativo' %}
+        {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'  or user.perfil.tipo_usuario == 'administrativo' %}
         <div class="sidebar-section">
           <div class="sidebar-section-title">Analytics</div>
           <ul class="sidebar-menu">
             <li class="sidebar-menu-item">
               <a
                 class="sidebar-menu-link"
-                href="{% url 'reportes:dashboard' %}"
+                href="{% url 'reportes:dashboard_analytics' %}"
                 data-tooltip="Reportes Analytics"
               >
                 <i class="fas fa-chart-line sidebar-menu-icon"></i>
                 <span class="sidebar-menu-text">Reportes Analytics</span>
+              </a>
+            </li>
+            <li class="sidebar-menu-item">
+              <a
+                class="sidebar-menu-link"
+                href="{% url 'reportes:reporte_semanal' %}"
+                data-tooltip="Reporte Semanal"
+              >
+                <i class="fas fa-calendar-week sidebar-menu-icon"></i>
+                <span class="sidebar-menu-text">Reporte Semanal</span>
               </a>
             </li>
           </ul>
@@ -922,7 +930,7 @@
                 <span class="sidebar-menu-text">Colegios</span>
               </a>
             </li>
-            {% endif %}
+            {% endif %} 
             {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' or user.perfil.tipo_usuario == 'administrativo' %}
             <li class="sidebar-menu-item">
               <a
@@ -969,8 +977,6 @@
         </div>
         {% endcomment %}
 
-
-
         <!-- Soporte Section -->
         <div class="sidebar-section">
           <div class="sidebar-section-title">Soporte</div>
@@ -991,8 +997,7 @@
 
         {% comment %}
         <!-- Only show Users link for non-admin users -->
-        {% if not user.is_superuser and user.perfil.tipo_usuario !=
-        'admin_colegio' %}
+        {% if not user.is_superuser and user.perfil.tipo_usuario != 'admin_colegio' %}
         <div class="sidebar-section">
           <div class="sidebar-section-title">Gestión</div>
           <ul class="sidebar-menu">
@@ -1020,14 +1025,23 @@
               {{ user.get_full_name|default:user.username }}
             </div>
             <div class="user-role">
-              {% if user.is_superuser %} Super Administrador 
-              {% elif user.perfil.tipo_usuario == 'admin_colegio' %} Admin. Colegio 
-              {% elif user.perfil.tipo_usuario == 'porteria' %} Portería 
-              {% elif user.perfil.tipo_usuario == 'administrativo' %} Administrativo
-              {% elif user.perfil.tipo_usuario == 'profesor' %} Profesor 
-              {% elif user.perfil.tipo_usuario == 'apoderado' %} Apoderado 
-              {% else %} Usuario {% endif %}
+              {% if user.is_superuser %}
+                Super Administrador
+              {% elif user.perfil.tipo_usuario == 'admin_colegio' %}
+                Admin. Colegio
+              {% elif user.perfil.tipo_usuario == 'porteria' %}
+                Portería
+              {% elif user.perfil.tipo_usuario == 'administrativo' %}
+                Administrativo
+              {% elif user.perfil.tipo_usuario == 'profesor' %}
+                Profesor
+              {% elif user.perfil.tipo_usuario == 'apoderado' %}
+                Apoderado
+              {% else %}
+                Usuario
+              {% endif %}
             </div>
+            
           </div>
           <i class="fas fa-chevron-up user-chevron"></i>
         </div>
