@@ -629,6 +629,46 @@ def estudiante_detail(request, pk):
         messages.error(request, 'No tienes permiso para ver este estudiante.')
         return redirect('estudiantes:list')
 
+    # Obtener estadísticas del estudiante
+    estadisticas = {
+        'total_atrasos': estudiante.atrasos.count(),
+        'atrasos_justificados': estudiante.atrasos.filter(justificado=True).count(),
+        'atrasos_no_justificados': estudiante.atrasos.filter(justificado=False).count(),
+        'total_salidas': estudiante.salidas_registradas.count(),
+        'salidas_justificadas': estudiante.salidas_registradas.exclude(tipo_justificativo='').count(),
+        'salidas_no_justificadas': estudiante.salidas_registradas.filter(tipo_justificativo='').count(),
+        'total_salidas_almuerzo': estudiante.registros_salida_almuerzo.count(),
+        'autorizaciones_almuerzo': estudiante.autorizaciones_almuerzo.filter(autorizado=True).count(),
+    }
+    
+    # Obtener datos temporales (últimos 30 días, mes actual, año actual)
+    from datetime import datetime, timedelta
+    from django.utils import timezone
+    
+    hoy = timezone.now().date()
+    hace_30_dias = hoy - timedelta(days=30)
+    inicio_mes = hoy.replace(day=1)
+    inicio_año = hoy.replace(month=1, day=1)
+    
+    estadisticas_temporales = {
+        'atrasos_30_dias': estudiante.atrasos.filter(fecha__gte=hace_30_dias).count(),
+        'atrasos_mes': estudiante.atrasos.filter(fecha__gte=inicio_mes).count(),
+        'atrasos_año': estudiante.atrasos.filter(fecha__gte=inicio_año).count(),
+        'salidas_30_dias': estudiante.salidas_registradas.filter(fecha__gte=hace_30_dias).count(),
+        'salidas_mes': estudiante.salidas_registradas.filter(fecha__gte=inicio_mes).count(),
+        'salidas_año': estudiante.salidas_registradas.filter(fecha__gte=inicio_año).count(),
+    }
+    
+    # Obtener historial reciente
+    historial_reciente = {
+        'ultimos_atrasos': estudiante.atrasos.order_by('-fecha', '-hora')[:5],
+        'ultimas_salidas': estudiante.salidas_registradas.order_by('-fecha', '-hora')[:5],
+        'ultimas_salidas_almuerzo': estudiante.registros_salida_almuerzo.order_by('-fecha')[:5],
+    }
+
     return render(request, 'estudiantes/estudiante_detail.html', {
-        'estudiante': estudiante
+        'estudiante': estudiante,
+        'estadisticas': estadisticas,
+        'estadisticas_temporales': estadisticas_temporales,
+        'historial_reciente': historial_reciente,
     })

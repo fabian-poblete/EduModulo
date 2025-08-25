@@ -38,15 +38,257 @@
           {{ estudiante.telefono_apoderado2|default:"-" }}
         </dd>
 
-        {% comment %} <dt class="col-sm-3">Estado</dt>
+        {% comment %}
+        <dt class="col-sm-3">Estado</dt>
         <dd class="col-sm-9">
           {% if estudiante.activo %}
           <span class="badge bg-success">Activo</span>
           {% else %}
           <span class="badge bg-danger">Inactivo</span>
           {% endif %}
-        </dd> {% endcomment %}
+        </dd>
+        {% endcomment %}
       </dl>
+    </div>
+  </div>
+
+  <!-- Estadísticas Generales -->
+  <div class="card mt-4">
+    <div class="card-header">
+      <h5 class="mb-0">Estadísticas Generales</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="text-center">
+            <h4 class="text-primary">{{ estadisticas.total_atrasos }}</h4>
+            <small class="text-muted">Total Atrasos</small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="text-center">
+            <h4 class="text-success">
+              {{ estadisticas.atrasos_justificados }}
+            </h4>
+            <small class="text-muted">Atrasos Justificados</small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="text-center">
+            <h4 class="text-warning">{{ estadisticas.total_salidas }}</h4>
+            <small class="text-muted">Total Salidas</small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="text-center">
+            <h4 class="text-info">{{ estadisticas.total_salidas_almuerzo }}</h4>
+            <small class="text-muted">Salidas Almuerzo</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estadísticas adicionales -->
+      <div class="row mt-3">
+        <div class="col-md-3">
+          <div class="text-center">
+            <h6 class="text-danger">
+              {{ estadisticas.atrasos_no_justificados }}
+            </h6>
+            <small class="text-muted">Atrasos No Justificados</small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="text-center">
+            <h6 class="text-success">
+              {{ estadisticas.salidas_justificadas }}
+            </h6>
+            <small class="text-muted">Salidas Justificadas</small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="text-center">
+            <h6 class="text-warning">
+              {{ estadisticas.salidas_no_justificadas }}
+            </h6>
+            <small class="text-muted">Salidas No Justificadas</small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="text-center">
+            <h6 class="text-info">
+              {{ estadisticas.autorizaciones_almuerzo }}
+            </h6>
+            <small class="text-muted">Autorizaciones Almuerzo</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estadísticas por Periodo -->
+  <div class="card mt-4">
+    <div class="card-header">
+      <h5 class="mb-0">Estadísticas por Periodo</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card bg-light">
+            <div class="card-body text-center">
+              <h6 class="card-title">Últimos 30 días</h6>
+              <div class="row">
+                <div class="col-6">
+                  <p class="mb-1">
+                    <strong
+                      >{{ estadisticas_temporales.atrasos_30_dias }}</strong
+                    >
+                  </p>
+                  <small class="text-muted">Atrasos</small>
+                </div>
+                <div class="col-6">
+                  <p class="mb-1">
+                    <strong
+                      >{{ estadisticas_temporales.salidas_30_dias }}</strong
+                    >
+                  </p>
+                  <small class="text-muted">Salidas</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card bg-light">
+            <div class="card-body text-center">
+              <h6 class="card-title">Mes Actual</h6>
+              <div class="row">
+                <div class="col-6">
+                  <p class="mb-1">
+                    <strong>{{ estadisticas_temporales.atrasos_mes }}</strong>
+                  </p>
+                  <small class="text-muted">Atrasos</small>
+                </div>
+                <div class="col-6">
+                  <p class="mb-1">
+                    <strong>{{ estadisticas_temporales.salidas_mes }}</strong>
+                  </p>
+                  <small class="text-muted">Salidas</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card bg-light">
+            <div class="card-body text-center">
+              <h6 class="card-title">Año Actual</h6>
+              <div class="row">
+                <div class="col-6">
+                  <p class="mb-1">
+                    <strong>{{ estadisticas_temporales.atrasos_año }}</strong>
+                  </p>
+                  <small class="text-muted">Atrasos</small>
+                </div>
+                <div class="col-6">
+                  <p class="mb-1">
+                    <strong>{{ estadisticas_temporales.salidas_año }}</strong>
+                  </p>
+                  <small class="text-muted">Salidas</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Historial Reciente -->
+  <div class="card mt-4">
+    <div class="card-header">
+      <h5 class="mb-0">Historial Reciente</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-4">
+          <h6 class="text-primary">Últimos Atrasos</h6>
+          {% for atraso in historial_reciente.ultimos_atrasos %}
+          <div class="border-bottom pb-2 mb-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ atraso.fecha|date:"d/m/Y" }}</strong>
+                <br />
+                <small class="text-muted">{{ atraso.hora|time:"H:i" }}</small>
+              </div>
+              {% if atraso.justificado %}
+              <span class="badge bg-success">Justificado</span>
+              {% else %}
+              <span class="badge bg-danger">No Justificado</span>
+              {% endif %}
+            </div>
+            {% if atraso.observacion %}
+            <small class="text-muted">{{ atraso.observacion }}</small>
+            {% endif %}
+          </div>
+          {% empty %}
+          <p class="text-muted">Sin atrasos recientes</p>
+          {% endfor %}
+        </div>
+
+        <div class="col-md-4">
+          <h6 class="text-warning">Últimas Salidas</h6>
+          {% for salida in historial_reciente.ultimas_salidas %}
+          <div class="border-bottom pb-2 mb-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ salida.fecha|date:"d/m/Y" }}</strong>
+                <br />
+                <small class="text-muted">{{ salida.hora|time:"H:i" }}</small>
+              </div>
+              {% if salida.tipo_justificativo %}
+              <span class="badge bg-success"
+                >{{ salida.get_tipo_justificativo_display }}</span
+              >
+              {% else %}
+              <span class="badge bg-warning">Sin justificar</span>
+              {% endif %}
+            </div>
+            {% if salida.observacion %}
+            <small class="text-muted">{{ salida.observacion }}</small>
+            {% endif %} {% if salida.regresado %}
+            <br /><small class="text-success">✓ Regresado</small>
+            {% endif %}
+          </div>
+          {% empty %}
+          <p class="text-muted">Sin salidas recientes</p>
+          {% endfor %}
+        </div>
+
+        <div class="col-md-4">
+          <h6 class="text-info">Últimas Salidas Almuerzo</h6>
+          {% for salida_alm in historial_reciente.ultimas_salidas_almuerzo %}
+          <div class="border-bottom pb-2 mb-2">
+            <div>
+              <strong>{{ salida_alm.fecha|date:"d/m/Y" }}</strong>
+              {% if salida_alm.hora_salida %}
+              <br /><small class="text-muted"
+                >Salida: {{ salida_alm.hora_salida|time:"H:i" }}</small
+              >
+              {% endif %} {% if salida_alm.hora_regreso %}
+              <br /><small class="text-success"
+                >Regreso: {{ salida_alm.hora_regreso|time:"H:i" }}</small
+              >
+              {% endif %}
+            </div>
+            {% if salida_alm.observaciones %}
+            <small class="text-muted">{{ salida_alm.observaciones }}</small>
+            {% endif %}
+          </div>
+          {% empty %}
+          <p class="text-muted">Sin salidas de almuerzo recientes</p>
+          {% endfor %}
+        </div>
+      </div>
     </div>
   </div>
 </div>
