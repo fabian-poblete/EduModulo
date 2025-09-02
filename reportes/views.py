@@ -12,7 +12,9 @@ from django.http import JsonResponse, HttpResponse
 from django.db.models import Count, Q, Avg
 from django.utils import timezone
 from datetime import datetime, timedelta
-from django.db.models.functions import TruncDate, TruncMonth, TruncYear, TruncWeek
+from django.db.models.functions import TruncDate, TruncMonth, TruncYear, TruncWeek, ExtractHour, ExtractMinute
+from django.db.models import Value
+from django.db.models.functions import Concat, LPad
 from django.template.loader import render_to_string
 import json
 import hashlib
@@ -47,6 +49,24 @@ matplotlib.use('Agg')
 def get_item(dictionary, key):
     """Filtro personalizado para acceder a elementos del diccionario en templates"""
     return dictionary.get(key)
+
+
+def agrupar_horas_atrasos(atrasos_semana):
+    """Función auxiliar para agrupar atrasos por hora exacta"""
+    # Para todos los tipos de BD, procesar en Python para consistencia
+    horas_dict = {}
+    for atraso in atrasos_semana:
+        hora_simple = atraso.hora.strftime('%H:%M')
+        if hora_simple in horas_dict:
+            horas_dict[hora_simple] += 1
+        else:
+            horas_dict[hora_simple] = 1
+
+    # Convertir a lista y ordenar
+    return [
+        {'hora_simple': hora, 'total': total}
+        for hora, total in sorted(horas_dict.items(), key=lambda x: x[1], reverse=True)
+    ][:20]
 
 
 @login_required
@@ -607,7 +627,9 @@ def exportar_reporte_pdf(request):
         if connection.vendor == 'sqlite':
             # Agrupación en Python para compatibilidad
             def week_start(d):
-                return d - timedelta(days=d.weekday())
+                # Usar isocalendar para mayor precisión
+                year, week, weekday = d.isocalendar()
+                return d - timedelta(days=weekday-1)
 
             # Semanal
             weekly_counter_students = defaultdict(lambda: defaultdict(
@@ -1019,7 +1041,9 @@ def exportar_reporte_excel(request):
         res = {}
         if connection.vendor == 'sqlite':
             def week_start(d):
-                return d - timedelta(days=d.weekday())
+                # Usar isocalendar para mayor precisión
+                year, week, weekday = d.isocalendar()
+                return d - timedelta(days=weekday-1)
 
             # Build lists like in PDF
             weekly_students = defaultdict(lambda: defaultdict(int))
@@ -1336,7 +1360,9 @@ def exportar_reporte_csv(request):
         res = {}
         if connection.vendor == 'sqlite':
             def week_start(d):
-                return d - timedelta(days=d.weekday())
+                # Usar isocalendar para mayor precisión
+                year, week, weekday = d.isocalendar()
+                return d - timedelta(days=weekday-1)
             # Reutilizar lógica simplificada
 
             def build_counts(key_func_student, key_func_course):
@@ -1423,14 +1449,19 @@ def exportar_reporte_csv(request):
 def reporte_semanal(request):
     """Reporte semanal similar al script Python"""
 
-    # Obtener semana actual
+    # Obtener semana actual usando isocalendar para mayor precisión
     from datetime import datetime, timedelta
     from django.utils import timezone
 
     hoy = timezone.now().date()
-    semana_actual = hoy.isocalendar()[1]
-    inicio_semana = hoy - timedelta(days=hoy.weekday())
+    # Usar isocalendar para obtener el año y semana de manera más precisa
+    year, week, weekday = hoy.isocalendar()
+
+    # Calcular el lunes de la semana actual (weekday 1 = lunes en isocalendar)
+    inicio_semana = hoy - timedelta(days=weekday-1)
     fin_semana = inicio_semana + timedelta(days=6)
+
+    semana_actual = week
 
     # Filtros base
     if request.user.is_superuser:
@@ -1460,17 +1491,16 @@ def reporte_semanal(request):
         total=Count('id')
     ).order_by('-total')[:20]
 
-    # Top 20 horas
-    top_horas = atrasos_semana.values('hora').annotate(
-        total=Count('id')
-    ).order_by('-total')[:20]
+    # Top 20 horas - usar función auxiliar para agrupar correctamente
+    top_horas = agrupar_horas_atrasos(atrasos_semana)
 
     # Análisis por día de la semana
     if connection.vendor == 'sqlite':
         # Para SQLite, procesar en Python
         atrasos_por_dia = []
         for atraso in atrasos_semana:
-            dia_semana = atraso.fecha.weekday()
+            # Usar isoweekday() que devuelve 1=lunes, 2=martes, etc.
+            dia_semana = atraso.fecha.isoweekday()
             # Buscar si ya existe este día
             existing = next(
                 (x for x in atrasos_por_dia if x['dia_semana'] == dia_semana), None)
@@ -1483,32 +1513,45 @@ def reporte_semanal(request):
                 })
         atrasos_por_dia.sort(key=lambda x: x['dia_semana'])
     else:
-        # Para PostgreSQL/MySQL, usar funciones nativas
-        from django.db.models.functions import ExtractWeekDay
-        atrasos_por_dia = atrasos_semana.annotate(
-            dia_semana=ExtractWeekDay('fecha')
-        ).values('dia_semana').annotate(
-            total=Count('id')
-        ).order_by('dia_semana')
+        # Para PostgreSQL/MySQL, también procesar en Python para consistencia
+        # ExtractWeekDay puede devolver valores diferentes según la configuración
+        atrasos_por_dia = []
+        for atraso in atrasos_semana:
+            # Usar isoweekday() que devuelve 1=lunes, 2=martes, etc.
+            dia_semana = atraso.fecha.isoweekday()
+            # Buscar si ya existe este día
+            existing = next(
+                (x for x in atrasos_por_dia if x['dia_semana'] == dia_semana), None)
+            if existing:
+                existing['total'] += 1
+            else:
+                atrasos_por_dia.append({
+                    'dia_semana': dia_semana,
+                    'total': 1
+                })
+        atrasos_por_dia.sort(key=lambda x: x['dia_semana'])
 
-    # Mapeo de días
+    # Mapeo de días - usar isoweekday() que es más consistente
     dias_semana = {
-        0: 'Lunes', 1: 'Martes', 2: 'Miércoles', 3: 'Jueves',
-        4: 'Viernes', 5: 'Sábado', 6: 'Domingo'
+        1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves',
+        5: 'Viernes', 6: 'Sábado', 7: 'Domingo'
     }
 
-    # Para compatibilidad con diferentes bases de datos
-    if connection.vendor == 'sqlite':
-        dias_semana = {
-            0: 'Lunes', 1: 'Martes', 2: 'Miércoles', 3: 'Jueves',
-            4: 'Viernes', 5: 'Sábado', 6: 'Domingo'
-        }
-    else:
-        # PostgreSQL/MySQL usan 1-7 para lunes-domingo
-        dias_semana = {
-            1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves',
-            5: 'Viernes', 6: 'Sábado', 7: 'Domingo'
-        }
+    # Asegurar que todos los días de la semana estén representados
+    dias_completos = []
+    for dia_num in range(1, 8):  # 1=lunes hasta 7=domingo
+        dia_existente = next(
+            (d for d in atrasos_por_dia if d['dia_semana'] == dia_num), None)
+        if dia_existente:
+            dias_completos.append(dia_existente)
+        else:
+            # Agregar día con 0 atrasos si no existe
+            dias_completos.append({
+                'dia_semana': dia_num,
+                'total': 0
+            })
+
+    atrasos_por_dia = dias_completos
 
     # Estadísticas generales
     total_atrasos = atrasos_semana.count()
@@ -1536,14 +1579,19 @@ def reporte_semanal(request):
 def exportar_reporte_semanal_excel(request):
     """Exportar reporte semanal en Excel similar al script Python"""
 
-    # Obtener semana actual
+    # Obtener semana actual usando isocalendar para mayor precisión
     from datetime import datetime, timedelta
     from django.utils import timezone
 
     hoy = timezone.now().date()
-    semana_actual = hoy.isocalendar()[1]
-    inicio_semana = hoy - timedelta(days=hoy.weekday())
+    # Usar isocalendar para obtener el año y semana de manera más precisa
+    year, week, weekday = hoy.isocalendar()
+
+    # Calcular el lunes de la semana actual (weekday 1 = lunes en isocalendar)
+    inicio_semana = hoy - timedelta(days=weekday-1)
     fin_semana = inicio_semana + timedelta(days=6)
+
+    semana_actual = week
 
     # Filtros base
     if request.user.is_superuser:
@@ -1573,10 +1621,8 @@ def exportar_reporte_semanal_excel(request):
         total=Count('id')
     ).order_by('-total')[:20]
 
-    # Top 20 horas
-    top_horas = atrasos_semana.values('hora').annotate(
-        total=Count('id')
-    ).order_by('-total')[:20]
+    # Top 20 horas - usar función auxiliar para agrupar correctamente
+    top_horas = agrupar_horas_atrasos(atrasos_semana)
 
     # Estadísticas generales
     total_atrasos = atrasos_semana.count()
@@ -1668,7 +1714,7 @@ def exportar_reporte_semanal_excel(request):
         cell.alignment = center_alignment
 
     for row, item in enumerate(top_horas, 2):
-        ws4.cell(row=row, column=1, value=str(item['hora']))
+        ws4.cell(row=row, column=1, value=str(item['hora_simple']))
         ws4.cell(row=row, column=2, value=item['total'])
 
     # Ajustar ancho de columnas
