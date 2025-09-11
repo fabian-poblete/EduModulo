@@ -94,7 +94,7 @@
               <td class="d-none d-md-table-cell">{{ estudiante.nombre }}</td>
               
               <!-- RUT - Solo en desktop -->
-              <td class="d-none d-lg-table-cell">{{ estudiante.formatear_rut }}</td>
+              <td class="d-none d-lg-table-cell">{{ estudiante.rut_formateado }}</td>
               
               <!-- Curso - Responsive -->
               <td class="d-none d-md-table-cell">{{ estudiante.curso.nombre }}</td>
@@ -125,7 +125,7 @@
                   <div class="d-md-none small text-muted mt-1">
                     <div class="fw-bold">{{ estudiante.nombre }}</div>
                     <div>{{ estudiante.curso.nombre }}</div>
-                    <div>{{ estudiante.formatear_rut }}</div>
+                    <div>{{ estudiante.rut_formateado }}</div>
                   </div>
                 </div>
               </td>

@@ -19,24 +19,25 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 def estudiante_list(request):
     # Obtener los cursos disponibles según el tipo de usuario
     if request.user.is_superuser:
-        cursos = Curso.objects.filter(activo=True)
+        cursos = Curso.objects.filter(activo=True).select_related(
+            'colegio').order_by('colegio__nombre', 'nombre')
         estudiantes = Estudiante.objects.all()
         can_edit = True
     elif request.user.perfil.tipo_usuario == 'admin_colegio':
         cursos = Curso.objects.filter(
-            colegio=request.user.perfil.colegio, activo=True)
+            colegio=request.user.perfil.colegio, activo=True).select_related('colegio').order_by('nombre')
         estudiantes = Estudiante.objects.filter(
             curso__colegio=request.user.perfil.colegio)
         can_edit = True
     elif request.user.perfil.tipo_usuario == 'administrativo':
         cursos = Curso.objects.filter(
-            colegio=request.user.perfil.colegio, activo=True)
+            colegio=request.user.perfil.colegio, activo=True).select_related('colegio').order_by('nombre')
         estudiantes = Estudiante.objects.filter(
             curso__colegio=request.user.perfil.colegio)
         can_edit = False  # Solo lectura para administrativos
     elif request.user.perfil.tipo_usuario == 'profesor':
         cursos = Curso.objects.filter(
-            colegio=request.user.perfil.colegio, activo=True)
+            colegio=request.user.perfil.colegio, activo=True).select_related('colegio').order_by('nombre')
         estudiantes = Estudiante.objects.filter(
             curso__colegio=request.user.perfil.colegio)
         can_edit = False
@@ -74,8 +75,14 @@ def estudiante_list(request):
     except EmptyPage:
         estudiantes_page = paginator.page(paginator.num_pages)
 
+    # OPTIMIZACIÓN: Pre-procesar RUTs formateados para mejorar rendimiento
+    estudiantes_con_rut_formateado = []
+    for estudiante in estudiantes_page:
+        estudiante.rut_formateado = estudiante.formatear_rut()
+        estudiantes_con_rut_formateado.append(estudiante)
+
     return render(request, 'estudiantes/estudiante_list.html', {
-        'estudiantes': estudiantes_page,
+        'estudiantes': estudiantes_con_rut_formateado,  # Usar lista procesada
         'cursos': cursos,
         'can_edit': can_edit,
         'is_admin': request.user.is_superuser or request.user.perfil.tipo_usuario in ['admin_colegio', 'soporte', 'administrativo'],
@@ -640,16 +647,16 @@ def estudiante_detail(request, pk):
         'total_salidas_almuerzo': estudiante.registros_salida_almuerzo.count(),
         'autorizaciones_almuerzo': estudiante.autorizaciones_almuerzo.filter(autorizado=True).count(),
     }
-    
+
     # Obtener datos temporales (últimos 30 días, mes actual, año actual)
     from datetime import datetime, timedelta
     from django.utils import timezone
-    
+
     hoy = timezone.now().date()
     hace_30_dias = hoy - timedelta(days=30)
     inicio_mes = hoy.replace(day=1)
     inicio_año = hoy.replace(month=1, day=1)
-    
+
     estadisticas_temporales = {
         'atrasos_30_dias': estudiante.atrasos.filter(fecha__gte=hace_30_dias).count(),
         'atrasos_mes': estudiante.atrasos.filter(fecha__gte=inicio_mes).count(),
@@ -658,7 +665,7 @@ def estudiante_detail(request, pk):
         'salidas_mes': estudiante.salidas_registradas.filter(fecha__gte=inicio_mes).count(),
         'salidas_año': estudiante.salidas_registradas.filter(fecha__gte=inicio_año).count(),
     }
-    
+
     # Obtener historial reciente
     historial_reciente = {
         'ultimos_atrasos': estudiante.atrasos.order_by('-fecha', '-hora')[:5],
