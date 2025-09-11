@@ -226,6 +226,35 @@
         margin-right: 8px;
     }
     
+    /* Estilos para paginación */
+    .pagination .page-link {
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid #dee2e6;
+        color: #667eea;
+        border-radius: 8px;
+        margin: 0 2px;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination .page-link:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: #667eea;
+        transform: translateY(-2px);
+    }
+    
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+        color: white;
+    }
+    
+    .pagination .page-item.disabled .page-link {
+        background: #f8f9fa;
+        color: #6c757d;
+        border-color: #dee2e6;
+    }
+    
     @media (max-width: 768px) {
         .metric-value {
             font-size: 2rem;
@@ -463,6 +492,36 @@
                             </tbody>
                         </table>
                     </div>
+                    <!-- Paginación para atrasos -->
+                    {% if top_estudiantes_atrasos.has_other_pages %}
+                    <nav aria-label="Paginación atrasos">
+                        <ul class="pagination justify-content-center mt-3">
+                            {% if top_estudiantes_atrasos.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{{ request.GET.urlencode }}&page_atrasos={{ top_estudiantes_atrasos.previous_page_number }}">Anterior</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in top_estudiantes_atrasos.paginator.page_range %}
+                                {% if top_estudiantes_atrasos.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > top_estudiantes_atrasos.number|add:'-3' and num < top_estudiantes_atrasos.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?{{ request.GET.urlencode }}&page_atrasos={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if top_estudiantes_atrasos.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{{ request.GET.urlencode }}&page_atrasos={{ top_estudiantes_atrasos.next_page_number }}">Siguiente</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
                 </div>
             </div>
             <div class="col-lg-6">
@@ -502,6 +561,36 @@
                             </tbody>
                         </table>
                     </div>
+                    <!-- Paginación para salidas -->
+                    {% if top_estudiantes_salidas.has_other_pages %}
+                    <nav aria-label="Paginación salidas">
+                        <ul class="pagination justify-content-center mt-3">
+                            {% if top_estudiantes_salidas.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{{ request.GET.urlencode }}&page_salidas={{ top_estudiantes_salidas.previous_page_number }}">Anterior</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in top_estudiantes_salidas.paginator.page_range %}
+                                {% if top_estudiantes_salidas.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > top_estudiantes_salidas.number|add:'-3' and num < top_estudiantes_salidas.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?{{ request.GET.urlencode }}&page_salidas={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if top_estudiantes_salidas.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{{ request.GET.urlencode }}&page_salidas={{ top_estudiantes_salidas.next_page_number }}">Siguiente</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
                 </div>
             </div>
         </div>

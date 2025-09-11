@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Count, Q, Avg
 from django.utils import timezone
+from django.core.paginator import Paginator
 from datetime import datetime, timedelta
 from django.db.models.functions import TruncDate, TruncMonth, TruncYear, TruncWeek, ExtractHour, ExtractMinute
 from django.db.models import Value
@@ -88,6 +89,11 @@ def dashboard_analytics(request):
     curso_id = request.GET.get('curso')
     tipo_incidencia = request.GET.get('tipo_incidencia')
 
+    # Si no se especifican fechas, limitar a últimos 30 días por defecto
+    if not fecha_inicio and not fecha_fin:
+        fecha_fin = timezone.now().date()
+        fecha_inicio = fecha_fin - timedelta(days=30)
+
     # Aplicar filtros base para atrasos y salidas
     filtros_atrasos = Q()
     filtros_salidas = Q()
@@ -110,14 +116,21 @@ def dashboard_analytics(request):
     elif tipo_incidencia == 'salidas':
         filtros_atrasos = Q(pk__isnull=True)  # No mostrar atrasos
 
-    # Obtener datos de atrasos y salidas
-    atrasos = Atraso.objects.filter(filtros_atrasos)
-    salidas = Salida.objects.filter(filtros_salidas)
+    # Obtener datos de atrasos y salidas con optimizaciones
+    atrasos = Atraso.objects.select_related(
+        'estudiante__curso').filter(filtros_atrasos)
+    salidas = Salida.objects.select_related(
+        'estudiante__curso').filter(filtros_salidas)
 
-    # Métricas principales
-    total_atrasos = atrasos.count()
-    atrasos_justificados = atrasos.filter(justificado=True).count()
-    atrasos_no_justificados = atrasos.filter(justificado=False).count()
+    # Métricas principales - optimizado con una sola consulta
+    atrasos_metrics = atrasos.aggregate(
+        total=Count('id'),
+        justificados=Count('id', filter=Q(justificado=True)),
+        no_justificados=Count('id', filter=Q(justificado=False))
+    )
+    total_atrasos = atrasos_metrics['total']
+    atrasos_justificados = atrasos_metrics['justificados']
+    atrasos_no_justificados = atrasos_metrics['no_justificados']
     total_salidas = salidas.count()
 
     # Porcentajes
@@ -182,20 +195,30 @@ def dashboard_analytics(request):
             total=Count('id')
         ).order_by('fecha_simple')
 
-    # Top estudiantes con más incidencias
-    top_estudiantes_atrasos = atrasos.values(
+    # Top estudiantes con más incidencias - con paginación
+    top_estudiantes_atrasos_qs = atrasos.values(
         'estudiante__nombre', 'estudiante__rut', 'estudiante__curso__nombre'
     ).annotate(
         total_atrasos=Count('id'),
         atrasos_justificados=Count('id', filter=Q(justificado=True)),
         atrasos_no_justificados=Count('id', filter=Q(justificado=False))
-    ).order_by('-total_atrasos')[:10]
+    ).order_by('-total_atrasos')
 
-    top_estudiantes_salidas = salidas.values(
+    top_estudiantes_salidas_qs = salidas.values(
         'estudiante__nombre', 'estudiante__rut', 'estudiante__curso__nombre'
     ).annotate(
         total_salidas=Count('id')
-    ).order_by('-total_salidas')[:10]
+    ).order_by('-total_salidas')
+
+    # Paginación para top estudiantes
+    paginator_atrasos = Paginator(top_estudiantes_atrasos_qs, 10)
+    paginator_salidas = Paginator(top_estudiantes_salidas_qs, 10)
+
+    page_atrasos = request.GET.get('page_atrasos', 1)
+    page_salidas = request.GET.get('page_salidas', 1)
+
+    top_estudiantes_atrasos = paginator_atrasos.get_page(page_atrasos)
+    top_estudiantes_salidas = paginator_salidas.get_page(page_salidas)
 
     # Análisis por hora del día
     atrasos_por_hora = atrasos.values('hora').annotate(
@@ -240,9 +263,9 @@ def dashboard_analytics(request):
         'salidas_por_curso': json.dumps(prepare_data_for_js(list(salidas_por_curso))),
         'salidas_por_fecha': json.dumps(prepare_data_for_js(list(salidas_por_fecha))),
 
-        # Top estudiantes
-        'top_estudiantes_atrasos': list(top_estudiantes_atrasos),
-        'top_estudiantes_salidas': list(top_estudiantes_salidas),
+        # Top estudiantes (objetos paginados)
+        'top_estudiantes_atrasos': top_estudiantes_atrasos,
+        'top_estudiantes_salidas': top_estudiantes_salidas,
 
         # Filtros disponibles
         'cursos': Curso.objects.all().order_by('nombre'),
