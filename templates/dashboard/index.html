@@ -339,6 +339,31 @@
     border: none;
   }
 
+  /* Pagination styles */
+  .pagination-info {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  .pagination-buttons .btn {
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    transition: all 0.2s ease;
+  }
+
+  .pagination-buttons .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .pagination-buttons .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
   @media (max-width: 768px) {
     .table-responsive {
       border-radius: 0;
@@ -427,28 +452,11 @@
         </div>
       </a>
     </div>
+  </div>
 
-    <div class="col-lg-3 col-md-6">
-      <a
-        href="{% url 'atrasos:list' %}"
-        class="text-decoration-none"
-        style="color: inherit"
-      >
-        <div class="stats-card warning h-100">
-          <div class="stats-icon">
-            <i class="fas fa-clock"></i>
-          </div>
-          <div class="stats-number">{{ total_atrasos }}</div>
-          <div class="stats-label">Total Atrasos</div>
-          <div class="stats-subtitle">
-            <i class="fas fa-arrow-right"></i>
-            Ver listado
-          </div>
-        </div>
-      </a>
-    </div>
-
-    <div class="col-lg-3 col-md-6">
+  <!-- Segunda fila: Salidas, Atrasos y Usuarios -->
+  <div class="row g-3 section-spacing">
+    <div class="col-lg-4 col-md-6">
       <a
         href="{% url 'salidas:list' %}"
         class="text-decoration-none"
@@ -468,14 +476,34 @@
       </a>
     </div>
 
+    <div class="col-lg-4 col-md-6">
+      <a
+        href="{% url 'atrasos:list' %}"
+        class="text-decoration-none"
+        style="color: inherit"
+      >
+        <div class="stats-card warning h-100">
+          <div class="stats-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stats-number">{{ total_atrasos }}</div>
+          <div class="stats-label">Total Atrasos</div>
+          <div class="stats-subtitle">
+            <i class="fas fa-arrow-right"></i>
+            Ver listado
+          </div>
+        </div>
+      </a>
+    </div>
+
     {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
-    <div class="col-lg-3 col-md-6">
+    <div class="col-lg-4 col-md-6">
       <a
         href="{% url 'usuarios:list' %}"
         class="text-decoration-none"
         style="color: inherit"
       >
-        <div class="stats-card warning h-100">
+        <div class="stats-card success h-100">
           <div class="stats-icon">
             <i class="fas fa-users"></i>
           </div>
@@ -489,59 +517,7 @@
       </a>
     </div>
     {% endif %}
-
-
   </div>
-  {% comment %}
-  <!-- Quick Access Section -->
-  <div class="row section-spacing">
-    {% if user.is_authenticated %}
-    <div class="col-lg-3 col-md-6 mb-4">
-      <div class="quick-access-card primary">
-        <div class="quick-access-icon">
-          <i class="fas fa-comments"></i>
-        </div>
-        <h5 class="quick-access-title">Comunicaciones</h5>
-        <a
-          href="{% url 'comunicaciones:lista_mensajes' %}"
-          class="btn btn-modern primary"
-        >
-          <i class="fas fa-arrow-right"></i>
-          Ir a Comunicaciones
-        </a>
-      </div>
-    </div>
-    {% endif %}
-  {% endcomment %}
-  
-    {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' or user.perfil.tipo_usuario == 'profesor' or user.perfil.tipo_usuario == 'apoderado' %}
-    <div class="col-lg-3 col-md-6 mb-4">
-      <div class="quick-access-card success">
-        <div class="quick-access-icon">
-          <i class="fas fa-door-open"></i>
-        </div>
-        <h5 class="quick-access-title">Salidas</h5>
-        <a href="{% url 'salidas:list' %}" class="btn btn-modern primary">
-          <i class="fas fa-arrow-right"></i>
-          Ir a Salidas
-        </a>
-      </div>
-    </div>
-    {% endif %} 
-    {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' or user.perfil.tipo_usuario == 'profesor' %}
-    <div class="col-lg-3 col-md-6 mb-4">
-      <div class="quick-access-card warning">
-        <div class="quick-access-icon">
-          <i class="fas fa-clock"></i>
-        </div>
-        <h5 class="quick-access-title">Atrasos</h5>
-        <a href="{% url 'atrasos:list' %}" class="btn btn-modern primary">
-          <i class="fas fa-arrow-right"></i>
-          Ir a Atrasos
-        </a>
-      </div>
-    </div>
-    {% endif %} 
 
   </div>
 
@@ -552,7 +528,7 @@
       <div class="data-card">
         <div class="data-card-header">
           <h5 class="data-card-title">Últimos Cursos</h5>
-          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'  %}
+          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
           <a href="{% url 'cursos:create' %}" class="btn btn-modern primary">
             <i class="fas fa-plus"></i>
             Nuevo Curso
@@ -596,7 +572,32 @@
               </tbody>
             </table>
           </div>
-          {% else %}
+
+          <!-- Paginación para cursos -->
+          {% if cursos_paginator.num_pages > 1 %}
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <small class="pagination-info">
+              Página {{ ultimos_cursos.number }} de {{ cursos_paginator.num_pages }}
+            </small>
+            <div class="btn-group btn-group-sm pagination-buttons" role="group">
+              {% if ultimos_cursos.has_previous %}
+              <a
+                href="?cursos_page={{ ultimos_cursos.previous_page_number }}"
+                class="btn btn-outline-primary"
+              >
+                <i class="fas fa-chevron-left"></i> Anterior
+              </a>
+              {% endif %} {% if ultimos_cursos.has_next %}
+              <a
+                href="?cursos_page={{ ultimos_cursos.next_page_number }}"
+                class="btn btn-outline-primary"
+              >
+                Siguiente <i class="fas fa-chevron-right"></i>
+              </a>
+              {% endif %}
+            </div>
+          </div>
+          {% endif %} {% else %}
           <div class="empty-state">
             <div class="empty-state-icon">
               <i class="fas fa-chalkboard"></i>
@@ -613,7 +614,7 @@
       <div class="data-card">
         <div class="data-card-header">
           <h5 class="data-card-title">Últimos Estudiantes</h5>
-          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio'  %}
+          {% if user.is_superuser or user.perfil.tipo_usuario == 'admin_colegio' %}
           <a
             href="{% url 'estudiantes:create' %}"
             class="btn btn-modern primary"
@@ -660,7 +661,32 @@
               </tbody>
             </table>
           </div>
-          {% else %}
+
+          <!-- Paginación para estudiantes -->
+          {% if estudiantes_paginator.num_pages > 1 %}
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <small class="pagination-info">
+              Página {{ ultimos_estudiantes.number }} de {{ estudiantes_paginator.num_pages }}
+            </small>
+            <div class="btn-group btn-group-sm pagination-buttons" role="group">
+              {% if ultimos_estudiantes.has_previous %}
+              <a
+                href="?estudiantes_page={{ ultimos_estudiantes.previous_page_number }}"
+                class="btn btn-outline-primary"
+              >
+                <i class="fas fa-chevron-left"></i> Anterior
+              </a>
+              {% endif %} {% if ultimos_estudiantes.has_next %}
+              <a
+                href="?estudiantes_page={{ ultimos_estudiantes.next_page_number }}"
+                class="btn btn-outline-primary"
+              >
+                Siguiente <i class="fas fa-chevron-right"></i>
+              </a>
+              {% endif %}
+            </div>
+          </div>
+          {% endif %} {% else %}
           <div class="empty-state">
             <div class="empty-state-icon">
               <i class="fas fa-user-graduate"></i>
@@ -671,8 +697,6 @@
         </div>
       </div>
     </div>
-
-
   </div>
 
   <!-- Recent Users (Admin Only) -->
@@ -752,7 +776,32 @@
               </tbody>
             </table>
           </div>
-          {% else %}
+
+          <!-- Paginación para usuarios -->
+          {% if usuarios_paginator and usuarios_paginator.num_pages > 1 %}
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <small class="pagination-info">
+              Página {{ ultimos_usuarios.number }} de {{ usuarios_paginator.num_pages }}
+            </small>
+            <div class="btn-group btn-group-sm pagination-buttons" role="group">
+              {% if ultimos_usuarios.has_previous %}
+              <a
+                href="?usuarios_page={{ ultimos_usuarios.previous_page_number }}"
+                class="btn btn-outline-primary"
+              >
+                <i class="fas fa-chevron-left"></i> Anterior
+              </a>
+              {% endif %} {% if ultimos_usuarios.has_next %}
+              <a
+                href="?usuarios_page={{ ultimos_usuarios.next_page_number }}"
+                class="btn btn-outline-primary"
+              >
+                Siguiente <i class="fas fa-chevron-right"></i>
+              </a>
+              {% endif %}
+            </div>
+          </div>
+          {% endif %} {% else %}
           <div class="empty-state">
             <div class="empty-state-icon">
               <i class="fas fa-users"></i>
