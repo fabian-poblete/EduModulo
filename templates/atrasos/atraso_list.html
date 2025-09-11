@@ -263,6 +263,37 @@
       </div>
     </div>
   </div>
+
+  <!-- Controles de paginación -->
+  {% if page_obj.has_other_pages %}
+  <nav aria-label="Paginación de atrasos" class="mt-4">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page=1{% if fecha_filtro %}&fecha={{ fecha_filtro }}{% endif %}{% if busqueda %}&q={{ busqueda }}{% endif %}">Primera</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if fecha_filtro %}&fecha={{ fecha_filtro }}{% endif %}{% if busqueda %}&q={{ busqueda }}{% endif %}">Anterior</a>
+        </li>
+      {% endif %}
+      
+      <li class="page-item active">
+        <span class="page-link">
+          Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+        </span>
+      </li>
+      
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if fecha_filtro %}&fecha={{ fecha_filtro }}{% endif %}{% if busqueda %}&q={{ busqueda }}{% endif %}">Siguiente</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if fecha_filtro %}&fecha={{ fecha_filtro }}{% endif %}{% if busqueda %}&q={{ busqueda }}{% endif %}">Última</a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
 </div>
 
 <style>

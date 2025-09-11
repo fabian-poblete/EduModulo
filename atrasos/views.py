@@ -4,12 +4,14 @@ from django.contrib import messages
 from django.urls import reverse
 from .models import Atraso
 from .forms import AtrasoForm
-from django.db.models import Q
+from django.db.models import Q, Count
 from datetime import datetime, date, timedelta
 from django.http import JsonResponse
 from estudiantes.models import Estudiante
 from cursos.models import Curso
 from notificaciones.utils import enviar_notificacion
+from django.core.paginator import Paginator
+from django.utils import timezone
 
 
 def puede_ver_atrasos(user):
@@ -20,34 +22,43 @@ def puede_ver_atrasos(user):
 
 @login_required
 def atraso_list(request):
-    # Obtener los atrasos según el tipo de usuario
+    # Obtener los atrasos según el tipo de usuario con select_related
     if request.user.is_superuser:
-        atrasos = Atraso.objects.all()
+        atrasos = Atraso.objects.select_related(
+            'estudiante__curso__colegio'
+        ).all()
     elif request.user.perfil.tipo_usuario in ['admin_colegio', 'porteria', 'administrativo']:
-        atrasos = Atraso.objects.filter(
-            estudiante__curso__colegio=request.user.perfil.colegio)
+        atrasos = Atraso.objects.select_related(
+            'estudiante__curso__colegio'
+        ).filter(estudiante__curso__colegio=request.user.perfil.colegio)
     elif request.user.perfil.tipo_usuario == 'profesor':
-        atrasos = Atraso.objects.filter(
-            estudiante__curso__colegio=request.user.perfil.colegio)
+        atrasos = Atraso.objects.select_related(
+            'estudiante__curso__colegio'
+        ).filter(estudiante__curso__colegio=request.user.perfil.colegio)
     else:
         messages.error(request, 'No tienes permiso para ver esta página.')
         return redirect('dashboard:index')
 
-    # Calcular totales adicionales ANTES de aplicar filtros
-    from django.utils import timezone
+    # Calcular totales adicionales ANTES de aplicar filtros usando aggregate
     hoy = timezone.now().date()
     inicio_semana = hoy - timedelta(days=hoy.weekday())
     fin_semana = inicio_semana + timedelta(days=6)
 
-    # Totales por período (sin filtros)
-    total_general = atrasos.count()
-    total_semanal = atrasos.filter(
-        fecha__gte=inicio_semana, fecha__lte=fin_semana).count()
-    total_diario = atrasos.filter(fecha=hoy).count()
+    # Una sola consulta para todos los totales usando aggregate
+    totales = atrasos.aggregate(
+        total_general=Count('id'),
+        total_justificados=Count('id', filter=Q(justificado=True)),
+        total_no_justificados=Count('id', filter=Q(justificado=False)),
+        total_semanal=Count('id', filter=Q(
+            fecha__gte=inicio_semana, fecha__lte=fin_semana)),
+        total_diario=Count('id', filter=Q(fecha=hoy))
+    )
 
-    # Totales por estado (sin filtros)
-    total_justificados = atrasos.filter(justificado=True).count()
-    total_no_justificados = atrasos.filter(justificado=False).count()
+    total_general = totales['total_general']
+    total_justificados = totales['total_justificados']
+    total_no_justificados = totales['total_no_justificados']
+    total_semanal = totales['total_semanal']
+    total_diario = totales['total_diario']
 
     # Filtrar por fecha si se proporciona
     fecha_filtro = request.GET.get('fecha')
@@ -58,19 +69,26 @@ def atraso_list(request):
         except ValueError:
             messages.error(request, 'Formato de fecha inválido')
 
-    # Filtrar por búsqueda si se proporciona
+    # Filtrar por búsqueda si se proporciona (optimizado con select_related)
     busqueda = request.GET.get('q')
     if busqueda:
-        atrasos = atrasos.filter(
+        atrasos = atrasos.select_related('estudiante__curso').filter(
             Q(estudiante__nombre__icontains=busqueda) |
             Q(estudiante__rut__icontains=busqueda)
         )
+
+    # Aplicar paginación
+    paginator = Paginator(atrasos, 50)  # 50 registros por página
+    page_number = request.GET.get('page')
+    atrasos_page = paginator.get_page(page_number)
 
     # Contar el total de atrasos filtrados
     total_atrasos = atrasos.count()
 
     return render(request, 'atrasos/atraso_list.html', {
-        'atrasos': atrasos,
+        'atrasos': atrasos_page,  # Usar atrasos_page en lugar de atrasos
+        'paginator': paginator,
+        'page_obj': atrasos_page,
         'fecha_filtro': fecha_filtro,
         'busqueda': busqueda,
         'total_atrasos': total_atrasos,
