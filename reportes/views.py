@@ -5,7 +5,6 @@ from estudiantes.models import Estudiante
 
 from atrasos.models import Atraso
 from salidas.models import Salida
-import matplotlib.pyplot as plt
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
@@ -40,9 +39,19 @@ from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.platypus import Image as RLImage
 
-# Matplotlib para gráficos en PDF (backend sin UI)
-import matplotlib
-matplotlib.use('Agg')
+# Matplotlib se carga de forma lazy para evitar problemas de inicio del servidor
+
+
+def get_matplotlib():
+    """Lazy loading de matplotlib para evitar importación global y problemas de FontManager"""
+    if not hasattr(get_matplotlib, '_plt'):
+        print("🔄 Cargando matplotlib por primera vez...")
+        import matplotlib
+        matplotlib.use('Agg')  # Configurar backend ANTES de importar pyplot
+        import matplotlib.pyplot as plt
+        get_matplotlib._plt = plt
+        print("✅ Matplotlib cargado y en cache")
+    return get_matplotlib._plt
 
 
 @register.filter
@@ -546,6 +555,9 @@ def exportar_reporte_pdf(request):
     # Gráficos principales (embebidos como imágenes)
 
     def build_chart_atrasos_por_curso(data):
+        # Obtener matplotlib usando lazy loading
+        plt = get_matplotlib()
+
         labels = [item.get('estudiante__curso__nombre')
                   or 'Curso desconocido' for item in data][:10]
         justificados = [int(item.get('justificados') or 0)
