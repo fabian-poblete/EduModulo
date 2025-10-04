@@ -173,7 +173,8 @@ class AtrasoViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend,
                        filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['estudiante', 'justificado', 'fecha']
+    filterset_fields = ['estudiante',
+                        'justificado', 'con_certificado', 'fecha']
     search_fields = ['estudiante__nombre', 'observacion']
     ordering_fields = ['fecha', 'hora']
     ordering = ['-fecha', '-hora']

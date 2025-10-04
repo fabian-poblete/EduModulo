@@ -119,8 +119,15 @@ class AtrasoSerializer(serializers.ModelSerializer):
         # Retornar la instancia del estudiante para la inserción
         return estudiante
 
+    def validate(self, data):
+        """Validación personalizada para manejar con_certificado"""
+        # Si con_certificado es True, forzar justificado a True
+        if data.get('con_certificado', False):
+            data['justificado'] = True
+        return data
+
     class Meta:
         model = Atraso
         fields = ('id', 'estudiante', 'fecha', 'hora',
-                  'justificado', 'observacion')
+                  'justificado', 'con_certificado', 'observacion')
         read_only_fields = ('fecha', 'hora')
