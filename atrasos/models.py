@@ -14,7 +14,9 @@ class Atraso(models.Model):
     fecha_actualizacion = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Atraso de {self.estudiante.nombre} - {self.fecha} {self.hora}"
+        tipo = "Certificado" if self.con_certificado else (
+            "Justificado" if self.justificado else "No justificado")
+        return f"Atraso de {self.estudiante.nombre} - {self.fecha} {self.hora} ({tipo})"
 
     class Meta:
         verbose_name = 'Atraso'
