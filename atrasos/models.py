@@ -8,6 +8,7 @@ class Atraso(models.Model):
     fecha = models.DateField(auto_now_add=True)
     hora = models.TimeField(auto_now_add=True)
     justificado = models.BooleanField(default=False)
+    con_certificado = models.BooleanField(default=False)
     observacion = models.TextField(blank=True, null=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
