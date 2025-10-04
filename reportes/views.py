@@ -46,12 +46,10 @@ from reportlab.platypus import Image as RLImage
 def get_matplotlib():
     """Lazy loading de matplotlib para evitar importación global y problemas de FontManager"""
     if not hasattr(get_matplotlib, '_plt'):
-        print("🔄 Cargando matplotlib por primera vez...")
         import matplotlib
         matplotlib.use('Agg')  # Configurar backend ANTES de importar pyplot
         import matplotlib.pyplot as plt
         get_matplotlib._plt = plt
-        print("✅ Matplotlib cargado y en cache")
     return get_matplotlib._plt
 
 

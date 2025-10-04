@@ -37,7 +37,6 @@ def contact_view(request):
             return JsonResponse({'success': True, 'message': '¡Mensaje recibido exitosamente! Nos contactaremos contigo pronto.'})
         except Exception as e:
             # En caso de error al enviar el correo
-            print(f"Error al enviar el correo: {e}")
             return JsonResponse({'success': False, 'message': 'Ocurrió un error al enviar el mensaje.'}, status=500)
 
     return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)

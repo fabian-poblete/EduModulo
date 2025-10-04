@@ -95,20 +95,8 @@ def usuario_create(request, colegio_id=None):
         return redirect('usuarios:list')
 
     if request.method == 'POST':
-        print(f"DEBUG usuario_create: POST data: {request.POST}")
         user_form = UserForm(request.POST)
         perfil_form = PerfilForm(request.POST, user=request.user)
-
-        print(
-            f"DEBUG usuario_create: user_form.is_valid()={user_form.is_valid()}")
-        print(
-            f"DEBUG usuario_create: perfil_form.is_valid()={perfil_form.is_valid()}")
-
-        if not user_form.is_valid():
-            print(f"DEBUG usuario_create: user_form.errors={user_form.errors}")
-        if not perfil_form.is_valid():
-            print(
-                f"DEBUG usuario_create: perfil_form.errors={perfil_form.errors}")
 
         if user_form.is_valid() and perfil_form.is_valid():
             try:

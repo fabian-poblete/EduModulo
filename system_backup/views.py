@@ -147,15 +147,8 @@ def create_backup(request):
                             Model = apps.get_model(app_label, model_name)
                             if Model is not None:
                                 available_models.append(model)
-                                print(
-                                    f"Modelo {model} encontrado y disponible para respaldo")
-                            else:
-                                print(f"Modelo {model} no encontrado")
                         except LookupError as e:
-                            print(f"Error al buscar modelo {model}: {str(e)}")
-
-                    print(
-                        f"\nIniciando respaldo de {len(available_models)} modelos disponibles...")
+                            pass
 
                     for model in available_models:
                         temp_file = f'temp_{model.replace(".", "_")}.json'
@@ -184,22 +177,14 @@ def create_backup(request):
                                     # Leer el archivo con la codificación específica
                                     with open(temp_file, 'r', encoding=encoding) as f:
                                         data = json.load(f)
-                                        print(
-                                            f"Archivo {model} leído exitosamente con codificación {encoding}")
 
                                     filtered_data = [item for item in data if item.get(
                                         'fields', {}).get('colegio') == colegio.id]
-                                    print(
-                                        f"Filtrados {len(filtered_data)} registros de {model} para el colegio {colegio.id}")
                                     all_data.extend(filtered_data)
 
                                 except Exception as e:
-                                    print(
-                                        f"Error al procesar datos de {model}: {str(e)}")
                                     # Intentar método alternativo para cursos.curso
                                     if model == 'cursos.curso':
-                                        print(
-                                            f"Intentando método alternativo para {model}")
                                         try:
                                             Model = apps.get_model(
                                                 *model.split('.'))
@@ -213,24 +198,16 @@ def create_backup(request):
                                                         **{f.name: getattr(obj, f.name) for f in obj._meta.fields if f.name != 'colegio'}
                                                     }
                                                 })
-                                            print(
-                                                f"Obtenidos {len(data)} registros de {model} usando ORM")
                                             all_data.extend(data)
                                         except Exception as e:
-                                            print(
-                                                f"Error en método alternativo para {model}: {str(e)}")
-                            else:
-                                print(
-                                    f"Error al ejecutar dumpdata para {model}: {result.stderr}")
+                                            pass
 
                         except Exception as e:
-                            print(f"Error al procesar {model}: {str(e)}")
+                            pass
 
                     # Guardar todos los datos en el archivo final
                     with open(db_backup_path, 'w', encoding='utf-8') as f:
                         json.dump(all_data, f, indent=2, ensure_ascii=False)
-                    print(
-                        f"\nRespaldo completado con {len(all_data)} registros en total")
 
                 finally:
                     # Limpiar archivos temporales
@@ -239,8 +216,7 @@ def create_backup(request):
                             try:
                                 os.remove(temp_file)
                             except Exception as e:
-                                print(
-                                    f"Error al eliminar archivo temporal {temp_file}: {str(e)}")
+                                pass
             else:
                 # Para respaldos del sistema completo
                 subprocess.run(
@@ -406,8 +382,6 @@ def restore_backup(request, backup_id):
                                     'pk': obj.pk,
                                     'fields': {'colegio': colegio_id, **fields}
                                 })
-                            print(
-                                f"Temporalmente respaldados {queryset.count()} registros de {model_name} para el colegio {colegio_id}")
                         elif model_name == 'colegios.colegio':
                             queryset = Model.objects.filter(id=colegio_id)
                             for obj in queryset:
@@ -428,19 +402,11 @@ def restore_backup(request, backup_id):
                                     'pk': obj.pk,
                                     'fields': fields
                                 })
-                            print(
-                                f"Temporalmente respaldado {queryset.count()} registro de {model_name} para el colegio {colegio_id}")
-
-                        else:
-                            print(
-                                f"Saltando modelo {model_name} en respaldo temporal de colegio: no tiene campo 'colegio' y no es el modelo Colegio.")
 
                     except LookupError:
-                        print(
-                            f"Saltando modelo {model_name} en respaldo temporal de colegio: modelo no encontrado.")
+                        pass
                     except Exception as e:
-                        print(
-                            f"Error al procesar modelo {model_name} para respaldo temporal de colegio: {str(e)}")
+                        pass
 
                 with open(temp_backup_path, 'w', encoding='utf-8') as f:
                     json.dump(all_data, f, indent=2, ensure_ascii=False)
@@ -491,7 +457,6 @@ def restore_backup(request, backup_id):
                 for model in models:
                     # Exclude the Backup model from deletion
                     if model == Backup:
-                        print(f"Saltando eliminación de datos para el modelo Backup.")
                         continue
 
                     if model._meta.app_label not in ['contenttypes', 'auth']:
@@ -571,8 +536,6 @@ def restore_backup(request, backup_id):
                     for model in models:
                         # Exclude the Backup model from deletion
                         if model == Backup:
-                            print(
-                                f"Saltando eliminación de datos para el modelo Backup.")
                             continue
 
                         if model._meta.app_label not in ['contenttypes', 'auth']:

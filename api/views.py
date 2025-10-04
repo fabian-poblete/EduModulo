@@ -181,23 +181,11 @@ class AtrasoViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def registrar_atraso(self, request):
-        print("="*50)
-        print("🚀 REGISTRO DE ATRASO INICIADO")
-        print("="*50)
-
         serializer = self.get_serializer(data=request.data)
-        print("📋 Serializer creado")
 
         if serializer.is_valid():
-            print("✅ Serializer válido")
-            print(f"📝 Datos validados: {serializer.validated_data}")
-
             atraso = serializer.save()
-            print(f"💾 Atraso guardado: ID={atraso.id}")
-            print(f"👨‍🎓 Estudiante: {atraso.estudiante.nombre}")
-            print(f"🏫 Colegio: {atraso.estudiante.curso.colegio.nombre}")
 
-            print("📱 ANTES de enviar_notificacion")
             try:
                 enviar_notificacion(
                     evento=atraso,
@@ -205,14 +193,10 @@ class AtrasoViewSet(viewsets.ModelViewSet):
                     colegio=atraso.estudiante.curso.colegio,
                     tipo_evento='atraso'
                 )
-                print("✅ DESPUÉS de enviar_notificacion - FUNCIÓN COMPLETADA")
             except Exception as e:
-                print(f"❌ ERROR en enviar_notificacion: {e}")
-                import traceback
-                traceback.print_exc()
+                # Log error but don't fail the request
+                pass
 
-            print("🔄 Retornando respuesta exitosa")
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            print(f"❌ Serializer inválido: {serializer.errors}")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
