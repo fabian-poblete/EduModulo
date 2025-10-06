@@ -163,9 +163,10 @@ def render_mensaje(tipo_evento, estudiante, evento):
         hora = evento.hora.strftime('%H:%M')
 
         # Determinar si está justificado
-        justificado = "Sí" if evento.justificado else "No"
-
-        return f"Estimado apoderado, se ha registrado un atraso para el/la estudiante {estudiante.nombre} el día {fecha_hoy} a las {hora}"
+        if evento.justificado:
+            return f"Estimado/a, se registró un atraso justificado para {estudiante.nombre} hoy a las {hora}"
+        else:
+            return f"Estimado/a, se registró un atraso sin justificar para {estudiante.nombre} hoy a las {hora}"
 
     elif tipo_evento == 'salida':
         # Formatear la fecha
@@ -174,5 +175,5 @@ def render_mensaje(tipo_evento, estudiante, evento):
         # Formatear la hora
         hora = evento.hora.strftime('%H:%M')
 
-        return f"Estimado apoderado, se ha registrado una salida para el/la estudiante {estudiante.nombre} el día {fecha} a las {hora}"
+        return f"Estimado/a, se registró una salida para {estudiante.nombre} hoy a las {hora}"
     return ""

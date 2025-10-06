@@ -20,7 +20,6 @@ SECRET_KEY = os.environ.get(
 
 
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-print(DEBUG)
 RENDER = os.environ.get('RENDER', None)
 
 
