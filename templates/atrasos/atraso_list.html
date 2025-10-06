@@ -208,7 +208,12 @@
 
               <!-- Estado - Siempre visible -->
               <td>
-                {% if atraso.justificado %}
+                {% if atraso.con_certificado %}
+                <span class="badge bg-info">
+                  <i class="fas fa-file-medical"></i>
+                  <span class="d-none d-sm-inline">Con Certificado</span>
+                </span>
+                {% elif atraso.justificado %}
                 <span class="badge bg-success">
                   <i class="fas fa-check-circle"></i>
                   <span class="d-none d-sm-inline">Justificado</span>
